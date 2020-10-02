@@ -22,4 +22,4 @@ jobs:
     - uses: actions/upload-artifact@v2
       with:
         name: uasssoftwarelinux
-        path: src/dist/linux
+        path: src
