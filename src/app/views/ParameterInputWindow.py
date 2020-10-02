@@ -1,14 +1,23 @@
+import sys
+import os
+import datetime
+import json
+
 from PySide2.QtCore import *
 from PySide2.QtGui import *
 from PySide2.QtWidgets import *
 from pyside_material import apply_stylesheet
 
 from app.views.Dashboard import Dashboard
-
+from app.utils.Alerts import Alert
 
 
 class ParameterInputWindow(object):
-    def setupUi(self, MainWindow,PreviousWindow):
+    def setupUi(self, receiver_port, radiosonde_port, MainWindow,PreviousWindow):
+        # Date from the port selection page 
+        self.receiver_port = receiver_port
+        self.radiosonde_port = radiosonde_port
+
 
         # to navigate between windows 
         self.current_window = MainWindow
@@ -187,6 +196,42 @@ class ParameterInputWindow(object):
         self.back_button.clicked.connect(self.open_previous_window)
     
     def open_next_window(self):
+        try:
+            data = {
+                "frequency" : float(self.frequency_input.currentText()),
+                "temperature" : float(self.temperature_input.text()),
+                "pressure" : float(self.pressure_input.text()),
+                "altitude" : float(self.altitude_input.text()),
+                "latitude" : float(self.latitude_input.text()),
+                "longitude" : float(self.longitude_input.text()),
+                "windspeed" : float(self.windspeed_input.text()),
+                "humidity" : float(self.humidity_input.text()),
+            }
+        except:
+            Alert(
+                main_text = "Input Error",
+                info_text = "Provide appropriate values",
+                alert_type=Alert.CRITICAL
+            )
+            return
+
+
+        # Make the folder structure for the new flight
+        folder_name = str(datetime.date.today())                           # Folder name is todays date
+        base_path = sys.path[0]                                            # get the base path 
+        folder_path = os.path.join(base_path, "export", folder_name)       # get the folder path
+        os.makedirs(folder_path)                                           # make the folder
+        
+        with open(os.path.join(folder_path, "output.csv"), 'w') as file_output:      # make the files
+            cols = ['Time', 'Latitude', 'Longitude', 'Satelites'\
+                'Altitude', 'Pressure', 'Internal Temperature',\
+                'External Temperature', 'Humidity']
+            file_output.write(", ".join(cols) + '\n')
+
+        with open(os.path.join(folder_path, "params.json"), 'w') as file_output:
+            json.dump({"data": data}, file_output)
+
+
         if self.next_window:
             self.current_window.close()
             self.next_window.show()
@@ -196,7 +241,7 @@ class ParameterInputWindow(object):
             self.next_window_ui.setupUi(self.next_window)
             self.next_window.show()
             self.current_window.close()
-    
+
     def open_previous_window(self):
         self.current_window.close()
         self.previous_window.show()
