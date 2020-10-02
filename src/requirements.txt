@@ -4,7 +4,7 @@ cycler==0.10.0
 Jinja2==2.11.2
 kiwisolver==1.2.0
 MarkupSafe==1.1.1
-matplotlib==3.3.2
+matplotlib==3.2.2
 numpy==1.19.2
 pandas==1.1.2
 Pillow==7.2.0
