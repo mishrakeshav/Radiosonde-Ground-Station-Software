@@ -1,0 +1,13 @@
+{
+    "data":{
+        "frequency": 600.0,
+        "temperature": 56.0,
+        "pressure": 536.0,
+        "altitude": 56.0,
+        "latitude": 56.0,
+        "longitude": 75.0,
+        "windspeed": 65.0,
+        "humidity": 6.0
+    },
+    "time": "00:25:00"
+}

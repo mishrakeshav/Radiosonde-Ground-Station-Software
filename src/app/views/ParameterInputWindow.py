@@ -14,15 +14,15 @@ from app.utils.Alerts import Alert
 
 class ParameterInputWindow(object):
     def setupUi(self, receiver_port, radiosonde_port, MainWindow,PreviousWindow):
-        # Date from the port selection page 
+        # Date from the port selection page
         self.receiver_port = receiver_port
         self.radiosonde_port = radiosonde_port
 
 
-        # to navigate between windows 
+        # to navigate between windows
         self.current_window = MainWindow
         self.previous_window = PreviousWindow
-        self.next_window = None 
+        self.next_window = None
 
         if not MainWindow.objectName():
             MainWindow.setObjectName(u"MainWindow")
@@ -163,7 +163,7 @@ class ParameterInputWindow(object):
 
         QMetaObject.connectSlotsByName(MainWindow)
 
-        # custom setups 
+        # custom setups
         self.connect_buttons()
 
     def retranslateUi(self, MainWindow):
@@ -190,11 +190,11 @@ class ParameterInputWindow(object):
         self.logo_databyte.setText("")
         self.logo_somaiya.setText("")
 
-    # connects buttons to the methods that gets triggered on click 
+    # connects buttons to the methods that gets triggered on click
     def connect_buttons(self):
         self.proceed_button.clicked.connect(self.open_next_window)
         self.back_button.clicked.connect(self.open_previous_window)
-    
+
     def open_next_window(self):
         try:
             data = {
@@ -217,19 +217,19 @@ class ParameterInputWindow(object):
 
 
         # Make the folder structure for the new flight
-        folder_name = str(datetime.date.today())                           # Folder name is todays date
-        base_path = sys.path[0]                                            # get the base path 
-        folder_path = os.path.join(base_path, "export", folder_name)       # get the folder path
-        os.makedirs(folder_path)                                           # make the folder
-        
-        with open(os.path.join(folder_path, "output.csv"), 'w') as file_output:      # make the files
-            cols = ['Time', 'Latitude', 'Longitude', 'Satelites'\
-                'Altitude', 'Pressure', 'Internal Temperature',\
-                'External Temperature', 'Humidity']
-            file_output.write(", ".join(cols) + '\n')
+        folder_name = datetime.datetime.utcnow().strftime("%Y%m%d_%H%M%S")             # Folder name is todays date
+        base_path = sys.path[0]                                                        # get the base path
+        folder_path = os.path.join(base_path, "export", folder_name)                   # get the folder path
+        os.makedirs(folder_path)                                                       # make the folder
+
+        with open(os.path.join(folder_path, "output.csv"), 'w') as file_output:        # make the files
+            cols = ['Time', 'Latitude', 'Longitude', 'Satelites', 'Altitude',\
+             'Pressure', 'Internal Temperature', 'External Temperature', 'Humidity',\
+             'TimeElapsed', 'Wind Direction', 'Wind Speed', 'Scaled Pressure', 'Scaled Temperature']
+            file_output.write(",".join(cols))
 
         with open(os.path.join(folder_path, "params.json"), 'w') as file_output:
-            json.dump({"data": data}, file_output)
+            json.dump({"data": data, "time":datetime.datetime.utcnow().strftime("%H:%M:%S")}, file_output)
 
 
         if self.next_window:
