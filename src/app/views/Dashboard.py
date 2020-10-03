@@ -1,14 +1,18 @@
-
+from collections import defaultdict
 from PySide2.QtCore import *
 from PySide2.QtGui import *
 from PySide2.QtWidgets import *
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
+import pandas as pd
+import os
 
 from app.utils.Canvas import MplCanvas
 from app.utils.Gauge import gauge
+from app.utils.ReadComPort import SerialPort
+from app.utils.Worker import Worker
 
 class Dashboard(object):
-    def setupUi(self, MainWindow):
+    def setupUi(self, MainWindow, flight_folder_path, comport_name):
         if not MainWindow.objectName():
             MainWindow.setObjectName(u"MainWindow")
         MainWindow.resize(830, 520)
@@ -244,7 +248,18 @@ class Dashboard(object):
 
         QMetaObject.connectSlotsByName(MainWindow)
 
+        self.graph_time.show()
+
+        self.threadpool = QThreadPool()
+
+        self.plot_ref_time = None
+        self.comport = SerialPort(comport_name)
+        self.comport.initialize_port(flight_folder_path)
+        self.flight_folder_path = flight_folder_path
+        self.data_frame = pd.read_csv(os.path.join(flight_folder_path, "output.csv"))
+
         self.update_gauge()
+        self.run_threads()
     # setupUi
 
     def retranslateUi(self, MainWindow):
@@ -274,7 +289,6 @@ class Dashboard(object):
         ___qtablewidgetitem5 = self.table.horizontalHeaderItem(5)
         ___qtablewidgetitem5.setText(QCoreApplication.translate("MainWindow", u"Wd[]", None));
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), QCoreApplication.translate("MainWindow", u"Tab 2", None))
-    # retranslateUi
 
     def update_gauge(self):
         # will change this later
@@ -302,6 +316,48 @@ class Dashboard(object):
         colors=['#FFCC00','#FFCC00','#FFCC00','#FFCC00'], arrow=3,
         title=f'Temp {chr(176)}C')
         self.pressure_gauge.draw()
+
+    def read_port(self):
+        output_file = os.path.join(self.flight_folder_path, "output.csv")
+        while True:
+            if self.comport.serial_port.in_waiting:
+                data = self.comport.serial_port.read_until().decode('ascii').split(",")
+                data = [data[0]] + list(map(lambda x: float(x), data[1:]))
+                time, latitude, longitude, satelite, \
+                altitude, pressure, internal_temperature, \
+                external_temperature, humidity = data
+
+                time_elapsed = self.comport.get_time_elapsed(time)
+                wind_direction = self.comport.get_wind_direction(latitude, longitude)
+                wind_speed = self.comport.get_wind_speed(latitude, longitude, time_elapsed)
+                scaled_pressure = (pressure/(self.comport.MAXIMUM_PRESSURE - self.comport.MINIMUM_PRESSURE))*100
+                scaled_external_temperature = (external_temperature/(self.comport.MAXIMUM_TEMPERATURE - self.comport.MINIMUM_TEMPERATURE))*100
+
+                data.extend([time_elapsed, wind_direction, wind_speed, scaled_pressure, scaled_external_temperature])
+                data = [data[0]] + list(map(lambda x: str(x), data[1:]))
+                with open(output_file, 'a') as file_output:
+                    file_output.write(",".join(data) + "\n")
+
+                cols = ['Time', 'Latitude', 'Longitude', 'Satelites', 'Altitude',\
+                     'Pressure', 'Internal Temperature', 'External Temperature', 'Humidity',\
+                     'TimeElapsed', 'Wind Direction', 'Wind Speed', 'Scaled Pressure', 'Scaled Temperature']
+
+                data_dict = dict(zip(cols, data))
+                self.data_frame.append(pd.DataFrame(data_dict, index=[self.data_frame.shape[0],]))
+                self.update_graph_time()
+                self.comport.previous_longitude = longitude
+                self.comport.previous_latitude = latitude
+                self.comport.previous_time = time_elapsed
+
+    def update_graph_time(self):
+        self.graph_time.axes.cla()
+        self.graph_time.axes.plot(self.data_frame["TimeElapsed"], self.data_frame["External Temperature"])
+        self.graph_time.draw()
+
+
+    def run_threads(self):
+        worker1 = Worker(self.read_port)
+        self.threadpool.start(worker1)
 
 
 if __name__ == "__main__":

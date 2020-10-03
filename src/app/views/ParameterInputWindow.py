@@ -238,7 +238,7 @@ class ParameterInputWindow(object):
         else:
             self.next_window = QMainWindow()
             self.next_window_ui = Dashboard()
-            self.next_window_ui.setupUi(self.next_window)
+            self.next_window_ui.setupUi(self.next_window, folder_path, self.receiver_port)
             self.next_window.show()
             self.current_window.close()
 

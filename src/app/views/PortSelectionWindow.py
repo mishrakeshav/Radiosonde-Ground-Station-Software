@@ -104,7 +104,7 @@ class PortSelectionWindow(object):
 
         QMetaObject.connectSlotsByName(MainWindow)
 
-        # custom setups 
+        # custom setups
         self.connect_buttons()
 
     def retranslateUi(self, MainWindow):
@@ -119,7 +119,7 @@ class PortSelectionWindow(object):
         self.logo_databyte.setText("")
         self.logo_somaiya.setText("")
 
-    # connects buttons to methods that gets triggered on click 
+    # connects buttons to methods that gets triggered on click
     def connect_buttons(self):
         self.proceed_button.clicked.connect(self.open_next_window)
         self.back_button.clicked.connect(self.open_previous_window)
@@ -133,7 +133,7 @@ class PortSelectionWindow(object):
         receiver_port = self.receiver_port_input.currentText()
         radiosonde_port = self.radiosonde_port_input.currentText()
 
-        if receiver_port == radiosonde_port: 
+        if False:
             Alert(
                 main_text = "Port Selection Error",
                 info_text = "The radiosonde and receiver port cannot be same",

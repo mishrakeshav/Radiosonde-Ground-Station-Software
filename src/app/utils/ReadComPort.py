@@ -4,32 +4,32 @@ import json
 import sys
 import datetime
 
-from Alerts import Alert
-from Wind import Wind
+from app.utils.Alerts import Alert
+from app.utils.Wind import Wind
 
-MAXIMUM_PRESSURE = 1100
-MINIMUM_PRESSURE = 3
 
-MAXIMUM_TEMPERATURE = 60
-MINIMUM_TEMPERATURE = -90
 
 
 
 class SerialPort:
 
     def __init__(self, comport:str, baudrate:int = 9600, timeout:int = 1):
+        self.MAXIMUM_PRESSURE = 1100
+        self.MINIMUM_PRESSURE = 3
+
+        self.MAXIMUM_TEMPERATURE = 60
+        self.MINIMUM_TEMPERATURE = -90
         self.serial_port = serial.Serial(port=comport, baudrate=baudrate, timeout=timeout)
 
 
     def initialize_parameters(self, flight_file_path):
         path = os.path.join(flight_file_path, 'params.json')
-        print(path)
-        json_file = open(path)
-        flight_data = json.load(json_file)
-        self.previous_latitude = flight_data["data"]["latitude"]
-        self.previous_longitude = flight_data["data"]["longitude"]
-        self.previous_time = 0
-        self.flight_init_time = None
+        with open(path) as json_file:
+            flight_data = json.load(json_file)
+            self.previous_latitude = flight_data["data"]["latitude"]
+            self.previous_longitude = flight_data["data"]["longitude"]
+            self.previous_time = 0
+            self.flight_init_time = None
 
     def get_wind_direction(self, latitude, longitude):
         return Wind.calculate_wind_direction(
@@ -50,20 +50,14 @@ class SerialPort:
         )
 
     def get_time_elapsed(self, time_):
-        hour, mins, secs = int(time_[:2]), int(time_[2:4]), int(time_[4:6])
+        hour, mins, secs = int(time_[:2]), int(time_[2:4]), int(time_[4:])
         current_time = datetime.time(hour, mins, secs)
         current_time_second = current_time.hour * 60*60 + current_time.minute*60  + current_time.second
         if not self.flight_init_time:
             self.flight_init_time = current_time_second
         return current_time_second - self.flight_init_time
 
-    def read_port(self, flight_file_path):
-        """
-            Will read from the serial input and store the data in the
-            file given by file_path
-
-            flight_file_path -- Give the path of the current flight folder
-        """
+    def initialize_port(self, flight_file_path):
         output_file = os.path.join(flight_file_path, 'output.csv')
         if not os.path.exists(output_file):
             Alert(
@@ -74,30 +68,6 @@ class SerialPort:
             return
 
         self.initialize_parameters(flight_file_path)
-
-        while True:
-            if self.serial_port.in_waiting:
-                data = self.serial_port.read_until().decode('ascii').split(",")
-                data = [data[0]] + list(map(lambda x: float(x), data[1:]))
-                time, latitude, longitude, satelite, \
-                altitude, pressure, internal_temperature, \
-                external_temperature, humidity = data
-
-                time_elapsed = self.get_time_elapsed(time)
-                wind_direction = self.get_wind_direction(latitude, longitude)
-                wind_speed = self.get_wind_speed(latitude, longitude, time_elapsed)
-                scaled_pressure = (pressure/(MAXIMUM_PRESSURE - MINIMUM_PRESSURE))*100
-                scaled_external_temperature = (external_temperature/(MAXIMUM_TEMPERATURE - MINIMUM_TEMPERATURE))*100
-
-                data.extend([time_elapsed, wind_direction, wind_speed, scaled_pressure, scaled_external_temperature])
-                data = [data[0]] + list(map(lambda x: str(x), data[1:]))
-                # TODO: Get the derived params
-                with open(output_file, 'a') as file_output:
-                    file_output.write(",".join(data) + "\n")
-
-                self.previous_longitude = longitude
-                self.previous_latitude = latitude
-                self.previous_time = time_elapsed
 
 
 
