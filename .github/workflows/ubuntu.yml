@@ -1,4 +1,4 @@
-name: Package Application with Pyinstaller for Ubuntu 
+name: Package Application with Pyinstaller
 
 on:
   push:
@@ -14,12 +14,12 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
-    - name: PyInstaller Linux
-      uses: JackMcKew/pyinstaller-action-linux@0.1.4
+    - name: Package Application
+      uses: JackMcKew/pyinstaller-action-linux@main
       with:
         path: src
 
     - uses: actions/upload-artifact@v2
       with:
-        name: uasssoftwarelinux
-        path: src
+        name: pathfindingvisualizerlinux
+        path: src/dist/linux
