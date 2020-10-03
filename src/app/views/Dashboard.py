@@ -1,8 +1,8 @@
-import sys 
 
 from PySide2.QtCore import *
 from PySide2.QtGui import *
 from PySide2.QtWidgets import *
+from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 
 from app.utils.Canvas import MplCanvas
 from app.utils.Gauge import gauge
@@ -11,92 +11,103 @@ class Dashboard(object):
     def setupUi(self, MainWindow):
         if not MainWindow.objectName():
             MainWindow.setObjectName(u"MainWindow")
-        MainWindow.resize(862, 576)
-        self.actionOption_1 = QAction(MainWindow)
-        self.actionOption_1.setObjectName(u"actionOption_1")
-        self.actionOption_2 = QAction(MainWindow)
-        self.actionOption_2.setObjectName(u"actionOption_2")
-        self.actionExit = QAction(MainWindow)
-        self.actionExit.setObjectName(u"actionExit")
+        MainWindow.resize(830, 520)
         self.centralwidget = QWidget(MainWindow)
         self.centralwidget.setObjectName(u"centralwidget")
         self.gridLayout_2 = QGridLayout(self.centralwidget)
         self.gridLayout_2.setObjectName(u"gridLayout_2")
         self.verticalLayout_2 = QVBoxLayout()
         self.verticalLayout_2.setObjectName(u"verticalLayout_2")
-        self.horizontalLayout_3 = QHBoxLayout()
-        self.horizontalLayout_3.setObjectName(u"horizontalLayout_3")
-
-        self.pressure_gauge = MplCanvas(self.centralwidget)
-        self.pressure_gauge.setObjectName(u"pressure_gauge")
-        self.pressure_gauge.setMinimumSize(QSize(125, 125))
-        self.pressure_gauge.setMaximumSize(QSize(16777215, 300))
-        self.pressure_gauge.setStyleSheet(u"background-color: blue;")
-
-        self.horizontalLayout_3.addWidget(self.pressure_gauge)
-
-        self.temperature_gauge = MplCanvas(self.centralwidget)
-        self.temperature_gauge.setObjectName(u"temperature_gauge")
-        self.temperature_gauge.setMinimumSize(QSize(125, 125))
-        self.temperature_gauge.setMaximumSize(QSize(16777215, 300))
-        self.temperature_gauge.setStyleSheet(u"background-color: blue;")
-
-        self.horizontalLayout_3.addWidget(self.temperature_gauge)
-
-        self.humidity_gauge = MplCanvas(self.centralwidget)
-        self.humidity_gauge.setObjectName(u"humidity_gauge")
-        self.humidity_gauge.setMinimumSize(QSize(125, 125))
-        self.humidity_gauge.setMaximumSize(QSize(16777215, 300))
-        self.humidity_gauge.setStyleSheet(u"background-color: blue;")
-
-        self.horizontalLayout_3.addWidget(self.humidity_gauge)
-
-        self.wind_speed_gauge = MplCanvas(self.centralwidget)
-        self.wind_speed_gauge.setObjectName(u"wind_speed_gauge")
-        self.wind_speed_gauge.setMinimumSize(QSize(125, 125))
-        self.wind_speed_gauge.setMaximumSize(QSize(16777215, 300))
-        self.wind_speed_gauge.setStyleSheet(u"background-color: blue;")
-
-        self.horizontalLayout_3.addWidget(self.wind_speed_gauge)
-
-        self.wind_direction_gauge = MplCanvas(self.centralwidget)
-        self.wind_direction_gauge.setObjectName(u"wind_direction_gauge")
-        self.wind_direction_gauge.setMinimumSize(QSize(125, 125))
-        self.wind_direction_gauge.setMaximumSize(QSize(16777215, 300))
-        self.wind_direction_gauge.setStyleSheet(u"background-color: blue;")
-
-        self.horizontalLayout_3.addWidget(self.wind_direction_gauge)
-
-        self.altitude_gauge = MplCanvas(self.centralwidget)
-        self.altitude_gauge.setObjectName(u"altitude_gauge")
-        self.altitude_gauge.setMinimumSize(QSize(125, 125))
-        self.altitude_gauge.setMaximumSize(QSize(16777215, 300))
-        self.altitude_gauge.setStyleSheet(u"background-color: blue;")
-
-        self.horizontalLayout_3.addWidget(self.altitude_gauge)
-        self.verticalLayout_2.addLayout(self.horizontalLayout_3)
-
         self.horizontalLayout_2 = QHBoxLayout()
         self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
         self.gridLayout_3 = QGridLayout()
         self.gridLayout_3.setObjectName(u"gridLayout_3")
         self.tabWidget = QTabWidget(self.centralwidget)
         self.tabWidget.setObjectName(u"tabWidget")
+
+
         self.tab = QWidget()
-        self.tab.setObjectName(u"tab")
+        self.tab.setObjectName(u"Graph Views")
         self.gridLayout = QGridLayout(self.tab)
         self.gridLayout.setObjectName(u"gridLayout")
         self.gridLayout_4 = QGridLayout()
         self.gridLayout_4.setObjectName(u"gridLayout_4")
-        self.graph_time = QLabel(self.tab)
-        self.graph_time.setObjectName(u"graph_time")
-        self.graph_time.setStyleSheet(u"background-color: blue;\n""")
 
-        self.gridLayout_4.addWidget(self.graph_time, 0, 0, 2, 1)
+        # -----------  Graph V/s Time -----------------
+        self.graph_time = MplCanvas(self.tab)
+        self.graph_time.setObjectName(u"graph_time")
+        self.gridLayout_4.addWidget(self.graph_time, 1, 0, 2, 1)
+
+        self.graph_time_nav = NavigationToolbar(self.graph_time, self.tab)
+        self.graph_time_nav.setObjectName(u"graph_time_nav")
+        self.graph_time_nav.setMinimumSize(QSize(0, 30))
+        self.graph_time_nav.setMaximumSize(QSize(16777215, 30))
+        self.gridLayout_4.addWidget(self.graph_time_nav, 0, 0, 1, 1)
+
+
+        # -----------  Graph V/s Altitude -----------------
+        self.graph_altitude = MplCanvas(self.tab)
+        self.graph_altitude.setObjectName(u"graph_altitude")
+        self.gridLayout_4.addWidget(self.graph_altitude, 1, 1, 2, 1)
+
+        self.graph_altitude_nav = NavigationToolbar(self.graph_altitude, self.tab)
+        self.graph_altitude_nav.setObjectName(u"graph_altitude_nav")
+        self.graph_altitude_nav.setMinimumSize(QSize(0, 30))
+        self.graph_altitude_nav.setMaximumSize(QSize(16777215, 30))
+        self.gridLayout_4.addWidget(self.graph_altitude_nav, 0, 1, 1, 1)
+
+
+        self.horizontalLayout_3 = QHBoxLayout()
+        self.horizontalLayout_3.setObjectName(u"horizontalLayout_3")
+
+        # -----------  Gauges -----------------
+        self.pressure_gauge = MplCanvas(self.tab)
+        self.pressure_gauge.setObjectName(u"pressure_gauge")
+        self.pressure_gauge.setMinimumSize(QSize(125, 125))
+        self.pressure_gauge.setMaximumSize(QSize(16777215, 300))
+        self.horizontalLayout_3.addWidget(self.pressure_gauge)
+
+
+        self.temperature_gauge = MplCanvas(self.tab)
+        self.temperature_gauge.setObjectName(u"temperature_gauge")
+        self.temperature_gauge.setMinimumSize(QSize(125, 125))
+        self.temperature_gauge.setMaximumSize(QSize(16777215, 300))
+        self.horizontalLayout_3.addWidget(self.temperature_gauge)
+
+
+        self.humidity_gauge = MplCanvas(self.tab)
+        self.humidity_gauge.setObjectName(u"humidity_gauge")
+        self.humidity_gauge.setMinimumSize(QSize(125, 125))
+        self.humidity_gauge.setMaximumSize(QSize(16777215, 300))
+        self.horizontalLayout_3.addWidget(self.humidity_gauge)
+
+
+        self.wind_speed_gauge = MplCanvas(self.tab)
+        self.wind_speed_gauge.setObjectName(u"wind_speed_gauge")
+        self.wind_speed_gauge.setMinimumSize(QSize(125, 125))
+        self.wind_speed_gauge.setMaximumSize(QSize(16777215, 300))
+        self.horizontalLayout_3.addWidget(self.wind_speed_gauge)
+
+
+        self.wind_direction_gauge = MplCanvas(self.tab)
+        self.wind_direction_gauge.setObjectName(u"wind_direction_gauge")
+        self.wind_direction_gauge.setMinimumSize(QSize(125, 125))
+        self.wind_direction_gauge.setMaximumSize(QSize(16777215, 300))
+        self.horizontalLayout_3.addWidget(self.wind_direction_gauge)
+
+
+        self.altitude_gauge = MplCanvas(self.tab)
+        self.altitude_gauge.setObjectName(u"altitude_gauge")
+        self.altitude_gauge.setMinimumSize(QSize(125, 125))
+        self.altitude_gauge.setMaximumSize(QSize(16777215, 300))
+        self.horizontalLayout_3.addWidget(self.altitude_gauge)
+
+
+        self.gridLayout_4.addLayout(self.horizontalLayout_3, 3, 0, 1, 3)
 
         self.parameter_group = QGroupBox(self.tab)
         self.parameter_group.setObjectName(u"parameter_group")
-        self.parameter_group.setMinimumSize(QSize(50, 230))
+        self.parameter_group.setMinimumSize(QSize(150, 230))
         self.parameter_group.setMaximumSize(QSize(150, 230))
         self.layoutWidget_2 = QWidget(self.parameter_group)
         self.layoutWidget_2.setObjectName(u"layoutWidget_2")
@@ -104,35 +115,33 @@ class Dashboard(object):
         self.verticalLayout = QVBoxLayout(self.layoutWidget_2)
         self.verticalLayout.setObjectName(u"verticalLayout")
         self.verticalLayout.setContentsMargins(0, 0, 0, 0)
-
-
         self.temperature_check = QCheckBox(self.layoutWidget_2)
         self.temperature_check.setObjectName(u"temperature_check")
+
         self.verticalLayout.addWidget(self.temperature_check)
 
         self.pressure_check = QCheckBox(self.layoutWidget_2)
         self.pressure_check.setObjectName(u"pressure_check")
+
         self.verticalLayout.addWidget(self.pressure_check)
 
         self.humidity_check = QCheckBox(self.layoutWidget_2)
         self.humidity_check.setObjectName(u"humidity_check")
+
         self.verticalLayout.addWidget(self.humidity_check)
 
         self.wind_speed_check = QCheckBox(self.layoutWidget_2)
         self.wind_speed_check.setObjectName(u"wind_speed_check")
+
         self.verticalLayout.addWidget(self.wind_speed_check)
 
         self.altitude_check = QCheckBox(self.layoutWidget_2)
         self.altitude_check.setObjectName(u"altitude_check")
+
         self.verticalLayout.addWidget(self.altitude_check)
 
 
-        self.gridLayout_4.addWidget(self.parameter_group, 0, 2, 1, 1)
-
-        self.graph_altitude = QLabel(self.tab)
-        self.graph_altitude.setObjectName(u"graph_altitude")
-        self.graph_altitude.setStyleSheet(u"background-color: blue;\n""")
-        self.gridLayout_4.addWidget(self.graph_altitude, 0, 1, 2, 1)
+        self.gridLayout_4.addWidget(self.parameter_group, 1, 2, 1, 1)
 
 
         self.gridLayout.addLayout(self.gridLayout_4, 0, 0, 1, 1)
@@ -155,8 +164,8 @@ class Dashboard(object):
 
         self.visualization_group = QGroupBox(self.tab_2)
         self.visualization_group.setObjectName(u"visualization_group")
-        self.visualization_group.setMinimumSize(QSize(100, 300))
-        self.visualization_group.setMaximumSize(QSize(200, 300))
+        self.visualization_group.setMinimumSize(QSize(100, 150))
+        self.visualization_group.setMaximumSize(QSize(200, 150))
         self.layoutWidget = QWidget(self.visualization_group)
         self.layoutWidget.setObjectName(u"layoutWidget")
         self.layoutWidget.setGeometry(QRect(10, 30, 114, 112))
@@ -222,42 +231,29 @@ class Dashboard(object):
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QMenuBar(MainWindow)
         self.menubar.setObjectName(u"menubar")
-        self.menubar.setGeometry(QRect(0, 0, 862, 20))
-        self.menuMenu = QMenu(self.menubar)
-        self.menuMenu.setObjectName(u"menuMenu")
+        self.menubar.setGeometry(QRect(0, 0, 830, 22))
         MainWindow.setMenuBar(self.menubar)
         self.statusbar = QStatusBar(MainWindow)
         self.statusbar.setObjectName(u"statusbar")
         MainWindow.setStatusBar(self.statusbar)
 
-        self.menubar.addAction(self.menuMenu.menuAction())
-        self.menuMenu.addAction(self.actionOption_1)
-        self.menuMenu.addAction(self.actionOption_2)
-        self.menuMenu.addSeparator()
-        self.menuMenu.addAction(self.actionExit)
-
         self.retranslateUi(MainWindow)
 
-        self.tabWidget.setCurrentIndex(1)
+        self.tabWidget.setCurrentIndex(0)
 
 
         QMetaObject.connectSlotsByName(MainWindow)
 
         self.update_gauge()
+    # setupUi
 
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"MainWindow", None))
-        self.actionOption_1.setText(QCoreApplication.translate("MainWindow", u"Option 1", None))
-        self.actionOption_2.setText(QCoreApplication.translate("MainWindow", u"Option 2", None))
-        self.actionExit.setText(QCoreApplication.translate("MainWindow", u"Exit", None))
-        self.graph_time.setText(QCoreApplication.translate("MainWindow", u"Graph v/s Time[s]", None))
-        self.parameter_group.setTitle(QCoreApplication.translate("MainWindow", u"Plot Params", None))
         self.temperature_check.setText(QCoreApplication.translate("MainWindow", u"Temperature", None))
         self.pressure_check.setText(QCoreApplication.translate("MainWindow", u"Pressure", None))
         self.humidity_check.setText(QCoreApplication.translate("MainWindow", u"Humidity", None))
         self.wind_speed_check.setText(QCoreApplication.translate("MainWindow", u"WindSpeed", None))
         self.altitude_check.setText(QCoreApplication.translate("MainWindow", u"Altitude", None))
-        self.graph_altitude.setText(QCoreApplication.translate("MainWindow", u"Graph v/s Altitude", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab), QCoreApplication.translate("MainWindow", u"Tab 1", None))
         self.spec_graph.setText(QCoreApplication.translate("MainWindow", u"Graphs", None))
         self.visualization_group.setTitle(QCoreApplication.translate("MainWindow", u"Visualization", None))
@@ -278,39 +274,40 @@ class Dashboard(object):
         ___qtablewidgetitem5 = self.table.horizontalHeaderItem(5)
         ___qtablewidgetitem5.setText(QCoreApplication.translate("MainWindow", u"Wd[]", None));
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), QCoreApplication.translate("MainWindow", u"Tab 2", None))
-        self.menuMenu.setTitle(QCoreApplication.translate("MainWindow", u"Menu", None))
+    # retranslateUi
 
     def update_gauge(self):
-        # will change this later 
-        gauge(self.temperature_gauge.axes, labels=['','','',''], 
-        colors=['#FFCC00','#FFCC00','#FFCC00','#FFCC00'], arrow=3, 
-        title=f'Temp {chr(176)}C') 
+        # will change this later
+        gauge(self.temperature_gauge.axes, labels=['','','',''],
+        colors=['#FFCC00','#FFCC00','#FFCC00','#FFCC00'], arrow=3,
+        title=f'Temp {chr(176)}C')
         self.temperature_gauge.draw()
-        gauge(self.humidity_gauge.axes, labels=['','','',''], 
-        colors=['#0063BF','#0063BF','#0063BF','#0063BF'], arrow=4, 
-        title=f'Temp {chr(176)}C') 
+        gauge(self.humidity_gauge.axes, labels=['','','',''],
+        colors=['#0063BF','#0063BF','#0063BF','#0063BF'], arrow=4,
+        title=f'Temp {chr(176)}C')
         self.humidity_gauge.draw()
-        gauge(self.wind_speed_gauge.axes, labels=['','','',''], 
-        colors=['#FFCC00','#FFCC00','#FFCC00','#FFCC00'], arrow=1, 
-        title=f'Temp {chr(176)}C') 
+        gauge(self.wind_speed_gauge.axes, labels=['','','',''],
+        colors=['#FFCC00','#FFCC00','#FFCC00','#FFCC00'], arrow=1,
+        title=f'Temp {chr(176)}C')
         self.wind_speed_gauge.draw()
-        gauge(self.wind_direction_gauge.axes, labels=['','','',''], 
-        colors=['#ED1C24','#ED1C24','#ED1C24','#ED1C24'], arrow=2, 
-        title=f'Temp {chr(176)}C') 
+        gauge(self.wind_direction_gauge.axes, labels=['','','',''],
+        colors=['#ED1C24','#ED1C24','#ED1C24','#ED1C24'], arrow=2,
+        title=f'Temp {chr(176)}C')
         self.wind_direction_gauge.draw()
-        gauge(self.altitude_gauge.axes, labels=['','','',''], 
-        colors=['#0063BF','#0063BF','#0063BF','#0063BF'], arrow=3, 
-        title=f'Temp {chr(176)}C') 
+        gauge(self.altitude_gauge.axes, labels=['','','',''],
+        colors=['#0063BF','#0063BF','#0063BF','#0063BF'], arrow=3,
+        title=f'Temp {chr(176)}C')
         self.altitude_gauge.draw()
-        gauge(self.pressure_gauge.axes, labels=['','','',''], 
-        colors=['#FFCC00','#FFCC00','#FFCC00','#FFCC00'], arrow=3, 
-        title=f'Temp {chr(176)}C') 
+        gauge(self.pressure_gauge.axes, labels=['','','',''],
+        colors=['#FFCC00','#FFCC00','#FFCC00','#FFCC00'], arrow=3,
+        title=f'Temp {chr(176)}C')
         self.pressure_gauge.draw()
+
 
 if __name__ == "__main__":
     # Qt Application
     app = QApplication(sys.argv)
-    
+
     MainWindow = QMainWindow()
     window = Dashboard()
     window.setupUi(MainWindow)
