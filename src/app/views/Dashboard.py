@@ -276,6 +276,7 @@ class Dashboard(object):
         self.data_frame = pd.read_csv(os.path.join(flight_folder_path, "output.csv"))
         self.update_gauge()
         self.run_threads()
+
     # setupUi
 
     def retranslateUi(self, MainWindow):
@@ -307,31 +308,27 @@ class Dashboard(object):
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), QCoreApplication.translate("MainWindow", u"Tab 2", None))
 
     def update_gauge(self):
-        # will change this later
-        gauge(self.temperature_gauge.axes, labels=['','','',''],
-        colors=['#FFCC00','#FFCC00','#FFCC00','#FFCC00'], arrow=3,
-        title=f'Temp {chr(176)}C')
-        self.temperature_gauge.draw()
-        gauge(self.humidity_gauge.axes, labels=['','','',''],
-        colors=['#0063BF','#0063BF','#0063BF','#0063BF'], arrow=4,
-        title=f'Temp {chr(176)}C')
-        self.humidity_gauge.draw()
-        gauge(self.wind_speed_gauge.axes, labels=['','','',''],
-        colors=['#FFCC00','#FFCC00','#FFCC00','#FFCC00'], arrow=1,
-        title=f'Temp {chr(176)}C')
-        self.wind_speed_gauge.draw()
-        gauge(self.wind_direction_gauge.axes, labels=['','','',''],
-        colors=['#ED1C24','#ED1C24','#ED1C24','#ED1C24'], arrow=2,
-        title=f'Temp {chr(176)}C')
-        self.wind_direction_gauge.draw()
-        gauge(self.altitude_gauge.axes, labels=['','','',''],
-        colors=['#0063BF','#0063BF','#0063BF','#0063BF'], arrow=3,
-        title=f'Temp {chr(176)}C')
-        self.altitude_gauge.draw()
-        gauge(self.pressure_gauge.axes, labels=['','','',''],
-        colors=['#FFCC00','#FFCC00','#FFCC00','#FFCC00'], arrow=3,
-        title=f'Temp {chr(176)}C')
+        """
+        Updates the gauges
+        """
+
+        gauge(self.pressure_gauge.axes, 20,colors = 'cool', arrow=20, title=f'Pressure hPa', value = str(516))
         self.pressure_gauge.draw()
+
+        gauge(self.temperature_gauge.axes, 20,colors = 'autumn',arrow=20, title=f'Temp {chr(176)}C', value = str(21))
+        self.temperature_gauge.draw()
+
+        gauge(self.humidity_gauge.axes, 20,colors='summer',arrow=20, title=f'Humidity %', value = str(9))
+        self.humidity_gauge.draw()
+
+        gauge(self.wind_speed_gauge.axes, 20,colors = 'copper',arrow=20, title=f'Speed m/s', value = str(40000))
+        self.wind_speed_gauge.draw()
+
+        gauge(self.wind_direction_gauge.axes, 20,colors = 'PuOr',arrow=20, title=f'Direction {chr(176)}',value = str(270))
+        self.wind_direction_gauge.draw()
+
+        gauge(self.altitude_gauge.axes, 20,colors = 'coolwarm',arrow=20, title=f'Altitude m', value = str(4000))
+        self.altitude_gauge.draw()
 
     def read_port(self):
         output_file = os.path.join(self.flight_folder_path, "output.csv")
