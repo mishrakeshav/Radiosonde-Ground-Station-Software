@@ -335,21 +335,41 @@ class Dashboard(object):
                 with open(output_file, 'a') as file_output:
                     file_output.write(",".join(data) + "\n")
 
-                cols = ['Time', 'Latitude', 'Longitude', 'Satelites', 'Altitude',\
-                     'Pressure', 'Internal Temperature', 'External Temperature', 'Humidity',\
-                     'TimeElapsed', 'Wind Direction', 'Wind Speed', 'Scaled Pressure', 'Scaled Temperature']
-
-                data_dict = dict(zip(cols, data))
-                self.data_frame.append(pd.DataFrame(data_dict, index=[self.data_frame.shape[0],]))
+                index = self.data_frame.shape[0]
+                self.data_frame.loc[index] = data
                 self.update_graph_time()
                 self.comport.previous_longitude = longitude
                 self.comport.previous_latitude = latitude
                 self.comport.previous_time = time_elapsed
 
     def update_graph_time(self):
+        # if not self.plot_ref_time:
+        #     self.plot_ref_time = dict()
+        #     self.plot_ref_time["temperature"] = self.graph_time.axes.plot(
+        #         self.data_frame["TimeElapsed"],
+        #         self.data_frame["External Temperature"]
+        #     )[0]
+        # else:
+        #     self.plot_ref_time["temperature"].set_ydata(self.data_frame["External Temperature"])
+        #     self.plot_ref_time["temperature"].set_xdata(self.data_frame["TimeElapsed"])
+
         self.graph_time.axes.cla()
-        self.graph_time.axes.plot(self.data_frame["TimeElapsed"], self.data_frame["External Temperature"])
+        self.graph_time.axes.plot(self.data_frame["TimeElapsed"], self.data_frame["Humidity"])
+        self.graph_time.axes.plot(self.data_frame["TimeElapsed"], self.data_frame["Scaled Pressure"])
+        self.graph_time.axes.plot(self.data_frame["TimeElapsed"], self.data_frame["Scaled Temperature"])
+        self.graph_time.axes.grid()
+        self.graph_time.axes.set_xlabel('Time Elapsed (s)')
         self.graph_time.draw()
+
+
+        self.graph_altitude.axes.cla()
+        self.graph_altitude.axes.plot(self.data_frame["Altitude"], self.data_frame["Humidity"])
+        self.graph_altitude.axes.plot(self.data_frame["Altitude"], self.data_frame["Scaled Pressure"])
+        self.graph_altitude.axes.plot(self.data_frame["Altitude"], self.data_frame["Scaled Temperature"])
+        self.graph_altitude.axes.grid()
+        self.graph_altitude.axes.set_xlabel('Altitude (m)')
+        self.graph_altitude.draw()
+
 
 
     def run_threads(self):
