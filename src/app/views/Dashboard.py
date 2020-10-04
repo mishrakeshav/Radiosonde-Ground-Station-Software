@@ -13,6 +13,9 @@ from app.utils.Worker import Worker
 
 class Dashboard(object):
     def setupUi(self, MainWindow, flight_folder_path, comport_name):
+
+        self.parameter_list = []
+
         if not MainWindow.objectName():
             MainWindow.setObjectName(u"MainWindow")
         MainWindow.resize(830, 520)
@@ -119,29 +122,43 @@ class Dashboard(object):
         self.verticalLayout = QVBoxLayout(self.layoutWidget_2)
         self.verticalLayout.setObjectName(u"verticalLayout")
         self.verticalLayout.setContentsMargins(0, 0, 0, 0)
+
+
+        self.temperature_color = "red"
         self.temperature_check = QCheckBox(self.layoutWidget_2)
         self.temperature_check.setObjectName(u"temperature_check")
-
+        self.temperature_check.setChecked(True)
+        self.temperature_check.setStyleSheet(f"background-color: {self.temperature_color}")
+        self.parameter_list.append((self.temperature_check, "Scaled Temperature", self.temperature_color))
         self.verticalLayout.addWidget(self.temperature_check)
 
+        self.pressure_color = "magenta"
         self.pressure_check = QCheckBox(self.layoutWidget_2)
         self.pressure_check.setObjectName(u"pressure_check")
-
+        self.pressure_check.setStyleSheet(f"background-color: {self.pressure_color}")
+        self.parameter_list.append((self.pressure_check, "Scaled Pressure", self.pressure_color))
         self.verticalLayout.addWidget(self.pressure_check)
 
+        self.humidity_color = "blue"
         self.humidity_check = QCheckBox(self.layoutWidget_2)
         self.humidity_check.setObjectName(u"humidity_check")
-
+        self.humidity_check.setChecked(True)
+        self.humidity_check.setStyleSheet(f"background-color: {self.humidity_color}")
+        self.parameter_list.append((self.humidity_check, "Humidity", self.humidity_color))
         self.verticalLayout.addWidget(self.humidity_check)
 
+        self.wind_speed_color = "green"
         self.wind_speed_check = QCheckBox(self.layoutWidget_2)
         self.wind_speed_check.setObjectName(u"wind_speed_check")
-
+        self.wind_speed_check.setStyleSheet(f"background-color: {self.wind_speed_color}")
+        self.parameter_list.append((self.wind_speed_check, "Wind Speed", self.wind_speed_color))
         self.verticalLayout.addWidget(self.wind_speed_check)
 
+        self.altitude_color = "yellow"
         self.altitude_check = QCheckBox(self.layoutWidget_2)
         self.altitude_check.setObjectName(u"altitude_check")
-
+        self.altitude_check.setStyleSheet(f"background-color: {self.altitude_color}")
+        self.parameter_list.append((self.altitude_check, "Altitude", self.altitude_color))
         self.verticalLayout.addWidget(self.altitude_check)
 
 
@@ -257,7 +274,6 @@ class Dashboard(object):
         self.comport.initialize_port(flight_folder_path)
         self.flight_folder_path = flight_folder_path
         self.data_frame = pd.read_csv(os.path.join(flight_folder_path, "output.csv"))
-
         self.update_gauge()
         self.run_threads()
     # setupUi
@@ -341,9 +357,19 @@ class Dashboard(object):
                 index = self.data_frame.shape[0]
                 self.data_frame.loc[index] = data
                 self.update_graph_time()
+                self.update_table([time_elapsed, pressure, external_temperature, humidity, wind_speed, wind_direction])
+
+
                 self.comport.previous_longitude = longitude
                 self.comport.previous_latitude = latitude
                 self.comport.previous_time = time_elapsed
+
+    def update_table(self, data):
+        row = self.table.rowCount()
+        self.table.insertRow(row)
+        for i in range(len(data)):
+            self.table.setItem(row, i, QTableWidgetItem(str(data[i])))
+        self.table.scrollToBottom()
 
     def update_graph_time(self):
         # if not self.plot_ref_time:
@@ -357,20 +383,20 @@ class Dashboard(object):
         #     self.plot_ref_time["temperature"].set_xdata(self.data_frame["TimeElapsed"])
 
         self.graph_time.axes.cla()
-        self.graph_time.axes.plot(self.data_frame["TimeElapsed"], self.data_frame["Humidity"])
-        self.graph_time.axes.plot(self.data_frame["TimeElapsed"], self.data_frame["Scaled Pressure"])
-        self.graph_time.axes.plot(self.data_frame["TimeElapsed"], self.data_frame["Scaled Temperature"])
+        for parameter_check, parameter_name, color in self.parameter_list:
+            if parameter_check.isChecked():
+                self.graph_time.axes.plot(self.data_frame[parameter_name], self.data_frame["TimeElapsed"], color=color)
         self.graph_time.axes.grid()
         self.graph_time.axes.set_xlabel('Time Elapsed (s)')
         self.graph_time.draw()
 
-
         self.graph_altitude.axes.cla()
-        self.graph_altitude.axes.plot(self.data_frame["Altitude"], self.data_frame["Humidity"])
-        self.graph_altitude.axes.plot(self.data_frame["Altitude"], self.data_frame["Scaled Pressure"])
-        self.graph_altitude.axes.plot(self.data_frame["Altitude"], self.data_frame["Scaled Temperature"])
+        for parameter_check, parameter_name, color in self.parameter_list:
+            if parameter_name == "Altitude": continue
+            if parameter_check.isChecked():
+                self.graph_altitude.axes.plot(self.data_frame[parameter_name], self.data_frame["Altitude"], color=color)
         self.graph_altitude.axes.grid()
-        self.graph_altitude.axes.set_xlabel('Altitude (m)')
+        self.graph_altitude.axes.set_xlabel('Time Elapsed (s)')
         self.graph_altitude.draw()
 
 
