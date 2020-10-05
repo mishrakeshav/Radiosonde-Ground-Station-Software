@@ -80,6 +80,11 @@ class Dashboard(object):
         self.horizontalLayout_3.setObjectName(u"horizontalLayout_3")
 
         # -----------  Gauges -----------------
+        font = QFont()
+        font.setFamily(u"Ubuntu Mono")
+        font.setPointSize(18)
+        font.setBold(True)
+
         self.pressure_gauge_vertical_layout = QVBoxLayout()
         self.pressure_gauge = QLabel(self.tab)
         self.pressure_gauge.setObjectName(u"pressure_gauge")
@@ -90,6 +95,8 @@ class Dashboard(object):
         self.pressure_gauge_label = QLabel(self.tab)
         self.pressure_gauge_label.setMinimumSize(QSize(GAUGE_LABEL_WIDTH, GAUGE_LABEL_HIEGHT))
         self.pressure_gauge_label.setMaximumSize(QSize(GAUGE_LABEL_WIDTH, GAUGE_LABEL_HIEGHT))
+        self.pressure_gauge_label.setFont(font)
+        self.pressure_gauge_label.setAlignment(Qt.AlignCenter)
         self.pressure_gauge_vertical_layout.addWidget(self.pressure_gauge_label)
         self.horizontalLayout_3.addLayout(self.pressure_gauge_vertical_layout)
 
@@ -107,6 +114,8 @@ class Dashboard(object):
         self.temperature_gauge_label = QLabel(self.tab)
         self.temperature_gauge_label.setMinimumSize(QSize(GAUGE_LABEL_WIDTH, GAUGE_LABEL_HIEGHT))
         self.temperature_gauge_label.setMaximumSize(QSize(GAUGE_LABEL_WIDTH, GAUGE_LABEL_HIEGHT))
+        self.temperature_gauge_label.setFont(font)
+        self.temperature_gauge_label.setAlignment(Qt.AlignCenter)
         self.temperature_gauge_vertical_layout.addWidget(self.temperature_gauge_label)
         self.horizontalLayout_3.addLayout(self.temperature_gauge_vertical_layout)
 
@@ -121,6 +130,8 @@ class Dashboard(object):
         self.humidity_gauge_label = QLabel(self.tab)
         self.humidity_gauge_label.setMinimumSize(QSize(GAUGE_LABEL_WIDTH, GAUGE_LABEL_HIEGHT))
         self.humidity_gauge_label.setMaximumSize(QSize(GAUGE_LABEL_WIDTH, GAUGE_LABEL_HIEGHT))
+        self.humidity_gauge_label.setFont(font)
+        self.humidity_gauge_label.setAlignment(Qt.AlignCenter)
         self.humidity_gauge_vertical_layout.addWidget(self.humidity_gauge_label)
         self.horizontalLayout_3.addLayout(self.humidity_gauge_vertical_layout)
 
@@ -135,6 +146,8 @@ class Dashboard(object):
         self.wind_speed_gauge_label = QLabel(self.tab)
         self.wind_speed_gauge_label.setMinimumSize(QSize(GAUGE_LABEL_WIDTH, GAUGE_LABEL_HIEGHT))
         self.wind_speed_gauge_label.setMaximumSize(QSize(GAUGE_LABEL_WIDTH, GAUGE_LABEL_HIEGHT))
+        self.wind_speed_gauge_label.setFont(font)
+        self.wind_speed_gauge_label.setAlignment(Qt.AlignCenter)
         self.wind_speed_gauge_vertical_layout.addWidget(self.wind_speed_gauge_label)
         self.horizontalLayout_3.addLayout(self.wind_speed_gauge_vertical_layout)
 
@@ -149,6 +162,8 @@ class Dashboard(object):
         self.wind_direction_gauge_label = QLabel(self.tab)
         self.wind_direction_gauge_label.setMinimumSize(QSize(GAUGE_LABEL_WIDTH, GAUGE_LABEL_HIEGHT))
         self.wind_direction_gauge_label.setMaximumSize(QSize(GAUGE_LABEL_WIDTH, GAUGE_LABEL_HIEGHT))
+        self.wind_direction_gauge_label.setFont(font)
+        self.wind_direction_gauge_label.setAlignment(Qt.AlignCenter)
         self.wind_direction_gauge_vertical_layout.addWidget(self.wind_direction_gauge_label)
         self.horizontalLayout_3.addLayout(self.wind_direction_gauge_vertical_layout)
 
@@ -164,6 +179,8 @@ class Dashboard(object):
         self.altitude_gauge_label = QLabel(self.tab)
         self.altitude_gauge_label.setMinimumSize(QSize(GAUGE_LABEL_WIDTH, GAUGE_LABEL_HIEGHT))
         self.altitude_gauge_label.setMaximumSize(QSize(GAUGE_LABEL_WIDTH, GAUGE_LABEL_HIEGHT))
+        self.altitude_gauge_label.setFont(font)
+        self.altitude_gauge_label.setAlignment(Qt.AlignCenter)
         self.altitude_gauge_vertical_layout.addWidget(self.altitude_gauge_label)
         self.horizontalLayout_3.addLayout(self.altitude_gauge_vertical_layout)
 
