@@ -4,12 +4,24 @@ from PySide2.QtGui import *
 from PySide2.QtWidgets import *
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 import pandas as pd
+import sys
 import os
 
 from app.utils.Canvas import MplCanvas
-from app.utils.Gauge import gauge
 from app.utils.ReadComPort import SerialPort
 from app.utils.Worker import Worker
+from app.utils.styles import *
+from app.utils.Percentage import Percentage
+
+GAUGE_MINIMUM_HEIGHT = 125 
+GAUGE_MINIMUM_WIDTH = 125
+GAUGE_MAXIMUM_HEIGHT = 250
+GAUGE_MAXIMUM_WIDTH = 16777215
+
+
+GAUGE_LABEL_WIDTH = 16777215
+GAUGE_LABEL_HIEGHT = 30 
+GAUGE_PATH = os.path.join(sys.path[0], "resources", "images")
 
 class Dashboard(object):
     def setupUi(self, MainWindow, flight_folder_path, comport_name):
@@ -68,46 +80,93 @@ class Dashboard(object):
         self.horizontalLayout_3.setObjectName(u"horizontalLayout_3")
 
         # -----------  Gauges -----------------
-        self.pressure_gauge = MplCanvas(self.tab)
+        self.pressure_gauge_vertical_layout = QVBoxLayout()
+        self.pressure_gauge = QLabel(self.tab)
         self.pressure_gauge.setObjectName(u"pressure_gauge")
-        self.pressure_gauge.setMinimumSize(QSize(125, 125))
-        self.pressure_gauge.setMaximumSize(QSize(16777215, 300))
-        self.horizontalLayout_3.addWidget(self.pressure_gauge)
+        self.pressure_gauge.setMinimumSize(QSize(GAUGE_MINIMUM_WIDTH, GAUGE_MINIMUM_HEIGHT))
+        self.pressure_gauge.setMaximumSize(QSize(GAUGE_MAXIMUM_WIDTH, GAUGE_MAXIMUM_HEIGHT))
+        self.pressure_gauge.setScaledContents(True)
+        self.pressure_gauge_vertical_layout.addWidget(self.pressure_gauge)
+        self.pressure_gauge_label = QLabel(self.tab)
+        self.pressure_gauge_label.setMinimumSize(QSize(GAUGE_LABEL_WIDTH, GAUGE_LABEL_HIEGHT))
+        self.pressure_gauge_label.setMaximumSize(QSize(GAUGE_LABEL_WIDTH, GAUGE_LABEL_HIEGHT))
+        self.pressure_gauge_vertical_layout.addWidget(self.pressure_gauge_label)
+        self.horizontalLayout_3.addLayout(self.pressure_gauge_vertical_layout)
 
 
-        self.temperature_gauge = MplCanvas(self.tab)
+
+
+
+        self.temperature_gauge_vertical_layout = QVBoxLayout()
+        self.temperature_gauge = QLabel(self.tab)
         self.temperature_gauge.setObjectName(u"temperature_gauge")
-        self.temperature_gauge.setMinimumSize(QSize(125, 125))
-        self.temperature_gauge.setMaximumSize(QSize(16777215, 300))
-        self.horizontalLayout_3.addWidget(self.temperature_gauge)
+        self.temperature_gauge.setMinimumSize(QSize(GAUGE_MINIMUM_WIDTH, GAUGE_MINIMUM_HEIGHT))
+        self.temperature_gauge.setMaximumSize(QSize(GAUGE_MAXIMUM_WIDTH, GAUGE_MAXIMUM_HEIGHT))
+        self.temperature_gauge.setScaledContents(True)
+        self.temperature_gauge_vertical_layout.addWidget(self.temperature_gauge)
+        self.temperature_gauge_label = QLabel(self.tab)
+        self.temperature_gauge_label.setMinimumSize(QSize(GAUGE_LABEL_WIDTH, GAUGE_LABEL_HIEGHT))
+        self.temperature_gauge_label.setMaximumSize(QSize(GAUGE_LABEL_WIDTH, GAUGE_LABEL_HIEGHT))
+        self.temperature_gauge_vertical_layout.addWidget(self.temperature_gauge_label)
+        self.horizontalLayout_3.addLayout(self.temperature_gauge_vertical_layout)
 
 
-        self.humidity_gauge = MplCanvas(self.tab)
+        self.humidity_gauge_vertical_layout = QVBoxLayout()
+        self.humidity_gauge = QLabel(self.tab)
         self.humidity_gauge.setObjectName(u"humidity_gauge")
-        self.humidity_gauge.setMinimumSize(QSize(125, 125))
-        self.humidity_gauge.setMaximumSize(QSize(16777215, 300))
-        self.horizontalLayout_3.addWidget(self.humidity_gauge)
+        self.humidity_gauge.setMinimumSize(QSize(GAUGE_MINIMUM_WIDTH, GAUGE_MINIMUM_HEIGHT))
+        self.humidity_gauge.setMaximumSize(QSize(GAUGE_MAXIMUM_WIDTH, GAUGE_MAXIMUM_HEIGHT))
+        self.humidity_gauge.setScaledContents(True)
+        self.humidity_gauge_vertical_layout.addWidget(self.humidity_gauge)
+        self.humidity_gauge_label = QLabel(self.tab)
+        self.humidity_gauge_label.setMinimumSize(QSize(GAUGE_LABEL_WIDTH, GAUGE_LABEL_HIEGHT))
+        self.humidity_gauge_label.setMaximumSize(QSize(GAUGE_LABEL_WIDTH, GAUGE_LABEL_HIEGHT))
+        self.humidity_gauge_vertical_layout.addWidget(self.humidity_gauge_label)
+        self.horizontalLayout_3.addLayout(self.humidity_gauge_vertical_layout)
 
 
-        self.wind_speed_gauge = MplCanvas(self.tab)
+        self.wind_speed_gauge_vertical_layout = QVBoxLayout()
+        self.wind_speed_gauge = QLabel(self.tab)
         self.wind_speed_gauge.setObjectName(u"wind_speed_gauge")
-        self.wind_speed_gauge.setMinimumSize(QSize(125, 125))
-        self.wind_speed_gauge.setMaximumSize(QSize(16777215, 300))
-        self.horizontalLayout_3.addWidget(self.wind_speed_gauge)
+        self.wind_speed_gauge.setMinimumSize(QSize(GAUGE_MINIMUM_WIDTH, GAUGE_MINIMUM_HEIGHT))
+        self.wind_speed_gauge.setMaximumSize(QSize(GAUGE_MAXIMUM_WIDTH, GAUGE_MAXIMUM_HEIGHT))
+        self.wind_speed_gauge.setScaledContents(True)
+        self.wind_speed_gauge_vertical_layout.addWidget(self.wind_speed_gauge)
+        self.wind_speed_gauge_label = QLabel(self.tab)
+        self.wind_speed_gauge_label.setMinimumSize(QSize(GAUGE_LABEL_WIDTH, GAUGE_LABEL_HIEGHT))
+        self.wind_speed_gauge_label.setMaximumSize(QSize(GAUGE_LABEL_WIDTH, GAUGE_LABEL_HIEGHT))
+        self.wind_speed_gauge_vertical_layout.addWidget(self.wind_speed_gauge_label)
+        self.horizontalLayout_3.addLayout(self.wind_speed_gauge_vertical_layout)
 
 
-        self.wind_direction_gauge = MplCanvas(self.tab)
+        self.wind_direction_gauge_vertical_layout = QVBoxLayout()
+        self.wind_direction_gauge = QLabel(self.tab)
         self.wind_direction_gauge.setObjectName(u"wind_direction_gauge")
-        self.wind_direction_gauge.setMinimumSize(QSize(125, 125))
-        self.wind_direction_gauge.setMaximumSize(QSize(16777215, 300))
-        self.horizontalLayout_3.addWidget(self.wind_direction_gauge)
+        self.wind_direction_gauge.setMinimumSize(QSize(GAUGE_MINIMUM_WIDTH, GAUGE_MINIMUM_HEIGHT))
+        self.wind_direction_gauge.setMaximumSize(QSize(GAUGE_MAXIMUM_WIDTH, GAUGE_MAXIMUM_HEIGHT))
+        self.wind_direction_gauge.setScaledContents(True)
+        self.wind_direction_gauge_vertical_layout.addWidget(self.wind_direction_gauge)
+        self.wind_direction_gauge_label = QLabel(self.tab)
+        self.wind_direction_gauge_label.setMinimumSize(QSize(GAUGE_LABEL_WIDTH, GAUGE_LABEL_HIEGHT))
+        self.wind_direction_gauge_label.setMaximumSize(QSize(GAUGE_LABEL_WIDTH, GAUGE_LABEL_HIEGHT))
+        self.wind_direction_gauge_vertical_layout.addWidget(self.wind_direction_gauge_label)
+        self.horizontalLayout_3.addLayout(self.wind_direction_gauge_vertical_layout)
 
 
-        self.altitude_gauge = MplCanvas(self.tab)
+
+        self.altitude_gauge_vertical_layout = QVBoxLayout()
+        self.altitude_gauge = QLabel(self.tab)
         self.altitude_gauge.setObjectName(u"altitude_gauge")
-        self.altitude_gauge.setMinimumSize(QSize(125, 125))
-        self.altitude_gauge.setMaximumSize(QSize(16777215, 300))
-        self.horizontalLayout_3.addWidget(self.altitude_gauge)
+        self.altitude_gauge.setMinimumSize(QSize(GAUGE_MINIMUM_WIDTH, GAUGE_MINIMUM_HEIGHT))
+        self.altitude_gauge.setMaximumSize(QSize(GAUGE_MAXIMUM_WIDTH, GAUGE_MAXIMUM_HEIGHT))
+        self.altitude_gauge.setScaledContents(True)
+        self.altitude_gauge_vertical_layout.addWidget(self.altitude_gauge)
+        self.altitude_gauge_label = QLabel(self.tab)
+        self.altitude_gauge_label.setMinimumSize(QSize(GAUGE_LABEL_WIDTH, GAUGE_LABEL_HIEGHT))
+        self.altitude_gauge_label.setMaximumSize(QSize(GAUGE_LABEL_WIDTH, GAUGE_LABEL_HIEGHT))
+        self.altitude_gauge_vertical_layout.addWidget(self.altitude_gauge_label)
+        self.horizontalLayout_3.addLayout(self.altitude_gauge_vertical_layout)
+
 
 
         self.gridLayout_4.addLayout(self.horizontalLayout_3, 3, 0, 1, 3)
@@ -143,7 +202,7 @@ class Dashboard(object):
         self.humidity_check = QCheckBox(self.layoutWidget_2)
         self.humidity_check.setObjectName(u"humidity_check")
         self.humidity_check.setChecked(True)
-        self.humidity_check.setStyleSheet(f"background-color: {self.humidity_color}")
+        self.humidity_check.setStyleSheet(checkbox_indicator)
         self.parameter_list.append((self.humidity_check, "Humidity", self.humidity_color))
         self.verticalLayout.addWidget(self.humidity_check)
 
@@ -274,7 +333,11 @@ class Dashboard(object):
         self.comport.initialize_port(flight_folder_path)
         self.flight_folder_path = flight_folder_path
         self.data_frame = pd.read_csv(os.path.join(flight_folder_path, "output.csv"))
-        self.update_gauge()
+        self.timer = QTimer()
+        self.timer.setInterval(3000)
+        self.timer.timeout.connect(self.table.scrollToBottom)
+        self.timer.start()
+        self.update_gauge(*[0, 0, 0, 0, 0, 0])
         self.run_threads()
 
     # setupUi
@@ -307,29 +370,6 @@ class Dashboard(object):
         ___qtablewidgetitem5.setText(QCoreApplication.translate("MainWindow", u"Wd[]", None));
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), QCoreApplication.translate("MainWindow", u"Tab 2", None))
 
-    def update_gauge(self):
-        """
-        Updates the gauges
-        """
-
-        gauge(self.pressure_gauge.axes, 20,colors = 'cool', arrow=20, title=f'Pressure hPa', value = str(516))
-        self.pressure_gauge.draw()
-
-        gauge(self.temperature_gauge.axes, 20,colors = 'autumn',arrow=20, title=f'Temp {chr(176)}C', value = str(21))
-        self.temperature_gauge.draw()
-
-        gauge(self.humidity_gauge.axes, 20,colors='summer',arrow=20, title=f'Humidity %', value = str(9))
-        self.humidity_gauge.draw()
-
-        gauge(self.wind_speed_gauge.axes, 20,colors = 'copper',arrow=20, title=f'Speed m/s', value = str(40000))
-        self.wind_speed_gauge.draw()
-
-        gauge(self.wind_direction_gauge.axes, 20,colors = 'PuOr',arrow=20, title=f'Direction {chr(176)}',value = str(270))
-        self.wind_direction_gauge.draw()
-
-        gauge(self.altitude_gauge.axes, 20,colors = 'coolwarm',arrow=20, title=f'Altitude m', value = str(4000))
-        self.altitude_gauge.draw()
-
     def read_port(self):
         output_file = os.path.join(self.flight_folder_path, "output.csv")
         while True:
@@ -355,18 +395,42 @@ class Dashboard(object):
                 self.data_frame.loc[index] = data
                 self.update_graph_time()
                 self.update_table([time_elapsed, pressure, external_temperature, humidity, wind_speed, wind_direction])
+                self.update_gauge(*[pressure, external_temperature, humidity, wind_speed, wind_direction, altitude])
 
 
                 self.comport.previous_longitude = longitude
                 self.comport.previous_latitude = latitude
                 self.comport.previous_time = time_elapsed
+    
+    def update_gauge(self, pressure, temperature, humidity, wind_speed, wind_direction, altitude):
+        self.pressure_gauge_label.setText(str(pressure))
+        self.temperature_gauge_label.setText(str(temperature))
+        self.humidity_gauge_label.setText(str(humidity))
+        self.wind_speed_gauge_label.setText(str(wind_speed))
+        self.wind_direction_gauge_label.setText(str(wind_direction))
+        self.altitude_gauge_label.setText(str(altitude))
+
+        pressure = Percentage.get_pressure(pressure)
+        temperature = Percentage.get_temperature(temperature)
+        humidity = int(humidity)
+        wind_speed = Percentage.get_wind_speed(wind_speed)
+        wind_direction = Percentage.get_wind_direction(wind_direction)
+        altitude = Percentage.get_altitude(altitude)
+
+        self.pressure_gauge.setPixmap(QPixmap(os.path.join(GAUGE_PATH, "pressure", f"{pressure}.png")))
+        self.temperature_gauge.setPixmap(QPixmap(os.path.join(GAUGE_PATH, "temperature", f"{temperature}.png")))
+        self.humidity_gauge.setPixmap(QPixmap(os.path.join(GAUGE_PATH, "humidity", f"{humidity}.png")))
+        self.wind_speed_gauge.setPixmap(QPixmap(os.path.join(GAUGE_PATH, "wind_speed", f"{wind_speed}.png")))
+        self.wind_direction_gauge.setPixmap(QPixmap(os.path.join(GAUGE_PATH, "wind_direction", f"{wind_direction}.png")))
+        self.altitude_gauge.setPixmap(QPixmap(os.path.join(GAUGE_PATH, "altitude", f"{altitude}.png")))
+
 
     def update_table(self, data):
         row = self.table.rowCount()
         self.table.insertRow(row)
         for i in range(len(data)):
             self.table.setItem(row, i, QTableWidgetItem(str(data[i])))
-        self.table.scrollToBottom()
+        # self.table.scrollToBottom()
 
     def update_graph_time(self):
         # if not self.plot_ref_time:

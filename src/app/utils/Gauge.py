@@ -15,7 +15,7 @@ def rot_text(ang):
     rotation = np.degrees(np.radians(ang) * np.pi / np.pi - np.radians(90))
     return rotation
 
-def gauge(ax,N,colors='jet_r', arrow=1, title='',value = ''): 
+def gauge(N,colors='jet_r', arrow=1, title='',fname=None): 
     
     """
     some sanity checks first
@@ -47,7 +47,7 @@ def gauge(ax,N,colors='jet_r', arrow=1, title='',value = ''):
     begins the plotting
     """
     
-
+    fig, ax = plt.subplots()
     ang_range, mid_points = degree_range(N)
 
     
@@ -70,7 +70,7 @@ def gauge(ax,N,colors='jet_r', arrow=1, title='',value = ''):
     r = Rectangle((-0.4,-0.1),0.8,0.1, facecolor='w', lw=2)
     ax.add_patch(r)
     
-    ax.text(0.5,0.0, title + f"\n {value} {chr(176)}", horizontalalignment='center', \
+    ax.text(0.5,0.0, title , horizontalalignment='center', \
          verticalalignment='bottom', fontsize=14, fontweight='bold', transform = ax.transAxes)
 
     """
@@ -93,4 +93,22 @@ def gauge(ax,N,colors='jet_r', arrow=1, title='',value = ''):
     ax.axes.set_xticks([])
     ax.axes.set_yticks([])
     ax.axis('equal')
+
+    plt.tight_layout()
+    if fname:
+        fig.savefig(fname, dpi=200)
+
+def update_gauge(arrow, number):
+        """
+        Updates the gauges
+        """
+        gauge(number, colors = 'cool', arrow = arrow, title=f'Pressure hPa', fname=f"images/pressure/{arrow}.png")
+        gauge(number, colors = 'autumn',arrow = arrow, title=f'Temp {chr(176)}C',fname=f"images/temperature/{arrow}.png")
+        gauge(number, colors='summer',arrow=arrow, title=f'Humidity %',fname=f"images/humidity/{arrow}.png")
+        gauge(number, colors = 'copper',arrow=arrow, title=f'Speed m/s',fname=f"images/wind_speed/{arrow}.png")
+        gauge(number, colors = 'PuOr',arrow=arrow, title=f'Direction {chr(176)}',fname=f"images/wind_direction/{arrow}.png")
+        gauge(number, colors = 'coolwarm',arrow=arrow, title=f'Altitude m',fname=f"images/altitude/{arrow}.png")
+
+for i in range(1, 101):
+    update_gauge(i, 100)
 
