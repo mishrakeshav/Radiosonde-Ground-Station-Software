@@ -119,4 +119,4 @@ class Wind:
         if (a2 < 0):
             a2 += Wind.TWO_PI
 
-        return math.degrees(a2)
+        return int(math.degrees(a2))

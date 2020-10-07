@@ -1,8 +1,13 @@
+import os
+import sys
+
 from PySide2.QtCore import *
 from PySide2.QtGui import *
 from PySide2.QtWidgets import *
 
 from app.views.Dashboard import Dashboard
+
+ASSETS_DIR = os.path.join(sys.path[0], "resources", "images", "assets")
 
 class ViewPreviousFlightWindow(object):
     def setupUi(self, MainWindow, PreviousWindow):
@@ -73,12 +78,12 @@ class ViewPreviousFlightWindow(object):
         self.logo_databyte = QLabel(self.centralwidget)
         self.logo_databyte.setObjectName(u"logo_databyte")
         self.logo_databyte.setGeometry(QRect(150, 20, 161, 141))
-        self.logo_databyte.setPixmap(QPixmap(u"../UASS-Project/mainApp/assets/logo.jpeg"))
+        self.logo_databyte.setPixmap(os.path.join(ASSETS_DIR, "logo.jpeg"))
         self.logo_databyte.setScaledContents(True)
         self.logo_somaiya = QLabel(self.centralwidget)
         self.logo_somaiya.setObjectName(u"logo_somaiya")
         self.logo_somaiya.setGeometry(QRect(320, 30, 121, 111))
-        self.logo_somaiya.setPixmap(QPixmap(u"../Requisition-and-Supply-Management-System/App/static/images/svv.png"))
+        self.logo_somaiya.setPixmap(QPixmap(os.path.join(ASSETS_DIR, "svv.png")))
         self.logo_somaiya.setScaledContents(True)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QMenuBar(MainWindow)

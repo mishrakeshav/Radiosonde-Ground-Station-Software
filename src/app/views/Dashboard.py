@@ -1,11 +1,16 @@
+import sys
+import os
 from collections import defaultdict
+
 from PySide2.QtCore import *
 from PySide2.QtGui import *
 from PySide2.QtWidgets import *
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 import pandas as pd
-import sys
-import os
+import metpy.calc as mpcalc
+from metpy.plots import Hodograph
+from metpy.units import units
+import numpy as np
 
 from app.utils.Canvas import MplCanvas
 from app.utils.ReadComPort import SerialPort
@@ -204,14 +209,14 @@ class Dashboard(object):
         self.temperature_check = QCheckBox(self.layoutWidget_2)
         self.temperature_check.setObjectName(u"temperature_check")
         self.temperature_check.setChecked(True)
-        self.temperature_check.setStyleSheet(f"background-color: {self.temperature_color}")
+        self.temperature_check.setStyleSheet(temperature_checkbox_indicator)
         self.parameter_list.append((self.temperature_check, "Scaled Temperature", self.temperature_color))
         self.verticalLayout.addWidget(self.temperature_check)
 
         self.pressure_color = "magenta"
         self.pressure_check = QCheckBox(self.layoutWidget_2)
         self.pressure_check.setObjectName(u"pressure_check")
-        self.pressure_check.setStyleSheet(f"background-color: {self.pressure_color}")
+        self.pressure_check.setStyleSheet(pressure_checkbox_indicator)
         self.parameter_list.append((self.pressure_check, "Scaled Pressure", self.pressure_color))
         self.verticalLayout.addWidget(self.pressure_check)
 
@@ -219,21 +224,21 @@ class Dashboard(object):
         self.humidity_check = QCheckBox(self.layoutWidget_2)
         self.humidity_check.setObjectName(u"humidity_check")
         self.humidity_check.setChecked(True)
-        self.humidity_check.setStyleSheet(checkbox_indicator)
+        self.humidity_check.setStyleSheet(humidity_checkbox_indicator)
         self.parameter_list.append((self.humidity_check, "Humidity", self.humidity_color))
         self.verticalLayout.addWidget(self.humidity_check)
 
         self.wind_speed_color = "green"
         self.wind_speed_check = QCheckBox(self.layoutWidget_2)
         self.wind_speed_check.setObjectName(u"wind_speed_check")
-        self.wind_speed_check.setStyleSheet(f"background-color: {self.wind_speed_color}")
+        self.wind_speed_check.setStyleSheet(wind_speed_checkbox_indicator)
         self.parameter_list.append((self.wind_speed_check, "Wind Speed", self.wind_speed_color))
         self.verticalLayout.addWidget(self.wind_speed_check)
 
         self.altitude_color = "yellow"
         self.altitude_check = QCheckBox(self.layoutWidget_2)
         self.altitude_check.setObjectName(u"altitude_check")
-        self.altitude_check.setStyleSheet(f"background-color: {self.altitude_color}")
+        self.altitude_check.setStyleSheet(altitude_checkbox_indicator)
         self.parameter_list.append((self.altitude_check, "Altitude", self.altitude_color))
         self.verticalLayout.addWidget(self.altitude_check)
 
@@ -248,10 +253,9 @@ class Dashboard(object):
         self.tab_2.setObjectName(u"tab_2")
         self.gridLayout_5 = QGridLayout(self.tab_2)
         self.gridLayout_5.setObjectName(u"gridLayout_5")
-        self.spec_graph = QLabel(self.tab_2)
+        self.spec_graph = MplCanvas(self.tab_2)
         self.spec_graph.setObjectName(u"spec_graph")
         self.spec_graph.setMinimumSize(QSize(300, 200))
-        self.spec_graph.setStyleSheet(u"background-color: blue;")
 
         self.gridLayout_5.addWidget(self.spec_graph, 0, 1, 2, 1)
 
@@ -367,7 +371,6 @@ class Dashboard(object):
         self.wind_speed_check.setText(QCoreApplication.translate("MainWindow", u"WindSpeed", None))
         self.altitude_check.setText(QCoreApplication.translate("MainWindow", u"Altitude", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab), QCoreApplication.translate("MainWindow", u"Tab 1", None))
-        self.spec_graph.setText(QCoreApplication.translate("MainWindow", u"Graphs", None))
         self.visualization_group.setTitle(QCoreApplication.translate("MainWindow", u"Visualization", None))
         self.skewt_check.setText(QCoreApplication.translate("MainWindow", u"Skew-T", None))
         self.tphi_check.setText(QCoreApplication.translate("MainWindow", u"T-Phi", None))
@@ -410,15 +413,27 @@ class Dashboard(object):
 
                 index = self.data_frame.shape[0]
                 self.data_frame.loc[index] = data
-                self.update_graph_time()
+                self.update_graph()
                 self.update_table([time_elapsed, pressure, external_temperature, humidity, wind_speed, wind_direction])
                 self.update_gauge(*[pressure, external_temperature, humidity, wind_speed, wind_direction, altitude])
-
+                self.update_hodograph()
 
                 self.comport.previous_longitude = longitude
                 self.comport.previous_latitude = latitude
                 self.comport.previous_time = time_elapsed
     
+    def update_hodograph(self):
+        wind_speed = np.array(list(map(float, self.data_frame['Wind Speed'].values))) * units.knots
+        wind_dir = np.array(list(map(float, self.data_frame['Wind Direction'].values))) * units.degrees
+        print(wind_speed[:5])   
+        u, v = mpcalc.wind_components(wind_speed, wind_dir)
+
+        self.spec_graph.axes.cla()
+        h = Hodograph(self.spec_graph.axes, component_range=.5)
+        h.add_grid(increment=0.1)
+        h.plot_colormapped(u, v, wind_speed)
+        self.spec_graph.draw()
+
     def update_gauge(self, pressure, temperature, humidity, wind_speed, wind_direction, altitude):
         self.pressure_gauge_label.setText(str(pressure))
         self.temperature_gauge_label.setText(str(temperature))
@@ -449,7 +464,7 @@ class Dashboard(object):
             self.table.setItem(row, i, QTableWidgetItem(str(data[i])))
         # self.table.scrollToBottom()
 
-    def update_graph_time(self):
+    def update_graph(self):
         # if not self.plot_ref_time:
         #     self.plot_ref_time = dict()
         #     self.plot_ref_time["temperature"] = self.graph_time.axes.plot(
