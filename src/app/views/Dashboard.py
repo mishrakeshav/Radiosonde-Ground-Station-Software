@@ -18,6 +18,7 @@ from app.utils.Worker import Worker
 from app.utils.styles import *
 from app.utils.Percentage import Percentage
 from app.utils.MapGenerator import Map
+from app.views.ViewMap import MapView
 
 GAUGE_MINIMUM_HEIGHT = 125 
 GAUGE_MINIMUM_WIDTH = 125
@@ -346,7 +347,7 @@ class Dashboard(object):
 
         self.menubar.addAction(self.menuVisualization.menuAction())
         self.menuVisualization.addAction(self.actionTrack_Balloon)
-        self.actionTrack_Balloon.triggered.connect(lambda: Map())
+        self.actionTrack_Balloon.triggered.connect(self.open_map)
         self.retranslateUi(MainWindow)
 
         self.tabWidget.setCurrentIndex(0)
@@ -401,6 +402,8 @@ class Dashboard(object):
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), QCoreApplication.translate("MainWindow", u"Tab 2", None))
         self.menuVisualization.setTitle(QCoreApplication.translate("MainWindow", u"Visualization", None))
 
+    def open_map(self):
+        self.map = MapView()
 
 
     def read_port(self):
