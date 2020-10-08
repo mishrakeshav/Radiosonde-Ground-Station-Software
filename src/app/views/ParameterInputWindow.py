@@ -227,7 +227,7 @@ class ParameterInputWindow(object):
             cols = ['Time', 'Latitude', 'Longitude', 'Satelites', 'Altitude',\
              'Pressure', 'Internal Temperature', 'External Temperature', 'Humidity',\
              'TimeElapsed', 'Wind Direction', 'Wind Speed', 'Scaled Pressure', 'Scaled Temperature']
-            file_output.write(",".join(cols))
+            file_output.write(",".join(cols) + "\n")
 
         with open(os.path.join(folder_path, "params.json"), 'w') as file_output:
             json.dump({"data": data, "time":datetime.datetime.utcnow().strftime("%H:%M:%S")}, file_output)
