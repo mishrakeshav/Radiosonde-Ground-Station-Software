@@ -17,6 +17,7 @@ from app.utils.ReadComPort import SerialPort
 from app.utils.Worker import Worker
 from app.utils.styles import *
 from app.utils.Percentage import Percentage
+from app.utils.MapGenerator import Map
 
 GAUGE_MINIMUM_HEIGHT = 125 
 GAUGE_MINIMUM_WIDTH = 125
@@ -35,7 +36,9 @@ class Dashboard(object):
 
         if not MainWindow.objectName():
             MainWindow.setObjectName(u"MainWindow")
-        MainWindow.resize(830, 520)
+        MainWindow.resize(830, 520) 
+        self.actionTrack_Balloon = QAction(MainWindow)
+        self.actionTrack_Balloon.setObjectName(u"actionTrack_Balloon")
         self.centralwidget = QWidget(MainWindow)
         self.centralwidget.setObjectName(u"centralwidget")
         self.gridLayout_2 = QGridLayout(self.centralwidget)
@@ -48,6 +51,7 @@ class Dashboard(object):
         self.gridLayout_3.setObjectName(u"gridLayout_3")
         self.tabWidget = QTabWidget(self.centralwidget)
         self.tabWidget.setObjectName(u"tabWidget")
+
 
 
         self.tab = QWidget()
@@ -333,11 +337,16 @@ class Dashboard(object):
         self.menubar = QMenuBar(MainWindow)
         self.menubar.setObjectName(u"menubar")
         self.menubar.setGeometry(QRect(0, 0, 830, 22))
+        self.menuVisualization = QMenu(self.menubar)
+        self.menuVisualization.setObjectName(u"menuVisualization")
         MainWindow.setMenuBar(self.menubar)
         self.statusbar = QStatusBar(MainWindow)
         self.statusbar.setObjectName(u"statusbar")
         MainWindow.setStatusBar(self.statusbar)
 
+        self.menubar.addAction(self.menuVisualization.menuAction())
+        self.menuVisualization.addAction(self.actionTrack_Balloon)
+        self.actionTrack_Balloon.triggered.connect(lambda: Map())
         self.retranslateUi(MainWindow)
 
         self.tabWidget.setCurrentIndex(0)
@@ -365,6 +374,7 @@ class Dashboard(object):
 
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"MainWindow", None))
+        self.actionTrack_Balloon.setText(QCoreApplication.translate("MainWindow", u"Track Balloon", None))
         self.temperature_check.setText(QCoreApplication.translate("MainWindow", u"Temperature", None))
         self.pressure_check.setText(QCoreApplication.translate("MainWindow", u"Pressure", None))
         self.humidity_check.setText(QCoreApplication.translate("MainWindow", u"Humidity", None))
@@ -389,6 +399,9 @@ class Dashboard(object):
         ___qtablewidgetitem5 = self.table.horizontalHeaderItem(5)
         ___qtablewidgetitem5.setText(QCoreApplication.translate("MainWindow", u"Wd[]", None));
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), QCoreApplication.translate("MainWindow", u"Tab 2", None))
+        self.menuVisualization.setTitle(QCoreApplication.translate("MainWindow", u"Visualization", None))
+
+
 
     def read_port(self):
         output_file = os.path.join(self.flight_folder_path, "output.csv")
