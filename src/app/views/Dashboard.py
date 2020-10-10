@@ -268,6 +268,7 @@ class Dashboard(object):
 
         self.gridLayout_5.addItem(self.verticalSpacer, 1, 2, 1, 1)
 
+        self.spec_graph_list = {}
         self.visualization_group = QGroupBox(self.tab_2)
         self.visualization_group.setObjectName(u"visualization_group")
         self.visualization_group.setMinimumSize(QSize(100, 150))
@@ -280,24 +281,20 @@ class Dashboard(object):
         self.verticalLayout_3.setContentsMargins(0, 0, 0, 0)
         self.skewt_check = QRadioButton(self.layoutWidget)
         self.skewt_check.setObjectName(u"skewt_check")
-
+        self.spec_graph_list["skewt"] = {"check": self.skewt_check, "function": self.update_skewt}
         self.verticalLayout_3.addWidget(self.skewt_check)
 
         self.tphi_check = QRadioButton(self.layoutWidget)
         self.tphi_check.setObjectName(u"tphi_check")
+        self.spec_graph_list["tphi"] = {"check": self.tphi_check, "function": self.update_tphi}
 
         self.verticalLayout_3.addWidget(self.tphi_check)
 
-        self.hohograph_check = QRadioButton(self.layoutWidget)
-        self.hohograph_check.setObjectName(u"hohograph_check")
-
-        self.verticalLayout_3.addWidget(self.hohograph_check)
-
-        self.track_check = QRadioButton(self.layoutWidget)
-        self.track_check.setObjectName(u"track_check")
-
-        self.verticalLayout_3.addWidget(self.track_check)
-
+        self.hodograph_check = QRadioButton(self.layoutWidget)
+        self.hodograph_check.setObjectName(u"hodograph_check")
+        self.hodograph_check.setChecked(True)
+        self.spec_graph_list["hodograph"] = {"check": self.hodograph_check, "function": self.update_hodograph}
+        self.verticalLayout_3.addWidget(self.hodograph_check)
 
         self.gridLayout_5.addWidget(self.visualization_group, 0, 2, 1, 1)
 
@@ -368,7 +365,6 @@ class Dashboard(object):
         self.timer.setInterval(3000)
         self.timer.timeout.connect(self.table.scrollToBottom)
         self.timer.start()
-        self.update_gauge(*[0, 0, 0, 0, 0, 0])
         self.run_threads()
 
     # setupUi
@@ -385,8 +381,7 @@ class Dashboard(object):
         self.visualization_group.setTitle(QCoreApplication.translate("MainWindow", u"Visualization", None))
         self.skewt_check.setText(QCoreApplication.translate("MainWindow", u"Skew-T", None))
         self.tphi_check.setText(QCoreApplication.translate("MainWindow", u"T-Phi", None))
-        self.hohograph_check.setText(QCoreApplication.translate("MainWindow", u"Hodograph", None))
-        self.track_check.setText(QCoreApplication.translate("MainWindow", u"Ballon Track", None))
+        self.hodograph_check.setText(QCoreApplication.translate("MainWindow", u"Hodograph", None))
         ___qtablewidgetitem = self.table.horizontalHeaderItem(0)
         ___qtablewidgetitem.setText(QCoreApplication.translate("MainWindow", u"Time[s]", None));
         ___qtablewidgetitem1 = self.table.horizontalHeaderItem(1)
@@ -437,18 +432,6 @@ class Dashboard(object):
                 self.comport.previous_longitude = longitude
                 self.comport.previous_latitude = latitude
                 self.comport.previous_time = time_elapsed
-    
-    def update_hodograph(self):
-        wind_speed = np.array(list(map(float, self.data_frame['Wind Speed'].values))) * units.knots
-        wind_dir = np.array(list(map(float, self.data_frame['Wind Direction'].values))) * units.degrees
-        print(wind_speed[:5])   
-        u, v = mpcalc.wind_components(wind_speed, wind_dir)
-
-        self.spec_graph.axes.cla()
-        h = Hodograph(self.spec_graph.axes, component_range=.5)
-        h.add_grid(increment=0.1)
-        h.plot_colormapped(u, v, wind_speed)
-        self.spec_graph.draw()
 
     def update_gauge(self, pressure, temperature, humidity, wind_speed, wind_direction, altitude):
         self.pressure_gauge_label.setText(str(pressure))
@@ -471,7 +454,6 @@ class Dashboard(object):
         self.wind_speed_gauge.setPixmap(QPixmap(os.path.join(GAUGE_PATH, "wind_speed", f"{wind_speed}.png")))
         self.wind_direction_gauge.setPixmap(QPixmap(os.path.join(GAUGE_PATH, "wind_direction", f"{wind_direction}.png")))
         self.altitude_gauge.setPixmap(QPixmap(os.path.join(GAUGE_PATH, "altitude", f"{altitude}.png")))
-
 
     def update_table(self, data):
         row = self.table.rowCount()
@@ -508,7 +490,29 @@ class Dashboard(object):
         self.graph_altitude.axes.set_xlabel('Time Elapsed (s)')
         self.graph_altitude.draw()
 
+    def update_hodograph(self):
+        wind_speed = np.array(list(map(float, self.data_frame['Wind Speed'].values))) * units.knots
+        wind_dir = np.array(list(map(float, self.data_frame['Wind Direction'].values))) * units.degrees
+        print(wind_speed[:5])   
+        u, v = mpcalc.wind_components(wind_speed, wind_dir)
 
+        self.spec_graph.axes.cla()
+        h = Hodograph(self.spec_graph.axes, component_range=.5)
+        h.add_grid(increment=0.1)
+        h.plot_colormapped(u, v, wind_speed)
+        self.spec_graph.draw()
+
+    def update_skewt(self):
+        # TODO: Add the implementation
+        pass
+    
+    def update_tphi(self):
+        # TODO: Add the implementation
+        pass
+
+    def update_spec_graphs(self):
+        for graph in self.spec_graph_list:
+            if graph['check'].isChecked(): graph["function"]()
 
     def run_threads(self):
         worker1 = Worker(self.read_port)
