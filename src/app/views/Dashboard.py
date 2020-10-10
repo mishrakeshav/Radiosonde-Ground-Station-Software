@@ -573,10 +573,10 @@ class Dashboard(object):
 
     def update_skewt(self):
         print("updating skewt")
-        self.data_frame['Td'] = self.data_frame.ExternalTemperature - \
+        self.data_frame['Td'] = self.data_frame.['External Temperature'] - \
             ((100 - self.data_frame.Humidity)/5)
         p = self.data_frame['Pressure'].values * units.hPa
-        T = self.data_frame['ExternalTemperature'].values * units.degC
+        T = self.data_frame['External Temperature'].values * units.degC
         Td = self.data_frame['Td'].values * units.degC
         wind_speed = self.data_frame['Wind Speed'].values * units.knots
         wind_dir = self.data_frame['Wind Direction'].values * units.degrees
@@ -590,12 +590,12 @@ class Dashboard(object):
 
     def update_tphi(self):
         print("updating tphi")
-        self.data_frame['Td'] = self.data_frame.ExternalTemperature - \
+        self.data_frame['Td'] = self.data_frame.['External Temperature'] - \
             ((100 - self.data_frame.Humidity)/5)
         dewpoint = list(
             zip(self.data_frame['Pressure'], self.data_frame['Td']))
         drybulb = list(
-            zip(self.data_frame['Pressure'], self.data_frame['ExternalTemperature']))
+            zip(self.data_frame['Pressure'], self.data_frame['External Temperature']))
         tephigram = Tephigram(figure=self.spec_graph.fig)
         tephigram.plot(dewpoint, label="Dew Point Temperature", color="blue")
         tephigram.plot(drybulb, label="Dry Bulb Temperature", color="red")
@@ -604,11 +604,11 @@ class Dashboard(object):
 
     def update_stuve(self):
         print("updating stuve")
-        self.data_frame['Td'] = self.data_frame.ExternalTemperature - \
+        self.data_frame['Td'] = self.data_frame.['External Temperature'] - \
             ((100 - self.data_frame.Humidity)/5)
         height_MSL_m = self.data_frame['Altitude'].tolist()
         press_mb = self.data_frame['Pressure'].tolist()
-        temp_C = self.data_frame['ExternalTemperature'].tolist()
+        temp_C = self.data_frame['External Temperature'].tolist()
         td_C = self.data_frame['Td'].tolist()
         wind_spd_kt = self.data_frame['Wind Speed'].tolist()
         wind_dir_deg = self.data_frame['Wind Direction'].tolist()
