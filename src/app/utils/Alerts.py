@@ -17,17 +17,17 @@ class Alert:
     """
     
     alerts ={
-        " CRITICAL" : QMessageBox.Critical,
-        " WARNING" : QMessageBox.Warning,
-        " INFORMATION" : QMessageBox.Information,
-        " QUESTION" :QMessageBox.Question,
+        "CRITICAL" : QMessageBox.Critical,
+        "WARNING" : QMessageBox.Warning,
+        "INFORMATION" : QMessageBox.Information,
+        "QUESTION" :QMessageBox.Question,
     }
 
-    def __init__(self, main_text:str, info_text="", alert_type="INFO"):
+    def __init__(self, main_text:str, info_text="", alert_type="INFORMATION"):
 
         self.alert = QMessageBox()
         self.alert.setText(main_text)
         self.alert.setInformativeText(info_text)
-        self.alert.setIcon(alerts[alert_type])
+        self.alert.setIcon(self.alerts[alert_type])
 
         _ = self.alert.exec_()

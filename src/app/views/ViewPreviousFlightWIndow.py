@@ -5,14 +5,16 @@ from PySide2.QtCore import *
 from PySide2.QtGui import *
 from PySide2.QtWidgets import *
 
-from app.views.Dashboard import Dashboard
+from app.views.PreviousParameterInputWindow import ParameterInputWindow
+from app.utils.Alerts import Alert
+
 
 ASSETS_DIR = os.path.join(sys.path[0], "resources", "images", "assets")
 
 class ViewPreviousFlightWindow(object):
     def setupUi(self, MainWindow, PreviousWindow):
 
-        self.folder_name = self.get_folder()
+        self.folder_name = None
         # to navigate between windows 
         self.current_window = MainWindow
         self.previous_window = PreviousWindow
@@ -101,6 +103,7 @@ class ViewPreviousFlightWindow(object):
 
         # custom setups 
         self.connect_buttons()
+        
 
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"MainWindow", None))
@@ -115,22 +118,28 @@ class ViewPreviousFlightWindow(object):
         self.logo_somaiya.setText("")
 
     def get_folder(self):
-        fname = QFileDialog.getExistingDirectory()
-        print(fname)
-        return fname
+        self.folder_name = QFileDialog.getExistingDirectory()
+        self.flight_directory_input.setText(str(self.folder_name))
+        print(self.folder_name)
+        
 
     def connect_buttons(self):
         self.proceed_button.clicked.connect(self.open_next_window)
         self.back_button.clicked.connect(self.open_previous_window)
+        self.browse_button.clicked.connect(self.get_folder)
     
     def open_next_window(self):
+        if not self.folder_name:
+            Alert(main_text = "PLS BROWSER WINDOW",  info_text= "Pls choose folder first lol")
+            return 
+        # validation 
         if self.next_window:
             self.current_window.close()
             self.next_window.show()
         else:
             self.next_window = QMainWindow()
             self.next_window_ui = ParameterInputWindow()
-            self.next_window_ui.setupUi(self.next_window)
+            self.next_window_ui.setupUi(self.folder_name,self.next_window,self.current_window)
             self.next_window.show()
             self.current_window.close()
     
