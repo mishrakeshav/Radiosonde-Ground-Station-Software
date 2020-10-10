@@ -372,8 +372,6 @@ class Dashboard(object):
         self.timer.start()
         self.run_threads()
 
-    # setupUi
-
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"MainWindow", None))
         self.actionTrack_Balloon.setText(QCoreApplication.translate("MainWindow", u"Track Balloon", None))
@@ -404,7 +402,6 @@ class Dashboard(object):
 
     def open_map(self):
         self.map = MapView()
-
 
     def read_port(self):
         output_file = os.path.join(self.flight_folder_path, "output.csv")
@@ -496,6 +493,7 @@ class Dashboard(object):
         self.graph_altitude.draw()
 
     def update_hodograph(self):
+        print("updating hodograph")
         wind_speed = np.array(list(map(float, self.data_frame['Wind Speed'].values))) * units.knots
         wind_dir = np.array(list(map(float, self.data_frame['Wind Direction'].values))) * units.degrees
         print(wind_speed[:5])   
@@ -509,13 +507,16 @@ class Dashboard(object):
 
     def update_skewt(self):
         # TODO: Add the implementation
+        print("updating skewt")
         pass
     
     def update_tphi(self):
+        print("updating tphi")
         # TODO: Add the implementation
         pass
 
     def update_stuve(self):
+        print("updating stuve")
         # TODO: Add the implementation
         pass
 

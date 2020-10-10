@@ -14,7 +14,7 @@ from app.utils.Alerts import Alert
 ASSETS_DIR = os.path.join(sys.path[0], "resources", "images", "assets")
 
 class ParameterInputWindow(object):
-    def setupUi(self, receiver_port, radiosonde_port, MainWindow,PreviousWindow):
+    def setupUi(self, receiver_port, radiosonde_port, MainWindow, PreviousWindow):
         # Date from the port selection page
         self.receiver_port = receiver_port
         self.radiosonde_port = radiosonde_port

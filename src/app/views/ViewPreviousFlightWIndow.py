@@ -12,6 +12,7 @@ ASSETS_DIR = os.path.join(sys.path[0], "resources", "images", "assets")
 class ViewPreviousFlightWindow(object):
     def setupUi(self, MainWindow, PreviousWindow):
 
+        self.folder_name = self.get_folder()
         # to navigate between windows 
         self.current_window = MainWindow
         self.previous_window = PreviousWindow
@@ -113,6 +114,11 @@ class ViewPreviousFlightWindow(object):
         self.logo_databyte.setText("")
         self.logo_somaiya.setText("")
 
+    def get_folder(self):
+        fname = QFileDialog.getExistingDirectory()
+        print(fname)
+        return fname
+
     def connect_buttons(self):
         self.proceed_button.clicked.connect(self.open_next_window)
         self.back_button.clicked.connect(self.open_previous_window)
@@ -123,7 +129,7 @@ class ViewPreviousFlightWindow(object):
             self.next_window.show()
         else:
             self.next_window = QMainWindow()
-            self.next_window_ui = Dashboard()
+            self.next_window_ui = ParameterInputWindow()
             self.next_window_ui.setupUi(self.next_window)
             self.next_window.show()
             self.current_window.close()
