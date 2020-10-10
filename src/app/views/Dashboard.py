@@ -279,6 +279,7 @@ class Dashboard(object):
         self.verticalLayout_3 = QVBoxLayout(self.layoutWidget)
         self.verticalLayout_3.setObjectName(u"verticalLayout_3")
         self.verticalLayout_3.setContentsMargins(0, 0, 0, 0)
+        
         self.skewt_check = QRadioButton(self.layoutWidget)
         self.skewt_check.setObjectName(u"skewt_check")
         self.spec_graph_list["skewt"] = {"check": self.skewt_check, "function": self.update_skewt}
@@ -287,8 +288,12 @@ class Dashboard(object):
         self.tphi_check = QRadioButton(self.layoutWidget)
         self.tphi_check.setObjectName(u"tphi_check")
         self.spec_graph_list["tphi"] = {"check": self.tphi_check, "function": self.update_tphi}
-
         self.verticalLayout_3.addWidget(self.tphi_check)
+
+        self.stuve_check = QRadioButton(self.layoutWidget)
+        self.stuve_check.setObjectName(u"stuve_check")
+        self.spec_graph_list["stuve"] = {"check": self.stuve_check, "function": self.update_stuve}
+        self.verticalLayout_3.addWidget(self.stuve_check)
 
         self.hodograph_check = QRadioButton(self.layoutWidget)
         self.hodograph_check.setObjectName(u"hodograph_check")
@@ -507,6 +512,10 @@ class Dashboard(object):
         pass
     
     def update_tphi(self):
+        # TODO: Add the implementation
+        pass
+
+    def update_stuve(self):
         # TODO: Add the implementation
         pass
 
