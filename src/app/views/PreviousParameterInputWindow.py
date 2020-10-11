@@ -8,7 +8,7 @@ from PySide2.QtGui import *
 from PySide2.QtWidgets import *
 from pyside_material import apply_stylesheet
 
-from app.views.Dashboard import Dashboard
+from app.views.FlightDashboard import Dashboard
 from app.utils.Alerts import Alert
 
 ASSETS_DIR = os.path.join(sys.path[0], "resources", "images", "assets")
@@ -217,34 +217,13 @@ class ParameterInputWindow(object):
 
     
     def open_next_window(self):
-        try:
-            data = {
-                "frequency" : float(self.frequency_input.currentText()),
-                "temperature" : float(self.temperature_input.text()),
-                "pressure" : float(self.pressure_input.text()),
-                "altitude" : float(self.altitude_input.text()),
-                "latitude" : float(self.latitude_input.text()),
-                "longitude" : float(self.longitude_input.text()),
-                "windspeed" : float(self.windspeed_input.text()),
-                "humidity" : float(self.humidity_input.text()),
-            }
-        except:
-            Alert(
-                main_text = "Input Error",
-                info_text = "Provide appropriate values",
-                alert_type=Alert.CRITICAL
-            )
-            return
-
-
-
         if self.next_window:
             self.current_window.close()
             self.next_window.show()
         else:
             self.next_window = QMainWindow()
             self.next_window_ui = Dashboard()
-            self.next_window_ui.setupUi(self.next_window, self.folder_path, self.receiver_port)
+            self.next_window_ui.setupUi(self.next_window, self.folder_path, self.data)
             self.next_window.show()
             self.current_window.close()
 
