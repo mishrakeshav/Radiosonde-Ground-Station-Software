@@ -388,6 +388,7 @@ class Dashboard(object):
 
         QMetaObject.connectSlotsByName(MainWindow)
 
+        self.display_graphs()
         
 
         
