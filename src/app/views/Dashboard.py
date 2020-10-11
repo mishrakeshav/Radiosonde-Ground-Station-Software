@@ -573,7 +573,7 @@ class Dashboard(object):
 
     def update_skewt(self):
         print("updating skewt")
-        self.data_frame['Td'] = self.data_frame.['External Temperature'] - \
+        self.data_frame['Td'] = self.data_frame['External Temperature'].values - \
             ((100 - self.data_frame.Humidity)/5)
         p = self.data_frame['Pressure'].values * units.hPa
         T = self.data_frame['External Temperature'].values * units.degC
@@ -590,7 +590,7 @@ class Dashboard(object):
 
     def update_tphi(self):
         print("updating tphi")
-        self.data_frame['Td'] = self.data_frame.['External Temperature'] - \
+        self.data_frame['Td'] = self.data_frame['External Temperature'].values - \
             ((100 - self.data_frame.Humidity)/5)
         dewpoint = list(
             zip(self.data_frame['Pressure'], self.data_frame['Td']))
@@ -604,7 +604,7 @@ class Dashboard(object):
 
     def update_stuve(self):
         print("updating stuve")
-        self.data_frame['Td'] = self.data_frame.['External Temperature'] - \
+        self.data_frame['Td'] = self.data_frame['External Temperature'].values - \
             ((100 - self.data_frame.Humidity)/5)
         height_MSL_m = self.data_frame['Altitude'].tolist()
         press_mb = self.data_frame['Pressure'].tolist()
