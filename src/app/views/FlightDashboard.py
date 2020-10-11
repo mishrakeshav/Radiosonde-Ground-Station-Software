@@ -451,6 +451,7 @@ class Dashboard(object):
         output_file = os.path.join(self.flight_folder_path, "output.csv")
         self.update_graph()
         self.update_hodograph()
+        self.update_gauge(*[1,1,1,1,1,1])
         
 
     def update_gauge(self, pressure, temperature, humidity, wind_speed, wind_direction, altitude):
