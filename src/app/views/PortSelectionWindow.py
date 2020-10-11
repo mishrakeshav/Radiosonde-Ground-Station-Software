@@ -1,9 +1,16 @@
+import os
+import sys
+
 from PySide2.QtCore import *
 from PySide2.QtGui import *
 from PySide2.QtWidgets import *
 from pyside_material import apply_stylesheet
+from serial.tools.list_ports import comports
 
 from app.views.ParameterInputWindow import ParameterInputWindow
+from app.utils.Alerts import Alert
+
+ASSETS_DIR = os.path.join(sys.path[0], "resources", "images", "assets")
 
 class PortSelectionWindow(object):
     def setupUi(self, MainWindow,PreviousWindow):
@@ -20,15 +27,11 @@ class PortSelectionWindow(object):
         self.centralwidget = QWidget(MainWindow)
         self.centralwidget.setObjectName(u"centralwidget")
         self.radiosonde_port_input = QComboBox(self.centralwidget)
-        self.radiosonde_port_input.addItem("")
-        self.radiosonde_port_input.addItem("")
-        self.radiosonde_port_input.addItem("")
+
         self.radiosonde_port_input.setObjectName(u"radiosonde_port_input")
         self.radiosonde_port_input.setGeometry(QRect(340, 400, 141, 25))
         self.receiver_port_input = QComboBox(self.centralwidget)
-        self.receiver_port_input.addItem("")
-        self.receiver_port_input.addItem("")
-        self.receiver_port_input.addItem("")
+
         self.receiver_port_input.setObjectName(u"receiver_port_input")
         self.receiver_port_input.setGeometry(QRect(340, 350, 141, 25))
         self.receiver_port_label = QLabel(self.centralwidget)
@@ -83,12 +86,12 @@ class PortSelectionWindow(object):
         self.logo_databyte = QLabel(self.centralwidget)
         self.logo_databyte.setObjectName(u"logo_databyte")
         self.logo_databyte.setGeometry(QRect(150, 10, 161, 141))
-        self.logo_databyte.setPixmap(QPixmap(u"../UASS-Project/mainApp/assets/logo.jpeg"))
+        self.logo_databyte.setPixmap(QPixmap(os.path.join(ASSETS_DIR, "logo.jpeg")))
         self.logo_databyte.setScaledContents(True)
         self.logo_somaiya = QLabel(self.centralwidget)
         self.logo_somaiya.setObjectName(u"logo_somaiya")
         self.logo_somaiya.setGeometry(QRect(320, 20, 121, 111))
-        self.logo_somaiya.setPixmap(QPixmap(u"../Requisition-and-Supply-Management-System/App/static/images/svv.png"))
+        self.logo_somaiya.setPixmap(QPixmap(os.path.join(ASSETS_DIR, "svv.png")))
         self.logo_somaiya.setScaledContents(True)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QMenuBar(MainWindow)
@@ -99,23 +102,18 @@ class PortSelectionWindow(object):
         self.statusbar.setObjectName(u"statusbar")
         MainWindow.setStatusBar(self.statusbar)
 
+        self.receiver_port_input.addItems(self.get_comport_list())
+        self.radiosonde_port_input.addItems(self.get_comport_list())
+
         self.retranslateUi(MainWindow)
 
         QMetaObject.connectSlotsByName(MainWindow)
 
-        # custom setups 
+        # custom setups
         self.connect_buttons()
 
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"MainWindow", None))
-        self.radiosonde_port_input.setItemText(0, QCoreApplication.translate("MainWindow", u"/dev/ttyACM0", None))
-        self.radiosonde_port_input.setItemText(1, QCoreApplication.translate("MainWindow", u"/dev/ttyACM1", None))
-        self.radiosonde_port_input.setItemText(2, QCoreApplication.translate("MainWindow", u"/dev/ttyACM2", None))
-
-        self.receiver_port_input.setItemText(0, QCoreApplication.translate("MainWindow", u"/dev/ttyACM0", None))
-        self.receiver_port_input.setItemText(1, QCoreApplication.translate("MainWindow", u"/dev/ttyACM1", None))
-        self.receiver_port_input.setItemText(2, QCoreApplication.translate("MainWindow", u"/dev/ttyACM2", None))
-
         self.receiver_port_label.setText(QCoreApplication.translate("MainWindow", u"Receiver com port :", None))
         self.radiosonde_port_label.setText(QCoreApplication.translate("MainWindow", u"Radiosonde com port :", None))
         self.subtitle_label.setText(QCoreApplication.translate("MainWindow", u"Receiver com port and Radiosonde com port", None))
@@ -125,26 +123,39 @@ class PortSelectionWindow(object):
         self.proceed_button.setText(QCoreApplication.translate("MainWindow", u"Proceed", None))
         self.logo_databyte.setText("")
         self.logo_somaiya.setText("")
-    
-    # connects buttons to methods that gets triggered on click 
+
+    # connects buttons to methods that gets triggered on click
     def connect_buttons(self):
         self.proceed_button.clicked.connect(self.open_next_window)
         self.back_button.clicked.connect(self.open_previous_window)
 
-
     def open_previous_window(self):
         self.current_window.close()
         self.previous_window.show()
-    
-    def open_next_window(self):
-        if self.next_window:
-            self.current_window.close()
-            self.next_window.show()
-        else:
-            self.next_window = QMainWindow()
-            self.next_window_ui = ParameterInputWindow()
-            self.next_window_ui.setupUi(self.next_window,self.current_window)
-            self.next_window.show()
-            self.current_window.close()
-    
 
+    def open_next_window(self):
+
+        receiver_port = self.receiver_port_input.currentText()
+        radiosonde_port = self.radiosonde_port_input.currentText()
+
+        if False:
+            Alert(
+                main_text = "Port Selection Error",
+                info_text = "The radiosonde and receiver port cannot be same",
+                alert_type = Alert.WARNING,
+            )
+        else:
+            if self.next_window:
+                self.current_window.close()
+                self.next_window.show()
+            else:
+                self.next_window = QMainWindow()
+                self.next_window_ui = ParameterInputWindow()
+                self.next_window_ui.setupUi(receiver_port, radiosonde_port, self.next_window,self.current_window)
+                self.next_window.show()
+                self.current_window.close()
+
+    def get_comport_list(self):
+        comport_list = comports()
+        comport_list = list(map(lambda x: str(x).split()[0], comport_list))
+        return comport_list

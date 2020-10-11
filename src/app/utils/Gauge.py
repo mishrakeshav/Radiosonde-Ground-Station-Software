@@ -15,15 +15,12 @@ def rot_text(ang):
     rotation = np.degrees(np.radians(ang) * np.pi / np.pi - np.radians(90))
     return rotation
 
-def gauge(ax,labels=['LOW','MEDIUM','HIGH','VERY HIGH','EXTREME'], \
-          colors='jet_r', arrow=1, title='', fname=False): 
+def gauge(N,colors='jet_r', arrow=1, title='',fname=None): 
     
     """
     some sanity checks first
     
     """
-    
-    N = len(labels)
     
     if arrow > N: 
         raise Exception("\n\nThe category ({}) is greated than \
@@ -50,11 +47,9 @@ def gauge(ax,labels=['LOW','MEDIUM','HIGH','VERY HIGH','EXTREME'], \
     begins the plotting
     """
     
-    # fig, ax = plt.subplots()
-
+    fig, ax = plt.subplots()
     ang_range, mid_points = degree_range(N)
 
-    labels = labels[::-1]
     
     """
     plots the sectors and the arcs
@@ -64,28 +59,18 @@ def gauge(ax,labels=['LOW','MEDIUM','HIGH','VERY HIGH','EXTREME'], \
         # sectors
         patches.append(Wedge((0.,0.), .4, *ang, facecolor='w', lw=2))
         # arcs
-        patches.append(Wedge((0.,0.), .4, *ang, width=0.10, facecolor=c, lw=2, alpha=0.5))
+        patches.append(Wedge((0.,0.), .4, *ang, width=0.10, facecolor=c, lw=2, alpha=1))
     
     [ax.add_patch(p) for p in patches]
 
     
-    """
-    set the labels (e.g. 'LOW','MEDIUM',...)
-    """
-
-    for mid, lab in zip(mid_points, labels): 
-
-        ax.text(0.35 * np.cos(np.radians(mid)), 0.35 * np.sin(np.radians(mid)), lab, \
-            horizontalalignment='center', verticalalignment='center', fontsize=14, \
-            fontweight='bold', rotation = rot_text(mid))
-
     """
     set the bottom banner and the title
     """
     r = Rectangle((-0.4,-0.1),0.8,0.1, facecolor='w', lw=2)
     ax.add_patch(r)
     
-    ax.text(0.5,0.0, title + f"\n 19 {chr(176)}", horizontalalignment='center', \
+    ax.text(0.5,0.0, title , horizontalalignment='center', \
          verticalalignment='bottom', fontsize=14, fontweight='bold', transform = ax.transAxes)
 
     """
@@ -108,8 +93,22 @@ def gauge(ax,labels=['LOW','MEDIUM','HIGH','VERY HIGH','EXTREME'], \
     ax.axes.set_xticks([])
     ax.axes.set_yticks([])
     ax.axis('equal')
-    # plt.tight_layout()
-    # plt.show()
 
-# gauge(labels=['','','',''], \
-#       colors=['#007A00','#0063BF','#FFCC00','#ED1C24'], arrow=3, title=f'Temp {chr(176)}C') 
+    plt.tight_layout()
+    if fname:
+        fig.savefig(fname, dpi=200)
+
+def update_gauge(arrow, number):
+        """
+        Updates the gauges
+        """
+        gauge(number, colors = 'cool', arrow = arrow, title=f'Pressure hPa', fname=f"images/pressure/{arrow}.png")
+        gauge(number, colors = 'autumn',arrow = arrow, title=f'Temp {chr(176)}C',fname=f"images/temperature/{arrow}.png")
+        gauge(number, colors='summer',arrow=arrow, title=f'Humidity %',fname=f"images/humidity/{arrow}.png")
+        gauge(number, colors = 'copper',arrow=arrow, title=f'Speed m/s',fname=f"images/wind_speed/{arrow}.png")
+        gauge(number, colors = 'PuOr',arrow=arrow, title=f'Direction {chr(176)}',fname=f"images/wind_direction/{arrow}.png")
+        gauge(number, colors = 'coolwarm',arrow=arrow, title=f'Altitude m',fname=f"images/altitude/{arrow}.png")
+
+for i in range(1, 101):
+    update_gauge(i, 100)
+

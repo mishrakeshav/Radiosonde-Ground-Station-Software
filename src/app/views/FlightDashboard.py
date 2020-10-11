@@ -34,9 +34,13 @@ GAUGE_PATH = os.path.join(sys.path[0], "resources", "images")
 
 
 class Dashboard(object):
-    def setupUi(self, MainWindow, flight_folder_path, comport_name):
+    def setupUi(self, MainWindow, flight_folder_path, surface_data):
 
         self.parameter_list = []
+        self.surface_data = surface_data 
+        self.flight_folder_path = flight_folder_path
+        self.data_frame = pd.read_csv(
+            os.path.join(self.flight_folder_path, "output.csv"))
 
         if not MainWindow.objectName():
             MainWindow.setObjectName(u"MainWindow")
@@ -384,21 +388,13 @@ class Dashboard(object):
 
         QMetaObject.connectSlotsByName(MainWindow)
 
-        self.graph_time.show()
+        self.display_graphs()
+        
 
-        self.threadpool = QThreadPool()
+        
 
-        self.plot_ref_time = None
-        self.comport = SerialPort(comport_name)
-        self.comport.initialize_port(flight_folder_path)
-        self.flight_folder_path = flight_folder_path
-        self.data_frame = pd.read_csv(
-            os.path.join(flight_folder_path, "output.csv"))
-        self.timer = QTimer()
-        self.timer.setInterval(3000)
-        self.timer.timeout.connect(self.table.scrollToBottom)
-        self.timer.start()
-        self.run_threads()
+        
+       
 
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(QCoreApplication.translate(
@@ -451,41 +447,11 @@ class Dashboard(object):
     def open_map(self):
         self.map = MapView()
 
-    def read_port(self):
+    def display_graphs(self):
         output_file = os.path.join(self.flight_folder_path, "output.csv")
-        while True:
-            if self.comport.serial_port.in_waiting:
-                data = self.comport.serial_port.read_until().decode('ascii').split(",")
-                data = [data[0]] + list(map(lambda x: float(x), data[1:]))
-                time, latitude, longitude, satelite, \
-                    altitude, pressure, internal_temperature, \
-                    external_temperature, humidity = data
-
-                time_elapsed = self.comport.get_time_elapsed(time)
-                wind_direction = self.comport.get_wind_direction(
-                    latitude, longitude)
-                wind_speed = self.comport.get_wind_speed(
-                    latitude, longitude, time_elapsed)
-                scaled_pressure = (
-                    pressure/(self.comport.MAXIMUM_PRESSURE - self.comport.MINIMUM_PRESSURE))*100
-                scaled_external_temperature = (
-                    external_temperature/(self.comport.MAXIMUM_TEMPERATURE - self.comport.MINIMUM_TEMPERATURE))*100
-
-                data.extend([time_elapsed, wind_direction, wind_speed,
-                             scaled_pressure, scaled_external_temperature])
-                data = [data[0]] + list(map(lambda x: str(x), data[1:]))
-                with open(output_file, 'a') as file_output:
-                    file_output.write(",".join(data) + "\n")
-
-                index = self.data_frame.shape[0]
-                self.data_frame.loc[index] = data
-                self.update_graph()
-                self.update_table([time_elapsed, pressure, external_temperature, humidity, wind_speed, wind_direction])
-                self.update_gauge(*[pressure, external_temperature, humidity, wind_speed, wind_direction, altitude])
-                self.update_spec_graphs()
-                self.comport.previous_longitude = longitude
-                self.comport.previous_latitude = latitude
-                self.comport.previous_time = time_elapsed
+        self.update_graph()
+        self.update_hodograph()
+        
 
     def update_gauge(self, pressure, temperature, humidity, wind_speed, wind_direction, altitude):
         self.pressure_gauge_label.setText(str(pressure))
@@ -520,19 +486,10 @@ class Dashboard(object):
         self.table.insertRow(row)
         for i in range(len(data)):
             self.table.setItem(row, i, QTableWidgetItem(str(data[i])))
-        # self.table.scrollToBottom()
+        self.table.scrollToBottom()
 
     def update_graph(self):
-        # if not self.plot_ref_time:
-        #     self.plot_ref_time = dict()
-        #     self.plot_ref_time["temperature"] = self.graph_time.axes.plot(
-        #         self.data_frame["TimeElapsed"],
-        #         self.data_frame["External Temperature"]
-        #     )[0]
-        # else:
-        #     self.plot_ref_time["temperature"].set_ydata(self.data_frame["External Temperature"])
-        #     self.plot_ref_time["temperature"].set_xdata(self.data_frame["TimeElapsed"])
-
+       
         self.graph_time.axes.cla()
         for parameter_check, parameter_name, color in self.parameter_list:
             if parameter_check.isChecked():
@@ -559,6 +516,7 @@ class Dashboard(object):
             list(map(float, self.data_frame['Wind Speed'].values))) * units.knots
         wind_dir = np.array(
             list(map(float, self.data_frame['Wind Direction'].values))) * units.degrees
+        print(wind_speed[:5])
         u, v = mpcalc.wind_components(wind_speed, wind_dir)
 
         self.spec_graph.axes.cla()
@@ -582,6 +540,7 @@ class Dashboard(object):
         skew.plot(p, Td, 'g', linewidth=2)
         skew.plot_barbs(p, u, v)
         self.spec_graph.draw()
+        
 
     def update_tphi(self):
         print("updating tphi")
@@ -646,10 +605,12 @@ class Dashboard(object):
                 ws_T_2D[22, i], Pws_2D[22, i]*0.01, labels[i], color='#0000f4', ha='center', weight='bold')
 
         self.spec_graph.draw()
+        
 
     def update_spec_graphs(self):
         for graph in self.spec_graph_list:
-            if self.spec_graph_list[graph]['check'].isChecked(): self.spec_graph_list[graph]["function"]()
+            if graph['check'].isChecked():
+                graph["function"]()
 
     def run_threads(self):
         worker1 = Worker(self.read_port)

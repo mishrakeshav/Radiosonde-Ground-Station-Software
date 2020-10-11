@@ -1,96 +1,87 @@
+import serial
+import os
+import json
+import sys
+import datetime
 
-import re
-import csv
-import time
-from datetime import time as time_convert
-from Wind import Wind
-import time
-import traceback, sys
+from app.utils.Alerts import Alert
+from app.utils.Wind import Wind
 
 
-class ReadComPort():
-    def __init__(self):
-        self.MAXIMUM_TEMPERATURE = 60
-        self.MINIMUM_TEMPERATURE = -90
+
+
+
+class SerialPort:
+
+    def __init__(self, comport:str, baudrate:int = 9600, timeout:int = 1):
         self.MAXIMUM_PRESSURE = 1100
         self.MINIMUM_PRESSURE = 3
-        
-        self.init_time = None
-        self.previous_latitude = 0
-        self.previous_longitude = 0
-        self.previous_time = 0
-        self.wind_speed = 0
-        self.path = 'raw/18Oct2019_16_36.raw'
-        self.file_input = open(
-            self.path,
-            encoding='utf8',
-            errors='ignore'
+
+        self.MAXIMUM_TEMPERATURE = 60
+        self.MINIMUM_TEMPERATURE = -90
+        self.serial_port = serial.Serial(port=comport, baudrate=baudrate, timeout=timeout)
+
+
+    def initialize_parameters(self, flight_file_path):
+        path = os.path.join(flight_file_path, 'params.json')
+        with open(path) as json_file:
+            flight_data = json.load(json_file)
+            self.previous_latitude = flight_data["data"]["latitude"]
+            self.previous_longitude = flight_data["data"]["longitude"]
+            self.previous_time = 0
+            self.flight_init_time = None
+
+    def get_wind_direction(self, latitude, longitude):
+        return Wind.calculate_wind_direction(
+            self.previous_latitude,
+            self.previous_longitude,
+            latitude,
+            longitude
         )
-        self.field_names = ['Sr.No.', 'Time', 'Latitude', 'Longitude', 'Satelites', 'Altitude',
-             'Pressure', 'Internal Temperature', 'External Temperature', 'Humidity',
-             'TimeElapsed', 'Wind Direction', 'Wind Speed', 'Scaled Pressure', 'Scaled Temperature']
-        self.counter = 1
-        self.write_index()
-    
-    def write_index(self):
-        with open('output.csv', 'w') as file_output:
-            wr = csv.writer(file_output)
-            wr.writerow(self.field_names)
 
-    def get_time_elapsed(self,time_):
-        hour = int(time_[:2])
-        mins = int(time_[2:4])
-        secs = int(time_[4:6])
-        current_time = time_convert(hour, mins, secs)
+    def get_wind_speed(self, latitude, longitude, time_elapsed):
+        return Wind.calculate_wind_speed(
+            self.previous_latitude,
+            self.previous_longitude,
+            latitude,
+            longitude,
+            self.previous_time,
+            time_elapsed
+        )
+
+    def get_time_elapsed(self, time_):
+        hour, mins, secs = int(time_[:2]), int(time_[2:4]), int(time_[4:])
+        current_time = datetime.time(hour, mins, secs)
         current_time_second = current_time.hour * 60*60 + current_time.minute*60  + current_time.second
+        if not self.flight_init_time:
+            self.flight_init_time = current_time_second
+        return current_time_second - self.flight_init_time
 
-        if self.init_time is None:
-            self.init_time = current_time_second
-        return current_time_second - self.init_time, current_time
-    
-    def write_values(self,filename, *args):
-        with open(filename, 'a') as file_output:
-            wr = csv.writer(file_output)
-            wr.writerow(args[0])
-    
-    def read_com_port(self):
-        data = self.file_input.readline()
-        if data[0] == '$':
-            try:
-                val = re.split('gpggat|l|xno|yeq1s|h|P|I|E|U|X|1234567890', data)
-                latitude = float(val[2])/100
-                longitude = float(val[3])/100
-                time_elapsed, time_ = self.get_time_elapsed(val[1])
-                satellite = int(val[4])
-                altitude = float(val[5])
-                pressure = int(val[6])/10
-                internal_temperature = int(val[7])/100
-                external_temperature = int(val[8])/100
-                humidity = int(val[9])/100
+    def initialize_port(self, flight_file_path):
+        output_file = os.path.join(flight_file_path, 'output.csv')
+        if not os.path.exists(output_file):
+            Alert(
+                main_text="File Not Found",
+                info_text=f"File not found at {flight_file_path}",
+                alert_type= Alert.CRITICAL
+            )
+            return
 
-                wind_direction = Wind.calculate_wind_direction( self.previous_latitude, self.previous_longitude,latitude,longitude)
-                if time_elapsed != self.previous_time:
-                    self.wind_speed = Wind.calculate_wind_speed(
-                        self.previous_latitude, self.previous_longitude,latitude ,
-                        longitude, self.previous_time, time_elapsed
-                    )
-                self.previous_latitude = latitude
-                self.previous_longitude = longitude
-                self.previous_time = time_elapsed
-                scaled_pressure = (pressure/(self.MAXIMUM_PRESSURE - self.MINIMUM_PRESSURE))*100
-                sacled_external_temperature = (external_temperature/(self.MAXIMUM_TEMPERATURE - self.MINIMUM_TEMPERATURE))*100
+        self.initialize_parameters(flight_file_path)
 
-                values = [self.counter, time_, latitude, longitude, satellite, altitude, \
-                    pressure, internal_temperature, external_temperature, humidity, time_elapsed, \
-                    wind_direction, self.wind_speed, scaled_pressure, sacled_external_temperature]
-                
-                self.write_values('output.csv',values)
-                self.counter += 1 
-            except Exception as e:
-                print(e)
+
+
 
 if __name__ == '__main__':
-    read_com_port = ReadComPort()
-    for i in range(3000):
-        read_com_port.read_com_port()
+    from serial.tools.list_ports import comports
+    ports_avail = comports()
+    for i, port in enumerate(ports_avail):
+        print(i, str(port))
+    index = int(input())
 
+    serial_port = SerialPort(
+        str(ports_avail[index]).split()[0]
+    )
+
+    flight_file_path = "/home/phoenix/Desktop/Projects/Radiosonde-Ground-Station-Software/src/export/sample"
+    serial_port.read_port(flight_file_path)
