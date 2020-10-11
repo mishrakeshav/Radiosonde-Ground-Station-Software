@@ -480,12 +480,9 @@ class Dashboard(object):
                 index = self.data_frame.shape[0]
                 self.data_frame.loc[index] = data
                 self.update_graph()
-                self.update_table(
-                    [time_elapsed, pressure, external_temperature, humidity, wind_speed, wind_direction])
-                self.update_gauge(
-                    *[pressure, external_temperature, humidity, wind_speed, wind_direction, altitude])
-                self.update_hodograph()
-
+                self.update_table([time_elapsed, pressure, external_temperature, humidity, wind_speed, wind_direction])
+                self.update_gauge(*[pressure, external_temperature, humidity, wind_speed, wind_direction, altitude])
+                self.update_spec_graphs()
                 self.comport.previous_longitude = longitude
                 self.comport.previous_latitude = latitude
                 self.comport.previous_time = time_elapsed
@@ -562,7 +559,6 @@ class Dashboard(object):
             list(map(float, self.data_frame['Wind Speed'].values))) * units.knots
         wind_dir = np.array(
             list(map(float, self.data_frame['Wind Direction'].values))) * units.degrees
-        print(wind_speed[:5])
         u, v = mpcalc.wind_components(wind_speed, wind_dir)
 
         self.spec_graph.axes.cla()
@@ -586,7 +582,6 @@ class Dashboard(object):
         skew.plot(p, Td, 'g', linewidth=2)
         skew.plot_barbs(p, u, v)
         self.spec_graph.draw()
-        pass
 
     def update_tphi(self):
         print("updating tphi")
@@ -600,7 +595,6 @@ class Dashboard(object):
         tephigram.plot(dewpoint, label="Dew Point Temperature", color="blue")
         tephigram.plot(drybulb, label="Dry Bulb Temperature", color="red")
         self.spec_graph.draw()
-        pass
 
     def update_stuve(self):
         print("updating stuve")
@@ -652,12 +646,10 @@ class Dashboard(object):
                 ws_T_2D[22, i], Pws_2D[22, i]*0.01, labels[i], color='#0000f4', ha='center', weight='bold')
 
         self.spec_graph.draw()
-        pass
 
     def update_spec_graphs(self):
         for graph in self.spec_graph_list:
-            if graph['check'].isChecked():
-                graph["function"]()
+            if self.spec_graph_list[graph]['check'].isChecked(): self.spec_graph_list[graph]["function"]()
 
     def run_threads(self):
         worker1 = Worker(self.read_port)
