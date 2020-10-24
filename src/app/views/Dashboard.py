@@ -315,6 +315,7 @@ class Dashboard(object):
 
         self.tphi_check = QRadioButton(self.layoutWidget)
         self.tphi_check.setObjectName(u"tphi_check")
+        self.tphi_check.setChecked(True)
         self.spec_graph_list["tphi"] = {
             "check": self.tphi_check, "function": self.update_tphi}
         self.verticalLayout_3.addWidget(self.tphi_check)
@@ -325,12 +326,12 @@ class Dashboard(object):
             "check": self.stuve_check, "function": self.update_stuve}
         self.verticalLayout_3.addWidget(self.stuve_check)
 
-        self.hodograph_check = QRadioButton(self.layoutWidget)
-        self.hodograph_check.setObjectName(u"hodograph_check")
-        self.hodograph_check.setChecked(True)
-        self.spec_graph_list["hodograph"] = {
-            "check": self.hodograph_check, "function": self.update_hodograph}
-        self.verticalLayout_3.addWidget(self.hodograph_check)
+        # self.hodograph_check = QRadioButton(self.layoutWidget)
+        # self.hodograph_check.setObjectName(u"hodograph_check")
+        # # self.hodograph_check.setChecked(True)
+        # self.spec_graph_list["hodograph"] = {
+        #     "check": self.hodograph_check, "function": self.update_hodograph}
+        # self.verticalLayout_3.addWidget(self.hodograph_check)
 
         self.gridLayout_5.addWidget(self.visualization_group, 0, 2, 1, 1)
 
@@ -399,6 +400,7 @@ class Dashboard(object):
         self.timer.timeout.connect(self.table.scrollToBottom)
         self.timer.start()
         self.run_threads()
+        
 
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(QCoreApplication.translate(
@@ -553,19 +555,19 @@ class Dashboard(object):
         self.graph_altitude.axes.set_xlabel('Time Elapsed (s)')
         self.graph_altitude.draw()
 
-    def update_hodograph(self):
-        print("updating hodograph")
-        wind_speed = np.array(
-            list(map(float, self.data_frame['Wind Speed'].values))) * units.knots
-        wind_dir = np.array(
-            list(map(float, self.data_frame['Wind Direction'].values))) * units.degrees
-        u, v = mpcalc.wind_components(wind_speed, wind_dir)
+    # def update_hodograph(self):
+    #     print("updating hodograph")
+    #     wind_speed = np.array(
+    #         list(map(float, self.data_frame['Wind Speed'].values))) * units.knots
+    #     wind_dir = np.array(
+    #         list(map(float, self.data_frame['Wind Direction'].values))) * units.degrees
+    #     u, v = mpcalc.wind_components(wind_speed, wind_dir)
 
-        self.spec_graph.axes.cla()
-        h = Hodograph(self.spec_graph.axes, component_range=.5)
-        h.add_grid(increment=0.1)
-        h.plot_colormapped(u, v, wind_speed)
-        self.spec_graph.draw()
+    #     self.spec_graph.axes.cla()
+    #     h = Hodograph(self.spec_graph.axes, component_range=.5)
+    #     h.add_grid(increment=0.1)
+    #     h.plot_colormapped(u, v, wind_speed) 
+    #     self.spec_graph.draw()
 
     def update_skewt(self):
         print("updating skewt")
@@ -654,6 +656,7 @@ class Dashboard(object):
     def run_threads(self):
         worker1 = Worker(self.read_port)
         self.threadpool.start(worker1)
+        
 
 
 if __name__ == "__main__":
@@ -664,6 +667,6 @@ if __name__ == "__main__":
     window = Dashboard()
     window.setupUi(MainWindow)
     MainWindow.show()
-
+    
     # Execute application
     sys.exit(app.exec_())
