@@ -9,7 +9,11 @@ from app.views.PreviousParameterInputWindow import ParameterInputWindow
 from app.utils.Alerts import Alert
 
 
-ASSETS_DIR = os.path.join(sys.path[0], "resources", "images", "assets")
+try:
+    PATH = sys._MEIPASS
+except:
+    PATH = sys.path[0]
+ASSETS_DIR = os.path.join(PATH, "resources", "images", "assets")
 
 class ViewPreviousFlightWindow(object):
     def setupUi(self, MainWindow, PreviousWindow):

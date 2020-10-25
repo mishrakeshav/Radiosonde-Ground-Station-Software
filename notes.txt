@@ -1,14 +1,21 @@
+to build 
+pyinstaller main.py -D --additional-hooks-dir=hooks --add-data 'resources:resources'
+
+
+
+
 # -*- mode: python ; coding: utf-8 -*-
 
 block_cipher = None
-
+from PyInstaller.utils.hooks import collect_all, copy_metadata
+datas, binaries, hiddenimports = collect_all('metpy')
 
 a = Analysis(['main.py'],
              pathex=['/home/keshav/Desktop/application/Radiosonde-Ground-Station-Software/src'],
-             binaries=[],
-             datas=[('resources/*', 'resources')],
-             hiddenimports=[],
-             hookspath=['hooks'],
+             binaries=binaries,
+             datas= datas,
+             hiddenimports= hiddenimports,
+             hookspath=[],
              runtime_hooks=[],
              excludes=[],
              win_no_prefer_redirects=False,
@@ -35,3 +42,13 @@ coll = COLLECT(exe,
                upx=True,
                upx_exclude=[],
                name='main')
+
+
+BASE_PATH = os.path.join("..", "venv", "lib", "python3.8", "site-packages")
+
+add_data = [
+    (os.path.join(BASE_PATH,"branca" , "*.json") , "branca"),
+    (os.path.join(BASE_PATH, "branca", "templates"), "templates"),
+    (os.path.join(BASE_PATH, "folium", "templates", "templates"))
+    
+]

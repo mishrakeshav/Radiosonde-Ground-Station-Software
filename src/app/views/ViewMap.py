@@ -1,5 +1,6 @@
 import os
 import sys
+import io
 
 from PySide2.QtCore import *
 from PySide2.QtWidgets import *
@@ -9,7 +10,10 @@ from PySide2.QtPrintSupport import *
 
 from app.utils.MapGenerator import Map
 
-PATH = sys.path[0]
+try:
+    PATH = sys._MEIPASS
+except:
+    PATH = sys.path[0]
 
 
 class MapView(QMainWindow):
@@ -20,7 +24,8 @@ class MapView(QMainWindow):
         map_generator.generate_map([19.1014], [72.8581])
 
         self.browser = QWebEngineView()
-        self.browser.setUrl(QUrl.fromLocalFile(os.path.join(PATH, "index.html")))
+        # self.browser.setUrl(QUrl.fromLocalFile(os.path.join(PATH,".." ,"index.html")))
+        self.browser.setHtml(map_generator.data.getvalue().decode())
         self.setCentralWidget(self.browser)
         self.status = QStatusBar()
         self.setStatusBar(self.status)

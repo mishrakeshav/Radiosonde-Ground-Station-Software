@@ -11,7 +11,11 @@ from pyside_material import apply_stylesheet
 from app.views.Dashboard import Dashboard
 from app.utils.Alerts import Alert
 
-ASSETS_DIR = os.path.join(sys.path[0], "resources", "images", "assets")
+try:
+    PATH = sys._MEIPASS
+except:
+    PATH = sys.path[0]
+ASSETS_DIR = os.path.join(PATH, "resources", "images", "assets")
 
 class ParameterInputWindow(object):
     def setupUi(self, receiver_port, radiosonde_port, MainWindow, PreviousWindow):

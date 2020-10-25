@@ -3,12 +3,12 @@
 block_cipher = None
 
 
-a = Analysis(['main.py'],
-             pathex=['/home/keshav/Desktop/application/Radiosonde-Ground-Station-Software/src'],
+a = Analysis(['app.py'],
+             pathex=['/home/keshav/Desktop/application/Radiosonde-Ground-Station-Software'],
              binaries=[],
-             datas=[('resources/*', 'resources')],
+             datas=[],
              hiddenimports=[],
-             hookspath=['hooks'],
+             hookspath=[],
              runtime_hooks=[],
              excludes=[],
              win_no_prefer_redirects=False,
@@ -21,7 +21,7 @@ exe = EXE(pyz,
           a.scripts,
           [],
           exclude_binaries=True,
-          name='main',
+          name='app',
           debug=False,
           bootloader_ignore_signals=False,
           strip=False,
@@ -34,4 +34,4 @@ coll = COLLECT(exe,
                strip=False,
                upx=True,
                upx_exclude=[],
-               name='main')
+               name='app')

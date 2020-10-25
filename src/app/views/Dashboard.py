@@ -30,7 +30,14 @@ GAUGE_MAXIMUM_WIDTH = 16777215
 
 GAUGE_LABEL_WIDTH = 16777215
 GAUGE_LABEL_HIEGHT = 30
-GAUGE_PATH = os.path.join(sys.path[0], "resources", "images")
+
+try:
+    PATH = sys._MEIPASS
+except:
+    PATH = sys.path[0]
+GAUGE_PATH = os.path.join(PATH, "resources", "images")
+
+
 
 
 class Dashboard(object):
@@ -450,6 +457,7 @@ class Dashboard(object):
 
     def open_map(self):
         self.map = MapView()
+    
 
     def read_port(self):
         output_file = os.path.join(self.flight_folder_path, "output.csv")
