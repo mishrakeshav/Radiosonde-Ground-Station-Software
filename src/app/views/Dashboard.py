@@ -31,11 +31,8 @@ GAUGE_MAXIMUM_WIDTH = 16777215
 GAUGE_LABEL_WIDTH = 16777215
 GAUGE_LABEL_HIEGHT = 30
 
-try:
-    PATH = sys._MEIPASS
-except:
-    PATH = sys.path[0]
-GAUGE_PATH = os.path.join(PATH, "resources", "images")
+
+GAUGE_PATH = os.path.join("resources", "images")
 
 
 

@@ -10,11 +10,7 @@ from serial.tools.list_ports import comports
 from app.views.ParameterInputWindow import ParameterInputWindow
 from app.utils.Alerts import Alert
 
-try:
-    PATH = sys._MEIPASS
-except:
-    PATH = sys.path[0]
-ASSETS_DIR = os.path.join(PATH, "resources", "images", "assets")
+ASSETS_DIR = os.path.join("resources", "images", "assets")
 
 class PortSelectionWindow(object):
     def setupUi(self, MainWindow,PreviousWindow):

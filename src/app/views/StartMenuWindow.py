@@ -8,14 +8,11 @@ from pyside_material import apply_stylesheet
 
 from app.views.PortSelectionWindow import PortSelectionWindow
 from app.views.ViewPreviousFlightWIndow import ViewPreviousFlightWindow
-try:
-    PATH = sys._MEIPASS
-except:
-    PATH = sys.path[0]
 
-ASSETS_DIR = os.path.join(PATH, "resources", "images", "assets")
-print(PATH)
-print(ASSETS_DIR)
+
+
+ASSETS_DIR = os.path.join("resources", "images", "assets")
+
 
 class StartMenuWindow(object):
     def setupUi(self, MainWindow):
