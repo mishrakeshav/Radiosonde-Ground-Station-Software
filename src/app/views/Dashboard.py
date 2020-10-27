@@ -312,24 +312,28 @@ class Dashboard(object):
         self.verticalLayout_3.setContentsMargins(0, 0, 0, 0)
 
         self.skewt_check = QRadioButton(self.layoutWidget)
+        self.skewt_check.toggled.connect(self.onClicked)
         self.skewt_check.setObjectName(u"skewt_check")
         self.spec_graph_list["skewt"] = {
             "check": self.skewt_check, "function": self.update_skewt}
         self.verticalLayout_3.addWidget(self.skewt_check)
 
         self.tphi_check = QRadioButton(self.layoutWidget)
+        self.tphi_check.toggled.connect(self.onClicked)
         self.tphi_check.setObjectName(u"tphi_check")
         self.spec_graph_list["tphi"] = {
             "check": self.tphi_check, "function": self.update_tphi}
         self.verticalLayout_3.addWidget(self.tphi_check)
 
         self.stuve_check = QRadioButton(self.layoutWidget)
+        self.stuve_check.toggled.connect(self.onClicked)
         self.stuve_check.setObjectName(u"stuve_check")
         self.spec_graph_list["stuve"] = {
             "check": self.stuve_check, "function": self.update_stuve}
         self.verticalLayout_3.addWidget(self.stuve_check)
 
         self.hodograph_check = QRadioButton(self.layoutWidget)
+        self.hodograph_check.toggled.connect(self.onClicked)
         self.hodograph_check.setObjectName(u"hodograph_check")
         self.hodograph_check.setChecked(True)
         self.spec_graph_list["hodograph"] = {
@@ -403,6 +407,11 @@ class Dashboard(object):
         self.timer.timeout.connect(self.table.scrollToBottom)
         self.timer.start()
         self.run_threads()
+
+    def onClicked(self):
+        radioButton = self.sender()
+        if radioButton.isChecked():
+            self.update_spec_graphs()
 
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(QCoreApplication.translate(
@@ -566,7 +575,9 @@ class Dashboard(object):
             list(map(float, self.data_frame['Wind Direction'].values))) * units.degrees
         u, v = mpcalc.wind_components(wind_speed, wind_dir)
 
-        self.spec_graph.axes.cla()
+        self.spec_graph.fig.clf()
+        self.spec_graph.axes = self.spec_graph.fig.add_subplot(111)
+
         h = Hodograph(self.spec_graph.axes, component_range=.5)
         h.add_grid(increment=0.1)
         h.plot_colormapped(u, v, wind_speed)
@@ -582,6 +593,10 @@ class Dashboard(object):
         wind_speed = self.data_frame['Wind Speed'].values * units.knots
         wind_dir = self.data_frame['Wind Direction'].values * units.degrees
         u, v = mpcalc.wind_components(wind_speed, wind_dir)
+
+        self.spec_graph.fig.clf()
+        self.spec_graph.axes = self.spec_graph.fig.add_subplot(111)
+
         skew = SkewT(self.spec_graph.fig)
         skew.plot(p, T, 'r', linewidth=2)
         skew.plot(p, Td, 'g', linewidth=2)
@@ -596,6 +611,10 @@ class Dashboard(object):
             zip(self.data_frame['Pressure'], self.data_frame['Td']))
         drybulb = list(
             zip(self.data_frame['Pressure'], self.data_frame['External Temperature']))
+
+        self.spec_graph.fig.clf()
+        self.spec_graph.axes = self.spec_graph.fig.add_subplot(111)
+
         tephigram = Tephigram(figure=self.spec_graph.fig)
         tephigram.plot(dewpoint, label="Dew Point Temperature", color="blue")
         tephigram.plot(drybulb, label="Dry Bulb Temperature", color="red")
@@ -626,6 +645,10 @@ class Dashboard(object):
         ws_2D, Pws_2D = np.meshgrid(x, y)
         ws_T_2D = 1./(1./273.15-1.844e-4 *
                       np.log(ws_2D*Pws_2D/611.3/(ws_2D+0.622)))
+
+        self.spec_graph.fig.clf()
+        self.spec_graph.axes = self.spec_graph.fig.add_subplot(111)
+
         self.spec_graph.axes.set_yscale('log')
         self.spec_graph.axes.set_xlabel('temp K')
         self.spec_graph.axes.set_ylabel('pressure mb')
@@ -652,10 +675,12 @@ class Dashboard(object):
 
         self.spec_graph.draw()
 
+
     def update_spec_graphs(self):
         for graph in self.spec_graph_list:
-            if self.spec_graph_list[graph]['check'].isChecked(): self.spec_graph_list[graph]["function"]()
-
+            if self.spec_graph_list[graph]["check"].isChecked():
+                self.spec_graph_list[graph]["function"]()
+    
     def run_threads(self):
         worker1 = Worker(self.read_port)
         self.threadpool.start(worker1)

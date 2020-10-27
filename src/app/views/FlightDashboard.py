@@ -640,10 +640,7 @@ class Dashboard(QWidget):
             if self.spec_graph_list[graph]["check"].isChecked():
                 self.spec_graph_list[graph]["function"]()
 
-    def run_threads(self):
-        worker1 = Worker(self.read_port)
-        self.threadpool.start(worker1)
-
+    
 
 if __name__ == "__main__":
     # Qt Application
