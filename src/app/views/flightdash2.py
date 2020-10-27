@@ -30,9 +30,7 @@ GAUGE_MAXIMUM_WIDTH = 16777215
 
 GAUGE_LABEL_WIDTH = 16777215
 GAUGE_LABEL_HIEGHT = 30
-
-
-GAUGE_PATH = os.path.join("resources", "images")
+GAUGE_PATH = os.path.join(sys.path[0], "resources", "images")
 
 
 class Dashboard(QWidget):
@@ -314,30 +312,30 @@ class Dashboard(QWidget):
         self.verticalLayout_3.setContentsMargins(0, 0, 0, 0)
 
         self.skewt_check = QRadioButton(self.layoutWidget)
-        self.skewt_check.toggled.connect(self.onClicked)
         self.skewt_check.setObjectName(u"skewt_check")
+        self.skewt_check.toggled.connect(self.onClicked)
         self.spec_graph_list["skewt"] = {
             "check": self.skewt_check, "function": self.update_skewt}
         self.verticalLayout_3.addWidget(self.skewt_check)
 
         self.tphi_check = QRadioButton(self.layoutWidget)
-        self.tphi_check.toggled.connect(self.onClicked)
         self.tphi_check.setObjectName(u"tphi_check")
+        self.tphi_check.toggled.connect(self.onClicked)
         self.spec_graph_list["tphi"] = {
             "check": self.tphi_check, "function": self.update_tphi}
         self.verticalLayout_3.addWidget(self.tphi_check)
 
         self.stuve_check = QRadioButton(self.layoutWidget)
-        self.stuve_check.toggled.connect(self.onClicked)
         self.stuve_check.setObjectName(u"stuve_check")
+        self.stuve_check.toggled.connect(self.onClicked)
         self.spec_graph_list["stuve"] = {
             "check": self.stuve_check, "function": self.update_stuve}
         self.verticalLayout_3.addWidget(self.stuve_check)
 
         self.hodograph_check = QRadioButton(self.layoutWidget)
-        self.hodograph_check.toggled.connect(self.onClicked)
         self.hodograph_check.setObjectName(u"hodograph_check")
-        self.hodograph_check.setChecked(True)
+        self.hodograph_check.toggled.connect(self.onClicked)
+        # self.hodograph_check.setChecked(True)
         self.spec_graph_list["hodograph"] = {
             "check": self.hodograph_check, "function": self.update_hodograph}
         self.verticalLayout_3.addWidget(self.hodograph_check)
@@ -396,15 +394,26 @@ class Dashboard(QWidget):
 
         self.display_graphs()
         
-    
+
+
+
+
+
+
+
+        
     def onClicked(self):
         radioButton = self.sender()
         if radioButton.isChecked():
             self.update_spec_graphs()
-        
-
+            
         
        
+
+
+
+
+
 
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(QCoreApplication.translate(
@@ -427,10 +436,10 @@ class Dashboard(QWidget):
             QCoreApplication.translate("MainWindow", u"Visualization", None))
         self.skewt_check.setText(
             QCoreApplication.translate("MainWindow", u"Skew-T", None))
-        self.stuve_check.setText(
-            QCoreApplication.translate("MainWindow", u"Stuve", None))
         self.tphi_check.setText(
             QCoreApplication.translate("MainWindow", u"T-Phi", None))
+        self.stuve_check.setText(
+            QCoreApplication.translate("MainWindow", u"Stuve", None))
         self.hodograph_check.setText(
             QCoreApplication.translate("MainWindow", u"Hodograph", None))
         ___qtablewidgetitem = self.table.horizontalHeaderItem(0)
@@ -462,8 +471,9 @@ class Dashboard(QWidget):
     def display_graphs(self):
         output_file = os.path.join(self.flight_folder_path, "output.csv")
         self.update_graph()
-        self.update_hodograph()
-        self.update_gauge(*[1,1,1,1,1,1])
+        self.update_spec_graphs()
+        # self.update_hodograph()
+
         
 
     def update_gauge(self, pressure, temperature, humidity, wind_speed, wind_direction, altitude):
@@ -532,9 +542,8 @@ class Dashboard(QWidget):
         print(wind_speed[:5])
         u, v = mpcalc.wind_components(wind_speed, wind_dir)
 
-        
+        # self.spec_graph.axes.cla()
         self.spec_graph.fig.clf()
-        self.spec_graph.axes = self.spec_graph.fig.add_subplot(111)
         
         h = Hodograph(self.spec_graph.axes, component_range=.5)
         h.add_grid(increment=0.1)
@@ -553,7 +562,6 @@ class Dashboard(QWidget):
         u, v = mpcalc.wind_components(wind_speed, wind_dir)
 
         self.spec_graph.fig.clf()
-        self.spec_graph.axes = self.spec_graph.fig.add_subplot(111)
 
         skew = SkewT(self.spec_graph.fig)
         skew.plot(p, T, 'r', linewidth=2)
@@ -570,9 +578,8 @@ class Dashboard(QWidget):
             zip(self.data_frame['Pressure'], self.data_frame['Td']))
         drybulb = list(
             zip(self.data_frame['Pressure'], self.data_frame['External Temperature']))
-
+        
         self.spec_graph.fig.clf()
-        self.spec_graph.axes = self.spec_graph.fig.add_subplot(111)
 
         tephigram = Tephigram(figure=self.spec_graph.fig)
         tephigram.plot(dewpoint, label="Dew Point Temperature", color="blue")
@@ -606,7 +613,7 @@ class Dashboard(QWidget):
                       np.log(ws_2D*Pws_2D/611.3/(ws_2D+0.622)))
 
         self.spec_graph.fig.clf()
-        self.spec_graph.axes = self.spec_graph.fig.add_subplot(111)
+        # self.spec_graph.axes.cla()
 
         self.spec_graph.axes.set_yscale('log')
         self.spec_graph.axes.set_xlabel('temp K')
@@ -636,12 +643,18 @@ class Dashboard(QWidget):
         
 
     def update_spec_graphs(self):
+        # self.spec_graph.axes.cla()
         for graph in self.spec_graph_list:
             if self.spec_graph_list[graph]["check"].isChecked():
                 self.spec_graph_list[graph]["function"]()
+            # print(self.spec_graph_list[graph]["check"].isChecked())
 
+    # def run_threads(self):
+    #     worker1 = Worker(self.read_port)
+    #     self.threadpool.start(worker1)
+    
     def run_threads(self):
-        worker1 = Worker(self.read_port)
+        worker1 = Worker(self.update_graph)
         self.threadpool.start(worker1)
 
 
@@ -656,3 +669,16 @@ if __name__ == "__main__":
 
     # Execute application
     sys.exit(app.exec_())
+
+
+
+
+
+
+
+
+
+
+
+
+
