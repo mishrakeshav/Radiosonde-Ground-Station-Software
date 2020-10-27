@@ -542,8 +542,9 @@ class Dashboard(QWidget):
         print(wind_speed[:5])
         u, v = mpcalc.wind_components(wind_speed, wind_dir)
 
+        # self.spec_graph.axes.cla()
         self.spec_graph.fig.clf()
-        self.spec_graph.axes.cla()
+        
         h = Hodograph(self.spec_graph.axes, component_range=.5)
         h.add_grid(increment=0.1)
         h.plot_colormapped(u, v, wind_speed)
@@ -612,7 +613,7 @@ class Dashboard(QWidget):
                       np.log(ws_2D*Pws_2D/611.3/(ws_2D+0.622)))
 
         self.spec_graph.fig.clf()
-        self.spec_graph.axes.cla()
+        # self.spec_graph.axes.cla()
 
         self.spec_graph.axes.set_yscale('log')
         self.spec_graph.axes.set_xlabel('temp K')
