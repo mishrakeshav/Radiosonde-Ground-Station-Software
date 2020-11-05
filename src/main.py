@@ -11,6 +11,10 @@ if __name__ == "__main__":
     app = QApplication(sys.argv)
     
     MainWindow = QMainWindow()
+    file = open("./styles.qss")
+    with file:
+        qss = file.read()
+        app.setStyleSheet(qss)
     # QMainWindow using QWidget as central widget
     window = StartMenuWindow()
     window.setupUi(MainWindow)
