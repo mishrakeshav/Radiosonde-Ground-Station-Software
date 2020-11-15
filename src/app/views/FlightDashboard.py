@@ -13,6 +13,9 @@ from metpy.units import units
 import numpy as np
 from tephi import Tephigram
 import matplotlib.pyplot as plt
+from numpy import dtype
+import netCDF4 as nc
+from datetime import datetime
 
 from app.utils.Canvas import MplCanvas
 from app.utils.ReadComPort import SerialPort
@@ -47,6 +50,10 @@ class Dashboard(QWidget):
         MainWindow.resize(830, 520)
         self.actionTrack_Balloon = QAction(MainWindow)
         self.actionTrack_Balloon.setObjectName(u"actionTrack_Balloon")
+
+        self.actionCreate_File = QAction(MainWindow)
+        self.actionCreate_File.setObjectName(u"actionCreate_File")
+
         self.centralwidget = QWidget(MainWindow)
         self.centralwidget.setObjectName(u"centralwidget")
         self.gridLayout_2 = QGridLayout(self.centralwidget)
@@ -340,6 +347,7 @@ class Dashboard(QWidget):
             "check": self.hodograph_check, "function": self.update_hodograph}
         self.verticalLayout_3.addWidget(self.hodograph_check)
 
+
         self.gridLayout_5.addWidget(self.visualization_group, 0, 2, 1, 1)
 
         self.table = QTableWidget(self.tab_2)
@@ -378,6 +386,10 @@ class Dashboard(QWidget):
         self.menubar.setGeometry(QRect(0, 0, 830, 22))
         self.menuVisualization = QMenu(self.menubar)
         self.menuVisualization.setObjectName(u"menuVisualization")
+
+        self.menuFiles = QMenu(self.menubar)
+        self.menuFiles.setObjectName(u"menuFiles")
+
         MainWindow.setMenuBar(self.menubar)
         self.statusbar = QStatusBar(MainWindow)
         self.statusbar.setObjectName(u"statusbar")
@@ -386,7 +398,15 @@ class Dashboard(QWidget):
         self.menubar.addAction(self.menuVisualization.menuAction())
         self.menuVisualization.addAction(self.actionTrack_Balloon)
         self.actionTrack_Balloon.triggered.connect(self.open_map)
+
+        self.menubar.addAction(self.menuFiles.menuAction())
+        self.menuFiles.addAction(self.actionCreate_File)
+        self.actionCreate_File.triggered.connect(self.cdf)
+
         self.retranslateUi(MainWindow)
+
+        
+        # self.retranslateUi(MainWindow)
 
         self.tabWidget.setCurrentIndex(0)
 
@@ -404,6 +424,7 @@ class Dashboard(QWidget):
         
     def onClicked(self):
         radioButton = self.sender()
+        # self.cdf()
         if radioButton.isChecked():
             self.update_spec_graphs()
             
@@ -420,6 +441,10 @@ class Dashboard(QWidget):
             "MainWindow", u"MainWindow", None))
         self.actionTrack_Balloon.setText(
             QCoreApplication.translate("MainWindow", u"Track Balloon", None))
+
+        self.actionCreate_File.setText(
+            QCoreApplication.translate("MainWindow", u"NetCDF", None))
+
         self.temperature_check.setText(
             QCoreApplication.translate("MainWindow", u"Temperature", None))
         self.pressure_check.setText(
@@ -464,6 +489,8 @@ class Dashboard(QWidget):
             self.tab_2), QCoreApplication.translate("MainWindow", u"Tab 2", None))
         self.menuVisualization.setTitle(
             QCoreApplication.translate("MainWindow", u"Visualization", None))
+        self.menuFiles.setTitle(
+            QCoreApplication.translate("MainWindow", u"Files", None))
 
     def open_map(self):
         self.map = MapView()
@@ -656,6 +683,113 @@ class Dashboard(QWidget):
     def run_threads(self):
         worker1 = Worker(self.update_graph)
         self.threadpool.start(worker1)
+
+    def cdf(self):
+         x = len(self.data_frame['Pressure'])
+         if(self.data_frame['Pressure'][x-1] <= 800):
+
+            self.data_frame["Time"] = pd.to_datetime(self.data_frame['Time'])
+            timed = self.data_frame['Time'][0]
+            format = '%Y-%m-%d %H:%M:%S' # The format 
+            timed= str(timed)
+            timed= datetime.strptime(timed, format) 
+            calendar = 'standard'
+            units = 'seconds since 1970-01-01 00:00:00'
+            timed = nc.date2num(timed, units=units, calendar=calendar)
+            size = len(self.data_frame['Time'])
+            times = [timed + self.data_frame['TimeElapsed'][i] for i in range(size)]
+
+            now = datetime.utcnow()
+            now = now.strftime("%Y%m%d_%H%M%S")
+            netfile = 'Indravani'+'_'+ str(int(self.data_frame['Pressure'][x-1]))+'_'+now+'.nc'
+
+            
+            ncout = nc.Dataset(netfile, 'w', format='NETCDF4')
+            base = 1
+            ncout.createDimension('base_time', base) 
+            ncout.createDimension('time_offset', size)
+            ncout.createDimension('time', size)
+            ncout.createDimension('lat', size)
+            ncout.createDimension('lon', size)
+            ncout.createDimension('alt', size)
+            ncout.createDimension('pres', size)
+            ncout.createDimension('rh', size)
+            ncout.createDimension('wdir', size)
+            ncout.createDimension('wspd', size)
+            ncout.createDimension('tdry', size)
+            ncout.createDimension('dp', size)
+            
+            base_time = ncout.createVariable('base_time', 'i8', ('base_time'))
+            base_time.standard_name = 'Launch Time'
+            base_time.long_name = 'Radiosonde Launch Time'
+            base_time.units = 'seconds since 1990-01-01 00:00:00'
+            time_offset = ncout.createVariable('time_offset', "i8", ('time_offset',))
+            time_offset.long_name = 'Time Elapsed'
+            time_offset.units = 'seconds'
+            time_offset.calendar = 'standard'
+            time_offset.axis = 'T'
+            time = ncout.createVariable('time', "i8", ('time',))
+            time.long_name = 'time'
+            time.units = 'seconds since 1990-01-01 00:00:00'
+            time.calendar = 'standard'
+            time.axis = 'T'
+            lon = ncout.createVariable('lon', np.dtype('double').char, ('lon'))
+            lon.standard_name = 'longitude'
+            lon.long_name = 'longitude'
+            lon.units = 'degrees_east'
+            lon.axis = 'X'
+            lat = ncout.createVariable('lat', np.dtype('double').char, ('lat'))
+            lat.standard_name = 'latitude'
+            lat.long_name = 'latitude'
+            lat.units = 'degrees_north'
+            lat.axis = 'Y'
+            alt = ncout.createVariable('alt', np.dtype('double').char, ('alt'))
+            alt.standard_name = 'altitude'
+            alt.long_name = 'altitude'
+            alt.units = 'meters'
+            pres = ncout.createVariable('pres', np.dtype('double').char, ('pres'))
+            pres.standard_name = 'pressure'
+            pres.long_name = 'pressure'
+            pres.units = 'hPa'
+            rh = ncout.createVariable('rh', np.dtype('double').char, ('rh'))
+            rh.standard_name = 'Humidity'
+            rh.long_name = 'Relative Humidity'
+            rh.units = '%'
+            wdir = ncout.createVariable('wdir', np.dtype('double').char, ('wdir'))
+            wdir.standard_name = 'Wind Direction'
+            wdir.long_name = 'Wind Direction'
+            wdir.units = 'degrees'
+            wspd = ncout.createVariable('wspd', np.dtype('double').char, ('wspd'))
+            wspd.standard_name = 'Wind Speed'
+            wspd.long_name = 'Wind Speed'
+            wspd.units = 'm/s'
+            tdry = ncout.createVariable('tdry', np.dtype('double').char, ('tdry'))
+            tdry.standard_name = 'Temperature'
+            tdry.long_name = 'Dry Temperature'
+            tdry.units = 'degree Celsius'
+            dp = ncout.createVariable('dp', np.dtype('double').char, ('dp'))
+            dp.standard_name = 'Dew Point'
+            dp.long_name = 'Dew Point'
+            dp.units = 'degree Celsius'
+            base_time[:] = timed
+            time_offset[:] = self.data_frame['TimeElapsed'].tolist()[:]
+            time[:] = times[:]
+            lon[:] = self.data_frame['Longitude'].tolist()[:]
+            lat[:] = self.data_frame['Latitude'].tolist()[:]
+            alt[:] = self.data_frame['Altitude'].tolist()[:]
+            pres[:] = self.data_frame['Pressure'].tolist()[:]
+            rh[:] = self.data_frame['Humidity'].tolist()[:]
+            wdir[:] = self.data_frame['Wind Direction'].tolist()[:]
+            wspd[:] = self.data_frame['Wind Speed'].tolist()[:]
+            tdry[:] = self.data_frame['External Temperature'].tolist()[:]
+            dp[:] = (self.data_frame['External Temperature'].values-((100 - self.data_frame['Humidity'])/5)).tolist()[:]
+            ncout.close()
+            
+
+
+
+
+
 
 
 if __name__ == "__main__":
