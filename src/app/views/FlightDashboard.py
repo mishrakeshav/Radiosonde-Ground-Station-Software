@@ -685,8 +685,8 @@ class Dashboard(QWidget):
         self.threadpool.start(worker1)
 
     def cdf(self):
-         x = len(self.data_frame['Pressure'])
-         if(self.data_frame['Pressure'][x-1] <= 800):
+        x = len(self.data_frame['Pressure'])
+        if(self.data_frame['Pressure'][x-1] <= 800):
 
             self.data_frame["Time"] = pd.to_datetime(self.data_frame['Time'])
             timed = self.data_frame['Time'][0]
