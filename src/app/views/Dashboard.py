@@ -453,7 +453,7 @@ class Dashboard(object):
             QCoreApplication.translate("MainWindow", u"Visualization", None))
 
     def open_map(self):
-        self.map = MapView()
+        self.map = MapView(self.flight_folder_path)
     
 
     def read_port(self):

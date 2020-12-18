@@ -1,6 +1,7 @@
 import os
 import sys
 import io
+import pandas as pd
 
 from PySide2.QtCore import *
 from PySide2.QtWidgets import *
@@ -10,26 +11,27 @@ from PySide2.QtPrintSupport import *
 
 from app.utils.MapGenerator import Map
 
-try:
-    PATH = sys._MEIPASS
-except:
-    PATH = sys.path[0]
-
 
 class MapView(QMainWindow):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, export_path, *args, **kwargs):
         super(MapView, self).__init__(*args, **kwargs)
-        
-        map_generator = Map()
-        map_generator.generate_map([19.1014], [72.8581])
-
+        self.export_path = os.path.join(export_path, 'output.csv')
         self.browser = QWebEngineView()
-        # self.browser.setUrl(QUrl.fromLocalFile(os.path.join(PATH,".." ,"index.html")))
-        self.browser.setHtml(map_generator.data.getvalue().decode())
         self.setCentralWidget(self.browser)
+        
+        df = pd.read_csv(self.export_path)
+        lats = list(df['Latitude'])
+        lons = list(df['Longitude'])
+        self.map_generator = Map()
+        self.map_generator.generate_map(lats, lons)
+        self.browser.setHtml(self.map_generator.data.getvalue().decode())
+
         self.status = QStatusBar()
         self.setStatusBar(self.status)
         self.show()
+
+
+
 
 
 

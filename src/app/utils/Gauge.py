@@ -1,3 +1,10 @@
+"""
+This module was used to generate the gauge images and is not actually 
+used in the software
+"""
+
+
+
 import os, sys
 import matplotlib
 from matplotlib import cm
@@ -109,6 +116,7 @@ def update_gauge(arrow, number):
         gauge(number, colors = 'PuOr',arrow=arrow, title=f'Direction {chr(176)}',fname=f"images/wind_direction/{arrow}.png")
         gauge(number, colors = 'coolwarm',arrow=arrow, title=f'Altitude m',fname=f"images/altitude/{arrow}.png")
 
-for i in range(1, 101):
-    update_gauge(i, 100)
+if __name__ == '__main__':
+    for i in range(1, 101):
+        update_gauge(i, 100)
 

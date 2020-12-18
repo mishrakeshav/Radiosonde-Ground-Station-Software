@@ -447,7 +447,8 @@ class Dashboard(object):
             QCoreApplication.translate("MainWindow", u"Visualization", None))
 
     def open_map(self):
-        self.map = MapView()
+        self.map_view =  MapView(self.flight_folder_path)
+
 
     def display_graphs(self):
         output_file = os.path.join(self.flight_folder_path, "output.csv")
@@ -617,6 +618,7 @@ class Dashboard(object):
 
     def run_threads(self):
         worker1 = Worker(self.read_port)
+
         self.threadpool.start(worker1)
 
 
