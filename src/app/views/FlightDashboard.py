@@ -294,11 +294,22 @@ class Dashboard(QWidget):
         self.tab_2.setObjectName(u"tab_2")
         self.gridLayout_5 = QGridLayout(self.tab_2)
         self.gridLayout_5.setObjectName(u"gridLayout_5")
+
+        # -----------  Special Graph-----------------
+
+
         self.spec_graph = MplCanvas(self.tab_2)
         self.spec_graph.setObjectName(u"spec_graph")
-        self.spec_graph.setMinimumSize(QSize(300, 200))
-
         self.gridLayout_5.addWidget(self.spec_graph, 0, 1, 2, 1)
+        
+
+        self.spec_graph_nav = NavigationToolbar(self.spec_graph, self.tab_2)
+        self.spec_graph_nav.setObjectName(u"spec_graph_nav")
+        self.spec_graph_nav.setMinimumSize(QSize(0, 30))
+        self.spec_graph_nav.setMaximumSize(QSize(16777215, 30))
+        self.gridLayout_5.addWidget(self.spec_graph_nav, 0, 1, 1, 1)
+
+
 
         self.verticalSpacer = QSpacerItem(
             20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
@@ -680,7 +691,9 @@ class Dashboard(QWidget):
 
     def cdf(self):
         x = len(self.data_frame['Pressure'])
+        print(self.data_frame['Pressure'][x-1])
         if(self.data_frame['Pressure'][x-1] <= 800):
+            print('Valid Data')
 
             self.data_frame["Time"] = pd.to_datetime(self.data_frame['Time'])
             timed = self.data_frame['Time'][0]
@@ -778,7 +791,7 @@ class Dashboard(QWidget):
             tdry[:] = self.data_frame['External Temperature'].tolist()[:]
             dp[:] = (self.data_frame['External Temperature'].values-((100 - self.data_frame['Humidity'])/5)).tolist()[:]
             ncout.close()
-            
+            print('Done')
 
 
 
