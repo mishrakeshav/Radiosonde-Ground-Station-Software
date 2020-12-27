@@ -1,0 +1,8 @@
+{
+    "type_of_flight": "RS with Pressure Sensor",
+    "receiver_port": "/dev/ttyUSB0",
+    "radiosonde_port": "/dev/ttyACM0",
+    "export_path": "./export",
+    "frequency": 403
+}
+

@@ -1,16 +1,20 @@
 import os
 import sys
+import json
 
 from PySide2.QtCore import *
 from PySide2.QtGui import *
 from PySide2.QtWidgets import *
 from pyside_material import apply_stylesheet
 from serial.tools.list_ports import comports
+from app.utils.PreferenceSetter import PreferenceSetter
 
 from app.views.ParameterInputWindow import ParameterInputWindow
 from app.utils.Alerts import Alert
 
 ASSETS_DIR = os.path.join("resources", "images", "assets")
+preference_setter = PreferenceSetter()
+
 
 class PortSelectionWindow(object):
     def setupUi(self, MainWindow,PreviousWindow):
@@ -102,8 +106,9 @@ class PortSelectionWindow(object):
         self.statusbar.setObjectName(u"statusbar")
         MainWindow.setStatusBar(self.statusbar)
 
-        self.receiver_port_input.addItems(self.get_comport_list())
-        self.radiosonde_port_input.addItems(self.get_comport_list())
+
+        preference_setter.set_receiver_port(self.get_comport_list(), self.receiver_port_input)
+        preference_setter.set_radiosonde_port(self.get_comport_list(), self.radiosonde_port_input)
 
         self.retranslateUi(MainWindow)
 
@@ -123,6 +128,7 @@ class PortSelectionWindow(object):
         self.proceed_button.setText(QCoreApplication.translate("MainWindow", u"Proceed", None))
         self.logo_databyte.setText("")
         self.logo_somaiya.setText("")
+
 
     # connects buttons to methods that gets triggered on click
     def connect_buttons(self):

@@ -7,11 +7,13 @@ from PySide2.QtCore import *
 from PySide2.QtGui import *
 from PySide2.QtWidgets import *
 from pyside_material import apply_stylesheet
+from app.utils.PreferenceSetter import PreferenceSetter
 
 from app.views.Dashboard import Dashboard
 from app.utils.Alerts import Alert
 
 ASSETS_DIR = os.path.join("resources", "images", "assets")
+preference_setter = PreferenceSetter()
 
 class ParameterInputWindow(object):
     def setupUi(self, receiver_port, radiosonde_port, MainWindow, PreviousWindow):
@@ -19,6 +21,8 @@ class ParameterInputWindow(object):
         self.receiver_port = receiver_port
         self.radiosonde_port = radiosonde_port
 
+
+        self.frequency = [400, 401, 402, 403, 404, 405, 406]
 
         # to navigate between windows
         self.current_window = MainWindow
@@ -72,11 +76,6 @@ class ParameterInputWindow(object):
         self.frequency_label.setFont(font3)
         self.frequency_label.setAlignment(Qt.AlignCenter)
         self.frequency_input = QComboBox(self.centralwidget)
-        self.frequency_input.addItem("")
-        self.frequency_input.addItem("")
-        self.frequency_input.addItem("")
-        self.frequency_input.addItem("")
-        self.frequency_input.addItem("")
         self.frequency_input.setObjectName(u"frequency_input")
         self.frequency_input.setGeometry(QRect(160, 340, 101, 21))
         self.temperature_label = QLabel(self.centralwidget)
@@ -173,11 +172,9 @@ class ParameterInputWindow(object):
         self.title_label.setText(QCoreApplication.translate("MainWindow", u"Start New Flight", None))
         self.subtitle_label.setText(QCoreApplication.translate("MainWindow", u"Enter Surface Parameters", None))
         self.frequency_label.setText(QCoreApplication.translate("MainWindow", u"Frequency", None))
-        self.frequency_input.setItemText(0, QCoreApplication.translate("MainWindow", u"600", None))
-        self.frequency_input.setItemText(1, QCoreApplication.translate("MainWindow", u"601", None))
-        self.frequency_input.setItemText(2, QCoreApplication.translate("MainWindow", u"602", None))
-        self.frequency_input.setItemText(3, QCoreApplication.translate("MainWindow", u"603", None))
-        self.frequency_input.setItemText(4, QCoreApplication.translate("MainWindow", u"604", None))
+        
+
+        preference_setter.set_frequency_options(self.frequency_input)
 
         self.temperature_label.setText(QCoreApplication.translate("MainWindow", u"Temperature", None))
         self.pressure_label.setText(QCoreApplication.translate("MainWindow", u"Pressure", None))
@@ -219,8 +216,7 @@ class ParameterInputWindow(object):
 
         # Make the folder structure for the new flight
         folder_name = datetime.datetime.utcnow().strftime("%Y%m%d_%H%M%S")             # Folder name is todays date
-        base_path = sys.path[0]                                                        # get the base path
-        folder_path = os.path.join(base_path, "export", folder_name)                   # get the folder path
+        folder_path = os.path.join(preference_setter.get_export_path(), folder_name)                   # get the folder path
         os.makedirs(folder_path)                                                       # make the folder
 
         with open(os.path.join(folder_path, "output.csv"), 'w') as file_output:        # make the files

@@ -4,6 +4,7 @@ import sys
 from PySide2.QtCore import *
 from PySide2.QtGui import *
 from PySide2.QtWidgets import *
+from app.utils.PreferenceSetter import PreferenceSetter
 
 from app.views.PreviousParameterInputWindow import ParameterInputWindow
 from app.utils.Alerts import Alert
@@ -117,7 +118,9 @@ class ViewPreviousFlightWindow(object):
         self.logo_databyte.setText("")
         self.logo_somaiya.setText("")
 
+
     def get_folder(self):
+        print('Get Foler Called')
         self.folder_name = QFileDialog.getExistingDirectory()
         self.flight_directory_input.setText(str(self.folder_name))
         print(self.folder_name)
