@@ -33,11 +33,7 @@ GAUGE_MAXIMUM_WIDTH = 16777215
 
 GAUGE_LABEL_WIDTH = 16777215
 GAUGE_LABEL_HIEGHT = 30
-
-
-GAUGE_PATH = os.path.join("resources", "images")
-
-
+GAUGE_PATH = os.path.join(sys.path[0], "resources", "images")
 
 
 class Dashboard(object):
@@ -295,16 +291,9 @@ class Dashboard(object):
         self.tab_2.setObjectName(u"tab_2")
         self.gridLayout_5 = QGridLayout(self.tab_2)
         self.gridLayout_5.setObjectName(u"gridLayout_5")
-       
-
         self.spec_graph = MplCanvas(self.tab_2)
         self.spec_graph.setObjectName(u"spec_graph")
         self.spec_graph.setMinimumSize(QSize(300, 200))
-
-        self.spec_graph_nav = NavigationToolbar(self.spec_graph, self.tab_2)
-        self.spec_graph_nav.setObjectName(u"spec_graph_nav")
-        self.spec_graph_nav.setMinimumSize(QSize(0, 200))
-        self.gridLayout_5.addWidget(self.spec_graph_nav, 0, 0, 1, 1)
 
         self.gridLayout_5.addWidget(self.spec_graph, 0, 1, 2, 1)
 
@@ -326,7 +315,6 @@ class Dashboard(object):
         self.verticalLayout_3.setContentsMargins(0, 0, 0, 0)
 
         self.skewt_check = QRadioButton(self.layoutWidget)
-        self.skewt_check.toggled.connect(self.onClicked)
         self.skewt_check.setObjectName(u"skewt_check")
         self.skewt_check.toggled.connect(self.onClicked)
         self.spec_graph_list["skewt"] = {
@@ -334,7 +322,6 @@ class Dashboard(object):
         self.verticalLayout_3.addWidget(self.skewt_check)
 
         self.tphi_check = QRadioButton(self.layoutWidget)
-        self.tphi_check.toggled.connect(self.onClicked)
         self.tphi_check.setObjectName(u"tphi_check")
         # self.tphi_check.setChecked(True)
         self.tphi_check.toggled.connect(self.onClicked)
@@ -343,7 +330,6 @@ class Dashboard(object):
         self.verticalLayout_3.addWidget(self.tphi_check)
 
         self.stuve_check = QRadioButton(self.layoutWidget)
-        self.stuve_check.toggled.connect(self.onClicked)
         self.stuve_check.setObjectName(u"stuve_check")
         self.stuve_check.toggled.connect(self.onClicked)
         self.spec_graph_list["stuve"] = {
@@ -351,7 +337,6 @@ class Dashboard(object):
         self.verticalLayout_3.addWidget(self.stuve_check)
 
         self.hodograph_check = QRadioButton(self.layoutWidget)
-        self.hodograph_check.toggled.connect(self.onClicked)
         self.hodograph_check.setObjectName(u"hodograph_check")
         self.hodograph_check.toggled.connect(self.onClicked)
         # self.hodograph_check.setChecked(True)
@@ -438,17 +423,12 @@ class Dashboard(object):
         
 
         def onClicked(self):
-            radioButton = self.sender()
-            # self.cdf()
-            if radioButton.isChecked():
-                self.update_spec_graphs()
-
-
-
-    def onClicked(self):
         radioButton = self.sender()
+        # self.cdf()
         if radioButton.isChecked():
             self.update_spec_graphs()
+
+
 
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(QCoreApplication.translate(
@@ -507,8 +487,7 @@ class Dashboard(object):
             QCoreApplication.translate("MainWindow", u"Files", None))
 
     def open_map(self):
-        self.map = MapView(self.flight_folder_path)
-    
+        self.map = MapView()
 
     def read_port(self):
         output_file = os.path.join(self.flight_folder_path, "output.csv")
@@ -654,8 +633,8 @@ class Dashboard(object):
             zip(self.data_frame['Pressure'], self.data_frame['Td']))
         drybulb = list(
             zip(self.data_frame['Pressure'], self.data_frame['External Temperature']))
-        
-        self.spec_graph.fig.clf()
+
+            self.spec_graph.fig.clf()
 
         tephigram = Tephigram(figure=self.spec_graph.fig)
         tephigram.plot(dewpoint, label="Dew Point Temperature", color="blue")
@@ -716,12 +695,12 @@ class Dashboard(object):
 
         self.spec_graph.draw()
 
-
     def update_spec_graphs(self):
         # self.spec_graph.axes.cla()
         for graph in self.spec_graph_list:
             if self.spec_graph_list[graph]["check"].isChecked():
                 self.spec_graph_list[graph]["function"]()
+
     def run_threads(self):
         worker1 = Worker(self.read_port)
         self.threadpool.start(worker1)

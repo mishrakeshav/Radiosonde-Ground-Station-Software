@@ -86,7 +86,7 @@ class Wind:
             return 0
         euclidian_distance = Wind.distance_between(previous_latitude, previous_longitude,
                                                         current_latitude, current_longitude)
-        return euclidian_distance/time
+        return round(euclidian_distance/time, 3)
 
     @staticmethod
     def calculate_wind_direction(previous_latitude:float,previous_longitude:float,

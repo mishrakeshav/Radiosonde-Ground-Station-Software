@@ -13,9 +13,6 @@ from metpy.units import units
 import numpy as np
 from tephi import Tephigram
 import matplotlib.pyplot as plt
-from numpy import dtype
-import netCDF4 as nc
-from datetime import datetime
 
 from app.utils.Canvas import MplCanvas
 from app.utils.ReadComPort import SerialPort
@@ -33,27 +30,23 @@ GAUGE_MAXIMUM_WIDTH = 16777215
 
 GAUGE_LABEL_WIDTH = 16777215
 GAUGE_LABEL_HIEGHT = 30
-
-
-GAUGE_PATH = os.path.join("resources", "images")
-
-
+GAUGE_PATH = os.path.join(sys.path[0], "resources", "images")
 
 
 class Dashboard(object):
-    def setupUi(self, MainWindow, flight_folder_path, comport_name):
+    def setupUi(self, MainWindow, flight_folder_path, surface_data):
 
         self.parameter_list = []
+        self.surface_data = surface_data 
+        self.flight_folder_path = flight_folder_path
+        self.data_frame = pd.read_csv(
+            os.path.join(self.flight_folder_path, "output.csv"))
 
         if not MainWindow.objectName():
             MainWindow.setObjectName(u"MainWindow")
         MainWindow.resize(830, 520)
         self.actionTrack_Balloon = QAction(MainWindow)
         self.actionTrack_Balloon.setObjectName(u"actionTrack_Balloon")
-
-        self.actionCreate_File = QAction(MainWindow)
-        self.actionCreate_File.setObjectName(u"actionCreate_File")
-
         self.centralwidget = QWidget(MainWindow)
         self.centralwidget.setObjectName(u"centralwidget")
         self.gridLayout_2 = QGridLayout(self.centralwidget)
@@ -295,16 +288,9 @@ class Dashboard(object):
         self.tab_2.setObjectName(u"tab_2")
         self.gridLayout_5 = QGridLayout(self.tab_2)
         self.gridLayout_5.setObjectName(u"gridLayout_5")
-       
-
         self.spec_graph = MplCanvas(self.tab_2)
         self.spec_graph.setObjectName(u"spec_graph")
         self.spec_graph.setMinimumSize(QSize(300, 200))
-
-        self.spec_graph_nav = NavigationToolbar(self.spec_graph, self.tab_2)
-        self.spec_graph_nav.setObjectName(u"spec_graph_nav")
-        self.spec_graph_nav.setMinimumSize(QSize(0, 200))
-        self.gridLayout_5.addWidget(self.spec_graph_nav, 0, 0, 1, 1)
 
         self.gridLayout_5.addWidget(self.spec_graph, 0, 1, 2, 1)
 
@@ -326,35 +312,29 @@ class Dashboard(object):
         self.verticalLayout_3.setContentsMargins(0, 0, 0, 0)
 
         self.skewt_check = QRadioButton(self.layoutWidget)
-        self.skewt_check.toggled.connect(self.onClicked)
         self.skewt_check.setObjectName(u"skewt_check")
+        # self.skewt_check.setChecked(True)
         self.skewt_check.toggled.connect(self.onClicked)
         self.spec_graph_list["skewt"] = {
             "check": self.skewt_check, "function": self.update_skewt}
         self.verticalLayout_3.addWidget(self.skewt_check)
 
         self.tphi_check = QRadioButton(self.layoutWidget)
-        self.tphi_check.toggled.connect(self.onClicked)
         self.tphi_check.setObjectName(u"tphi_check")
-        # self.tphi_check.setChecked(True)
-        self.tphi_check.toggled.connect(self.onClicked)
+        self.tphi_check.setChecked(True)
         self.spec_graph_list["tphi"] = {
             "check": self.tphi_check, "function": self.update_tphi}
         self.verticalLayout_3.addWidget(self.tphi_check)
 
         self.stuve_check = QRadioButton(self.layoutWidget)
-        self.stuve_check.toggled.connect(self.onClicked)
         self.stuve_check.setObjectName(u"stuve_check")
-        self.stuve_check.toggled.connect(self.onClicked)
         self.spec_graph_list["stuve"] = {
             "check": self.stuve_check, "function": self.update_stuve}
         self.verticalLayout_3.addWidget(self.stuve_check)
 
         self.hodograph_check = QRadioButton(self.layoutWidget)
-        self.hodograph_check.toggled.connect(self.onClicked)
         self.hodograph_check.setObjectName(u"hodograph_check")
-        self.hodograph_check.toggled.connect(self.onClicked)
-        # self.hodograph_check.setChecked(True)
+        self.hodograph_check.setChecked(True)
         self.spec_graph_list["hodograph"] = {
             "check": self.hodograph_check, "function": self.update_hodograph}
         self.verticalLayout_3.addWidget(self.hodograph_check)
@@ -397,10 +377,6 @@ class Dashboard(object):
         self.menubar.setGeometry(QRect(0, 0, 830, 22))
         self.menuVisualization = QMenu(self.menubar)
         self.menuVisualization.setObjectName(u"menuVisualization")
-
-        self.menuFiles = QMenu(self.menubar)
-        self.menuFiles.setObjectName(u"menuFiles")
-
         MainWindow.setMenuBar(self.menubar)
         self.statusbar = QStatusBar(MainWindow)
         self.statusbar.setObjectName(u"statusbar")
@@ -409,56 +385,39 @@ class Dashboard(object):
         self.menubar.addAction(self.menuVisualization.menuAction())
         self.menuVisualization.addAction(self.actionTrack_Balloon)
         self.actionTrack_Balloon.triggered.connect(self.open_map)
-
-        self.menubar.addAction(self.menuFiles.menuAction())
-        self.menuFiles.addAction(self.actionCreate_File)
-        self.actionCreate_File.triggered.connect(self.cdf)
-
         self.retranslateUi(MainWindow)
 
         self.tabWidget.setCurrentIndex(0)
 
         QMetaObject.connectSlotsByName(MainWindow)
 
-        self.graph_time.show()
-
-        self.threadpool = QThreadPool()
-
-        self.plot_ref_time = None
-        self.comport = SerialPort(comport_name)
-        self.comport.initialize_port(flight_folder_path)
-        self.flight_folder_path = flight_folder_path
-        self.data_frame = pd.read_csv(
-            os.path.join(flight_folder_path, "output.csv"))
-        self.timer = QTimer()
-        self.timer.setInterval(3000)
-        self.timer.timeout.connect(self.table.scrollToBottom)
-        self.timer.start()
-        self.run_threads()
+        self.display_graphs()
         
 
-        def onClicked(self):
-            radioButton = self.sender()
-            # self.cdf()
-            if radioButton.isChecked():
-                self.update_spec_graphs()
 
 
 
+
+
+
+        
     def onClicked(self):
         radioButton = self.sender()
         if radioButton.isChecked():
-            self.update_spec_graphs()
+            
+        
+       
+
+
+
+
+
 
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(QCoreApplication.translate(
             "MainWindow", u"MainWindow", None))
         self.actionTrack_Balloon.setText(
             QCoreApplication.translate("MainWindow", u"Track Balloon", None))
-
-        self.actionCreate_File.setText(
-            QCoreApplication.translate("MainWindow", u"NetCDF", None))
-
         self.temperature_check.setText(
             QCoreApplication.translate("MainWindow", u"Temperature", None))
         self.pressure_check.setText(
@@ -477,8 +436,6 @@ class Dashboard(object):
             QCoreApplication.translate("MainWindow", u"Skew-T", None))
         self.tphi_check.setText(
             QCoreApplication.translate("MainWindow", u"T-Phi", None))
-        self.stuve_check.setText(
-            QCoreApplication.translate("MainWindow", u"Stuve", None))
         self.hodograph_check.setText(
             QCoreApplication.translate("MainWindow", u"Hodograph", None))
         ___qtablewidgetitem = self.table.horizontalHeaderItem(0)
@@ -503,48 +460,17 @@ class Dashboard(object):
             self.tab_2), QCoreApplication.translate("MainWindow", u"Tab 2", None))
         self.menuVisualization.setTitle(
             QCoreApplication.translate("MainWindow", u"Visualization", None))
-        self.menuFiles.setTitle(
-            QCoreApplication.translate("MainWindow", u"Files", None))
 
     def open_map(self):
-        self.map = MapView(self.flight_folder_path)
-    
+        self.map = MapView()
 
-    def read_port(self):
+    def display_graphs(self):
         output_file = os.path.join(self.flight_folder_path, "output.csv")
-        while True:
-            if self.comport.serial_port.in_waiting:
-                data = self.comport.serial_port.read_until().decode('ascii').split(",")
-                data = [data[0]] + list(map(lambda x: float(x), data[1:]))
-                time, latitude, longitude, satelite, \
-                    altitude, pressure, internal_temperature, \
-                    external_temperature, humidity = data
+        self.update_graph()
+        self.update_spec_graphs()
+        # self.update_hodograph()
 
-                time_elapsed = self.comport.get_time_elapsed(time)
-                wind_direction = self.comport.get_wind_direction(
-                    latitude, longitude)
-                wind_speed = self.comport.get_wind_speed(
-                    latitude, longitude, time_elapsed)
-                scaled_pressure = (
-                    pressure/(self.comport.MAXIMUM_PRESSURE - self.comport.MINIMUM_PRESSURE))*100
-                scaled_external_temperature = (
-                    external_temperature/(self.comport.MAXIMUM_TEMPERATURE - self.comport.MINIMUM_TEMPERATURE))*100
-
-                data.extend([time_elapsed, wind_direction, wind_speed,
-                             scaled_pressure, scaled_external_temperature])
-                data = [data[0]] + list(map(lambda x: str(x), data[1:]))
-                with open(output_file, 'a') as file_output:
-                    file_output.write(",".join(data) + "\n")
-
-                index = self.data_frame.shape[0]
-                self.data_frame.loc[index] = data
-                self.update_graph()
-                self.update_table([time_elapsed, pressure, external_temperature, humidity, wind_speed, wind_direction])
-                self.update_gauge(*[pressure, external_temperature, humidity, wind_speed, wind_direction, altitude])
-                self.update_spec_graphs()
-                self.comport.previous_longitude = longitude
-                self.comport.previous_latitude = latitude
-                self.comport.previous_time = time_elapsed
+        
 
     def update_gauge(self, pressure, temperature, humidity, wind_speed, wind_direction, altitude):
         self.pressure_gauge_label.setText(str(pressure))
@@ -579,19 +505,10 @@ class Dashboard(object):
         self.table.insertRow(row)
         for i in range(len(data)):
             self.table.setItem(row, i, QTableWidgetItem(str(data[i])))
-        # self.table.scrollToBottom()
+        self.table.scrollToBottom()
 
     def update_graph(self):
-        # if not self.plot_ref_time:
-        #     self.plot_ref_time = dict()
-        #     self.plot_ref_time["temperature"] = self.graph_time.axes.plot(
-        #         self.data_frame["TimeElapsed"],
-        #         self.data_frame["External Temperature"]
-        #     )[0]
-        # else:
-        #     self.plot_ref_time["temperature"].set_ydata(self.data_frame["External Temperature"])
-        #     self.plot_ref_time["temperature"].set_xdata(self.data_frame["TimeElapsed"])
-
+       
         self.graph_time.axes.cla()
         for parameter_check, parameter_name, color in self.parameter_list:
             if parameter_check.isChecked():
@@ -618,13 +535,13 @@ class Dashboard(object):
             list(map(float, self.data_frame['Wind Speed'].values))) * units.knots
         wind_dir = np.array(
             list(map(float, self.data_frame['Wind Direction'].values))) * units.degrees
+        print(wind_speed[:5])
         u, v = mpcalc.wind_components(wind_speed, wind_dir)
 
-        # self.spec_graph.axes.cla()
-        self.spec_graph.fig.clf()
+        self.spec_graph.axes.cla()
         h = Hodograph(self.spec_graph.axes, component_range=.5)
         h.add_grid(increment=0.1)
-        h.plot_colormapped(u, v, wind_speed) 
+        h.plot_colormapped(u, v, wind_speed)
         self.spec_graph.draw()
 
     def update_skewt(self):
@@ -637,14 +554,12 @@ class Dashboard(object):
         wind_speed = self.data_frame['Wind Speed'].values * units.knots
         wind_dir = self.data_frame['Wind Direction'].values * units.degrees
         u, v = mpcalc.wind_components(wind_speed, wind_dir)
-        
-        self.spec_graph.fig.clf()
-
         skew = SkewT(self.spec_graph.fig)
         skew.plot(p, T, 'r', linewidth=2)
         skew.plot(p, Td, 'g', linewidth=2)
         skew.plot_barbs(p, u, v)
         self.spec_graph.draw()
+        
 
     def update_tphi(self):
         print("updating tphi")
@@ -654,9 +569,6 @@ class Dashboard(object):
             zip(self.data_frame['Pressure'], self.data_frame['Td']))
         drybulb = list(
             zip(self.data_frame['Pressure'], self.data_frame['External Temperature']))
-        
-        self.spec_graph.fig.clf()
-
         tephigram = Tephigram(figure=self.spec_graph.fig)
         tephigram.plot(dewpoint, label="Dew Point Temperature", color="blue")
         tephigram.plot(drybulb, label="Dry Bulb Temperature", color="red")
@@ -687,9 +599,6 @@ class Dashboard(object):
         ws_2D, Pws_2D = np.meshgrid(x, y)
         ws_T_2D = 1./(1./273.15-1.844e-4 *
                       np.log(ws_2D*Pws_2D/611.3/(ws_2D+0.622)))
-
-        self.spec_graph.fig.clf()
-
         self.spec_graph.axes.set_yscale('log')
         self.spec_graph.axes.set_xlabel('temp K')
         self.spec_graph.axes.set_ylabel('pressure mb')
@@ -715,119 +624,23 @@ class Dashboard(object):
                 ws_T_2D[22, i], Pws_2D[22, i]*0.01, labels[i], color='#0000f4', ha='center', weight='bold')
 
         self.spec_graph.draw()
-
+        
 
     def update_spec_graphs(self):
-        # self.spec_graph.axes.cla()
         for graph in self.spec_graph_list:
-            if self.spec_graph_list[graph]["check"].isChecked():
-                self.spec_graph_list[graph]["function"]()
+            # if graph['check'].isChecked():
+                # graph["function"]()
+            # if self.spec_graph_list[graph]["check"].isChecked():
+            #     self.spec_graph_list[graph]["function"]()
+            print(self.spec_graph_list[graph]["check"].isChecked())
+
+    # def run_threads(self):
+    #     worker1 = Worker(self.read_port)
+    #     self.threadpool.start(worker1)
+    
     def run_threads(self):
-        worker1 = Worker(self.read_port)
+        worker1 = Worker(self.update_graph)
         self.threadpool.start(worker1)
-
-
-    def cdf(self):
-        x = len(self.data_frame['Pressure'])
-        if(self.data_frame['Pressure'][x-1] <= 800):
-
-            self.data_frame["Time"] = pd.to_datetime(self.data_frame['Time'])
-            timed = self.data_frame['Time'][0]
-            format = '%Y-%m-%d %H:%M:%S' # The format 
-            timed= str(timed)
-            timed= datetime.strptime(timed, format) 
-            calendar = 'standard'
-            units = 'seconds since 1970-01-01 00:00:00'
-            timed = nc.date2num(timed, units=units, calendar=calendar)
-            size = len(self.data_frame['Time'])
-            times = [timed + self.data_frame['TimeElapsed'][i] for i in range(size)]
-
-            now = datetime.utcnow()
-            now = now.strftime("%Y%m%d_%H%M%S")
-            netfile = 'Indravani'+'_'+ str(int(self.data_frame['Pressure'][x-1]))+'_'+now+'.nc'
-
-            
-            ncout = nc.Dataset(netfile, 'w', format='NETCDF4')
-            base = 1
-            ncout.createDimension('base_time', base) 
-            ncout.createDimension('time_offset', size)
-            ncout.createDimension('time', size)
-            ncout.createDimension('lat', size)
-            ncout.createDimension('lon', size)
-            ncout.createDimension('alt', size)
-            ncout.createDimension('pres', size)
-            ncout.createDimension('rh', size)
-            ncout.createDimension('wdir', size)
-            ncout.createDimension('wspd', size)
-            ncout.createDimension('tdry', size)
-            ncout.createDimension('dp', size)
-            
-            base_time = ncout.createVariable('base_time', 'i8', ('base_time'))
-            base_time.standard_name = 'Launch Time'
-            base_time.long_name = 'Radiosonde Launch Time'
-            base_time.units = 'seconds since 1990-01-01 00:00:00'
-            time_offset = ncout.createVariable('time_offset', "i8", ('time_offset',))
-            time_offset.long_name = 'Time Elapsed'
-            time_offset.units = 'seconds'
-            time_offset.calendar = 'standard'
-            time_offset.axis = 'T'
-            time = ncout.createVariable('time', "i8", ('time',))
-            time.long_name = 'time'
-            time.units = 'seconds since 1990-01-01 00:00:00'
-            time.calendar = 'standard'
-            time.axis = 'T'
-            lon = ncout.createVariable('lon', np.dtype('double').char, ('lon'))
-            lon.standard_name = 'longitude'
-            lon.long_name = 'longitude'
-            lon.units = 'degrees_east'
-            lon.axis = 'X'
-            lat = ncout.createVariable('lat', np.dtype('double').char, ('lat'))
-            lat.standard_name = 'latitude'
-            lat.long_name = 'latitude'
-            lat.units = 'degrees_north'
-            lat.axis = 'Y'
-            alt = ncout.createVariable('alt', np.dtype('double').char, ('alt'))
-            alt.standard_name = 'altitude'
-            alt.long_name = 'altitude'
-            alt.units = 'meters'
-            pres = ncout.createVariable('pres', np.dtype('double').char, ('pres'))
-            pres.standard_name = 'pressure'
-            pres.long_name = 'pressure'
-            pres.units = 'hPa'
-            rh = ncout.createVariable('rh', np.dtype('double').char, ('rh'))
-            rh.standard_name = 'Humidity'
-            rh.long_name = 'Relative Humidity'
-            rh.units = '%'
-            wdir = ncout.createVariable('wdir', np.dtype('double').char, ('wdir'))
-            wdir.standard_name = 'Wind Direction'
-            wdir.long_name = 'Wind Direction'
-            wdir.units = 'degrees'
-            wspd = ncout.createVariable('wspd', np.dtype('double').char, ('wspd'))
-            wspd.standard_name = 'Wind Speed'
-            wspd.long_name = 'Wind Speed'
-            wspd.units = 'm/s'
-            tdry = ncout.createVariable('tdry', np.dtype('double').char, ('tdry'))
-            tdry.standard_name = 'Temperature'
-            tdry.long_name = 'Dry Temperature'
-            tdry.units = 'degree Celsius'
-            dp = ncout.createVariable('dp', np.dtype('double').char, ('dp'))
-            dp.standard_name = 'Dew Point'
-            dp.long_name = 'Dew Point'
-            dp.units = 'degree Celsius'
-            base_time[:] = timed
-            time_offset[:] = self.data_frame['TimeElapsed'].tolist()[:]
-            time[:] = times[:]
-            lon[:] = self.data_frame['Longitude'].tolist()[:]
-            lat[:] = self.data_frame['Latitude'].tolist()[:]
-            alt[:] = self.data_frame['Altitude'].tolist()[:]
-            pres[:] = self.data_frame['Pressure'].tolist()[:]
-            rh[:] = self.data_frame['Humidity'].tolist()[:]
-            wdir[:] = self.data_frame['Wind Direction'].tolist()[:]
-            wspd[:] = self.data_frame['Wind Speed'].tolist()[:]
-            tdry[:] = self.data_frame['External Temperature'].tolist()[:]
-            dp[:] = (self.data_frame['External Temperature'].values-((100 - self.data_frame['Humidity'])/5)).tolist()[:]
-            ncout.close()
-
 
 
 if __name__ == "__main__":
@@ -838,6 +651,6 @@ if __name__ == "__main__":
     window = Dashboard()
     window.setupUi(MainWindow)
     MainWindow.show()
-    
+
     # Execute application
     sys.exit(app.exec_())
