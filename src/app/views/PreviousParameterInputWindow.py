@@ -29,8 +29,12 @@ class ParameterInputWindow(object):
         MainWindow.resize(600, 600)
         MainWindow.setMinimumSize(QSize(600, 600))
         MainWindow.setMaximumSize(QSize(600, 600))
+
+        # Central widget 
         self.centralwidget = QWidget(MainWindow)
         self.centralwidget.setObjectName(u"centralwidget")
+
+        # main title 
         self.main_title_label = QLabel(self.centralwidget)
         self.main_title_label.setObjectName(u"main_title_label")
         self.main_title_label.setGeometry(QRect(0, 170, 591, 41))
@@ -41,6 +45,8 @@ class ParameterInputWindow(object):
         font.setWeight(75)
         self.main_title_label.setFont(font)
         self.main_title_label.setAlignment(Qt.AlignCenter)
+
+        # title label 
         self.title_label = QLabel(self.centralwidget)
         self.title_label.setObjectName(u"title_label")
         self.title_label.setGeometry(QRect(0, 220, 591, 41))
@@ -66,10 +72,15 @@ class ParameterInputWindow(object):
         self.frequency_label.setGeometry(QRect(20, 340, 151, 21))
         font3 = QFont()
         font3.setFamily(FONT_NAME)
-        font3.setPointSize(14)
+        font3.setPointSize(12)
         self.frequency_label.setFont(font3)
         self.frequency_label.setAlignment(Qt.AlignCenter)
         self.frequency_input = QComboBox(self.centralwidget)
+
+        font4 = QFont()
+        font4.setFamily(FONT_NAME)
+        font4.setPointSize(10)
+        self.frequency_input.setFont(font4)
         self.frequency_input.addItem("")
         self.frequency_input.addItem("")
         self.frequency_input.addItem("")
@@ -77,73 +88,91 @@ class ParameterInputWindow(object):
         self.frequency_input.addItem("")
         self.frequency_input.setObjectName(u"frequency_input")
         self.frequency_input.setGeometry(QRect(160, 340, 101, 21))
+
         self.temperature_label = QLabel(self.centralwidget)
         self.temperature_label.setObjectName(u"temperature_label")
         self.temperature_label.setGeometry(QRect(20, 380, 151, 21))
         self.temperature_label.setFont(font3)
         self.temperature_label.setAlignment(Qt.AlignCenter)
+
         self.pressure_label = QLabel(self.centralwidget)
         self.pressure_label.setObjectName(u"pressure_label")
         self.pressure_label.setGeometry(QRect(20, 420, 151, 21))
         self.pressure_label.setFont(font3)
         self.pressure_label.setAlignment(Qt.AlignCenter)
+
         self.altitude_label = QLabel(self.centralwidget)
         self.altitude_label.setObjectName(u"altitude_label")
         self.altitude_label.setGeometry(QRect(20, 460, 151, 21))
         self.altitude_label.setFont(font3)
         self.altitude_label.setAlignment(Qt.AlignCenter)
+
         self.windspeed_label = QLabel(self.centralwidget)
         self.windspeed_label.setObjectName(u"windspeed_label")
         self.windspeed_label.setGeometry(QRect(300, 420, 151, 21))
         self.windspeed_label.setFont(font3)
         self.windspeed_label.setAlignment(Qt.AlignCenter)
+
         self.latitude_label = QLabel(self.centralwidget)
         self.latitude_label.setObjectName(u"latitude_label")
         self.latitude_label.setGeometry(QRect(300, 340, 151, 21))
         self.latitude_label.setFont(font3)
         self.latitude_label.setAlignment(Qt.AlignCenter)
+
         self.humidity_label = QLabel(self.centralwidget)
         self.humidity_label.setObjectName(u"humidity_label")
         self.humidity_label.setGeometry(QRect(300, 460, 151, 21))
         self.humidity_label.setFont(font3)
         self.humidity_label.setAlignment(Qt.AlignCenter)
+
         self.longitude_label = QLabel(self.centralwidget)
         self.longitude_label.setObjectName(u"longitude_label")
         self.longitude_label.setGeometry(QRect(300, 380, 151, 21))
         self.longitude_label.setFont(font3)
         self.longitude_label.setAlignment(Qt.AlignCenter)
+
         self.temperature_input = QLineEdit(self.centralwidget)
         self.temperature_input.setObjectName(u"temperature_input")
         self.temperature_input.setGeometry(QRect(160, 380, 113, 25))
+
         self.longitude_input = QLineEdit(self.centralwidget)
         self.longitude_input.setObjectName(u"longitude_input")
         self.longitude_input.setGeometry(QRect(430, 380, 113, 25))
+
         self.pressure_input = QLineEdit(self.centralwidget)
         self.pressure_input.setObjectName(u"pressure_input")
         self.pressure_input.setGeometry(QRect(160, 420, 113, 25))
+
         self.windspeed_input = QLineEdit(self.centralwidget)
         self.windspeed_input.setObjectName(u"windspeed_input")
         self.windspeed_input.setGeometry(QRect(430, 420, 113, 25))
+
         self.altitude_input = QLineEdit(self.centralwidget)
         self.altitude_input.setObjectName(u"altitude_input")
         self.altitude_input.setGeometry(QRect(160, 460, 113, 25))
+
         self.humidity_input = QLineEdit(self.centralwidget)
         self.humidity_input.setObjectName(u"humidity_input")
         self.humidity_input.setGeometry(QRect(430, 460, 113, 25))
+
         self.latitude_input = QLineEdit(self.centralwidget)
         self.latitude_input.setObjectName(u"latitude_input")
         self.latitude_input.setGeometry(QRect(430, 340, 113, 25))
+
         self.proceed_button = QPushButton(self.centralwidget)
         self.proceed_button.setObjectName(u"proceed_button")
         self.proceed_button.setGeometry(QRect(170, 510, 141, 31))
+
         self.back_button = QPushButton(self.centralwidget)
         self.back_button.setObjectName(u"back_button")
         self.back_button.setGeometry(QRect(330, 510, 141, 31))
+
         self.logo_databyte = QLabel(self.centralwidget)
         self.logo_databyte.setObjectName(u"logo_databyte")
         self.logo_databyte.setGeometry(QRect(160, 20, 161, 141))
         self.logo_databyte.setPixmap(os.path.join(ASSETS_DIR, "logo.jpeg"))
         self.logo_databyte.setScaledContents(True)
+
         self.logo_somaiya = QLabel(self.centralwidget)
         self.logo_somaiya.setObjectName(u"logo_somaiya")
         self.logo_somaiya.setGeometry(QRect(330, 30, 121, 111))
