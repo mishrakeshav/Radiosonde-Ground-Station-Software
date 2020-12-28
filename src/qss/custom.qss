@@ -1,0 +1,74 @@
+/* btn_outline_secondary */ 
+QPushButton[accessibleName="btn_outline_secondary"]{
+    background-color: #ffffff;
+    color: #000000;
+    font-size:14px;
+    border-radius: 8px;
+    border: 2px solid #112d4e;
+}
+QPushButton::hover[accessibleName="btn_outline_secondary"]{
+    background-color:#112d4e;
+    color: #ffffff;
+    font-size:14px;
+    border-radius: 8px;
+}
+
+/* btn_outline_danger */
+QPushButton[accessibleName="btn_outline_danger"]{
+    background-color: #ffffff;
+    color: #000000;
+    font-size:14px;
+    border-radius: 8px;
+    border: 2px solid #e84545;
+}
+QPushButton::hover[accessibleName="btn_outline_danger"]{
+    background-color:#ea5455;
+    color: #ffffff;
+    font-size:14px;
+    border-radius: 8px;
+    border: 2px;
+}
+
+/* btn_danger */
+QPushButton[accessibleName="btn_danger"]{
+    background-color: #f64b3c;
+    color: #ffffff;
+    font-size:14px;
+    border-radius: 8px;
+}
+QPushButton::hover[accessibleName="btn_danger"]{
+    background-color:#c81912;
+    color: #ffffff;
+    font-size:14px;
+    border-radius: 8px;
+    border: 2px;
+}
+
+/* btn_secondary */ 
+QPushButton[accessibleName="btn_secondary"]{
+    background-color: #27496d;
+    color: #ffffff;
+    font-size:14px;
+    border-radius: 8px;
+}
+QPushButton::hover[accessibleName="btn_secondary"]{
+    background-color:#142850;
+    color: #ffffff;
+    font-size:14px;
+    border-radius: 8px;
+}
+
+/* MainWindow */ 
+QMainWindow {
+    background-color : #ffffff;
+}
+
+
+/* ComboBox */
+QComboBox {
+    selection-background-color: #27496d;
+    background-color: #142850;
+    color: #ffffff;
+    min-width: 100px;
+	padding: 2px;
+}

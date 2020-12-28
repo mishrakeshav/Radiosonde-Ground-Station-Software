@@ -12,7 +12,7 @@ from app.views.ViewPreviousFlightWIndow import ViewPreviousFlightWindow
 
 
 ASSETS_DIR = os.path.join("resources", "images", "assets")
-
+FONT_NAME = u"MS Shell Dlg 2"
 
 class StartMenuWindow(object):
     def setupUi(self, MainWindow):
@@ -26,14 +26,13 @@ class StartMenuWindow(object):
         MainWindow.resize(600, 600)
         MainWindow.setMinimumSize(QSize(600, 600))
         MainWindow.setMaximumSize(QSize(600, 600))
-        MainWindow.setStyleSheet(u"background-color: white;")
         self.centralwidget = QWidget(MainWindow)
         self.centralwidget.setObjectName(u"centralwidget")
         self.main_title_label = QLabel(self.centralwidget)
         self.main_title_label.setObjectName(u"main_title_label")
         self.main_title_label.setGeometry(QRect(40, 180, 551, 81))
         font = QFont()
-        font.setFamily(u"Ubuntu Mono")
+        font.setFamily(FONT_NAME)
         font.setPointSize(22)
         font.setBold(True)
         font.setWeight(75)
@@ -43,7 +42,7 @@ class StartMenuWindow(object):
         self.previous_flights_button.setObjectName(u"previous_flights_button")
         self.previous_flights_button.setGeometry(QRect(170, 480, 271, 51))
         font1 = QFont()
-        font1.setFamily(u"Ubuntu Mono")
+        font1.setFamily(FONT_NAME)
         font1.setPointSize(17)
         font1.setBold(False)
         font1.setWeight(50)
@@ -76,7 +75,7 @@ class StartMenuWindow(object):
         MainWindow.setStatusBar(self.statusbar)
 
         self.retranslateUi(MainWindow)
-
+        self.set_accesible_name()
         QMetaObject.connectSlotsByName(MainWindow)
 
         # custom setups 
@@ -90,7 +89,11 @@ class StartMenuWindow(object):
         self.continue_flight_button.setText(QCoreApplication.translate("MainWindow", u"Continue Flight", None))
         self.logo_databyte.setText("")
         self.logo_somaiya.setText("")
-    # retranslateUi
+
+    def set_accesible_name(self):
+        self.new_flight_button.setAccessibleName(QCoreApplication.translate("MainWindow", u"btn_outline_secondary", None))
+        self.continue_flight_button.setAccessibleName(QCoreApplication.translate("MainWindow", u"btn_outline_danger", None))
+        self.previous_flights_button.setAccessibleName(QCoreApplication.translate("MainWindow", u"btn_secondary",None))
 
     def connect_buttons(self):
         self.new_flight_button.clicked.connect(self.start_new_flight)

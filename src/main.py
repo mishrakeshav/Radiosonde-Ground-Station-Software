@@ -11,7 +11,7 @@ if __name__ == "__main__":
     app = QApplication(sys.argv)
     
     MainWindow = QMainWindow()
-    file = open("./styles.qss")
+    file = open("./qss/custom.qss")
     with file:
         qss = file.read()
         app.setStyleSheet(qss)

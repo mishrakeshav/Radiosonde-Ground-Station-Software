@@ -12,6 +12,7 @@ from app.views.FlightDashboard import Dashboard
 from app.utils.Alerts import Alert
 
 ASSETS_DIR = os.path.join("resources", "images", "assets")
+FONT_NAME = u"MS Shell Dlg 2"
 
 class ParameterInputWindow(object):
     def setupUi(self,folder_path ,MainWindow, PreviousWindow):
@@ -28,14 +29,13 @@ class ParameterInputWindow(object):
         MainWindow.resize(600, 600)
         MainWindow.setMinimumSize(QSize(600, 600))
         MainWindow.setMaximumSize(QSize(600, 600))
-        MainWindow.setStyleSheet(u"background-color:white;\n""")
         self.centralwidget = QWidget(MainWindow)
         self.centralwidget.setObjectName(u"centralwidget")
         self.main_title_label = QLabel(self.centralwidget)
         self.main_title_label.setObjectName(u"main_title_label")
         self.main_title_label.setGeometry(QRect(0, 170, 591, 41))
         font = QFont()
-        font.setFamily(u"Ubuntu Mono")
+        font.setFamily(FONT_NAME)
         font.setPointSize(18)
         font.setBold(True)
         font.setWeight(75)
@@ -45,7 +45,7 @@ class ParameterInputWindow(object):
         self.title_label.setObjectName(u"title_label")
         self.title_label.setGeometry(QRect(0, 220, 591, 41))
         font1 = QFont()
-        font1.setFamily(u"Ubuntu Mono")
+        font1.setFamily(FONT_NAME)
         font1.setPointSize(16)
         font1.setBold(True)
         font1.setWeight(75)
@@ -55,7 +55,7 @@ class ParameterInputWindow(object):
         self.subtitle_label.setObjectName(u"subtitle_label")
         self.subtitle_label.setGeometry(QRect(0, 270, 591, 41))
         font2 = QFont()
-        font2.setFamily(u"Ubuntu Mono")
+        font2.setFamily(FONT_NAME)
         font2.setPointSize(16)
         font2.setBold(False)
         font2.setWeight(50)
@@ -65,7 +65,7 @@ class ParameterInputWindow(object):
         self.frequency_label.setObjectName(u"frequency_label")
         self.frequency_label.setGeometry(QRect(20, 340, 151, 21))
         font3 = QFont()
-        font3.setFamily(u"Ubuntu Mono")
+        font3.setFamily(FONT_NAME)
         font3.setPointSize(14)
         self.frequency_label.setFont(font3)
         self.frequency_label.setAlignment(Qt.AlignCenter)
@@ -159,7 +159,8 @@ class ParameterInputWindow(object):
         MainWindow.setStatusBar(self.statusbar)
 
         self.retranslateUi(MainWindow)
-
+        self.set_accesible_name()
+        
         QMetaObject.connectSlotsByName(MainWindow)
 
         # custom setups
@@ -194,6 +195,9 @@ class ParameterInputWindow(object):
     def connect_buttons(self):
         self.proceed_button.clicked.connect(self.open_next_window)
         self.back_button.clicked.connect(self.open_previous_window)
+    def set_accesible_name(self):
+        self.proceed_button.setAccessibleName(QCoreApplication.translate("MainWindow", u"btn_secondary", None))
+        self.back_button.setAccessibleName(QCoreApplication.translate("MainWindow", u"btn_danger", None))
 
     # fills all the QlineEdits  
     def fill_parameters(self):
