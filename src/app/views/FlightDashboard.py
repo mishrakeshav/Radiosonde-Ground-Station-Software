@@ -242,12 +242,11 @@ class Dashboard(QWidget):
         self.verticalLayout = QVBoxLayout(self.layoutWidget_2)
         self.verticalLayout.setObjectName(u"verticalLayout")
         self.verticalLayout.setContentsMargins(0, 0, 0, 0)
-
+        
         self.temperature_color = "red"
         self.temperature_check = QCheckBox(self.layoutWidget_2)
         self.temperature_check.setObjectName(u"temperature_check")
         self.temperature_check.setChecked(True)
-        self.temperature_check.setStyleSheet(temperature_checkbox_indicator)
         self.parameter_list.append(
             (self.temperature_check, "Scaled Temperature", self.temperature_color))
         self.verticalLayout.addWidget(self.temperature_check)
@@ -255,7 +254,6 @@ class Dashboard(QWidget):
         self.pressure_color = "magenta"
         self.pressure_check = QCheckBox(self.layoutWidget_2)
         self.pressure_check.setObjectName(u"pressure_check")
-        self.pressure_check.setStyleSheet(pressure_checkbox_indicator)
         self.parameter_list.append(
             (self.pressure_check, "Scaled Pressure", self.pressure_color))
         self.verticalLayout.addWidget(self.pressure_check)
@@ -264,7 +262,6 @@ class Dashboard(QWidget):
         self.humidity_check = QCheckBox(self.layoutWidget_2)
         self.humidity_check.setObjectName(u"humidity_check")
         self.humidity_check.setChecked(True)
-        self.humidity_check.setStyleSheet(humidity_checkbox_indicator)
         self.parameter_list.append(
             (self.humidity_check, "Humidity", self.humidity_color))
         self.verticalLayout.addWidget(self.humidity_check)
@@ -272,7 +269,6 @@ class Dashboard(QWidget):
         self.wind_speed_color = "green"
         self.wind_speed_check = QCheckBox(self.layoutWidget_2)
         self.wind_speed_check.setObjectName(u"wind_speed_check")
-        self.wind_speed_check.setStyleSheet(wind_speed_checkbox_indicator)
         self.parameter_list.append(
             (self.wind_speed_check, "Wind Speed", self.wind_speed_color))
         self.verticalLayout.addWidget(self.wind_speed_check)
@@ -280,7 +276,6 @@ class Dashboard(QWidget):
         self.altitude_color = "yellow"
         self.altitude_check = QCheckBox(self.layoutWidget_2)
         self.altitude_check.setObjectName(u"altitude_check")
-        self.altitude_check.setStyleSheet(altitude_checkbox_indicator)
         self.parameter_list.append(
             (self.altitude_check, "Altitude", self.altitude_color))
         self.verticalLayout.addWidget(self.altitude_check)
@@ -418,7 +413,7 @@ class Dashboard(QWidget):
         self.actionCreate_File.triggered.connect(self.cdf)
 
         self.retranslateUi(MainWindow)
-
+        self.set_accesible_name()
         
         # self.retranslateUi(MainWindow)
 
@@ -499,6 +494,64 @@ class Dashboard(QWidget):
             QCoreApplication.translate("MainWindow", u"Visualization", None))
         self.menuFiles.setTitle(
             QCoreApplication.translate("MainWindow", u"Files", None))
+
+
+    def set_accesible_name(self):
+        self.temperature_check.setStyleSheet("""
+        QCheckBox::indicator:checked{
+            height: 10px;
+            width: 10px;
+            border-style:solid;
+            border-width: 1px;
+            border-color: qlineargradient(spread:pad, x1:0.5, y1:1, x2:0.5, y2:0, stop:0 rgba(0, 113, 255, 255), stop:1 rgba(91, 171, 252, 255));
+            color: #000000;
+            background-color: red;
+        }
+        """)
+        self.pressure_check.setStyleSheet("""
+        QCheckBox::indicator:checked{
+            height: 10px;
+            width: 10px;
+            border-style:solid;
+            border-width: 1px;
+            border-color: qlineargradient(spread:pad, x1:0.5, y1:1, x2:0.5, y2:0, stop:0 rgba(0, 113, 255, 255), stop:1 rgba(91, 171, 252, 255));
+            color: #000000;
+            background-color: magenta;
+        }
+        """)
+        self.humidity_check.setStyleSheet("""
+        QCheckBox::indicator:checked{
+            height: 10px;
+            width: 10px;
+            border-style:solid;
+            border-width: 1px;
+            border-color: qlineargradient(spread:pad, x1:0.5, y1:1, x2:0.5, y2:0, stop:0 rgba(0, 113, 255, 255), stop:1 rgba(91, 171, 252, 255));
+            color: #000000;
+            background-color: blue;
+        }
+        """)
+        self.wind_speed_check.setStyleSheet("""
+        QCheckBox::indicator:checked{
+            height: 10px;
+            width: 10px;
+            border-style:solid;
+            border-width: 1px;
+            border-color: qlineargradient(spread:pad, x1:0.5, y1:1, x2:0.5, y2:0, stop:0 rgba(0, 113, 255, 255), stop:1 rgba(91, 171, 252, 255));
+            color: #000000;
+            background-color: green;
+        }
+        """)
+        self.altitude_check.setStyleSheet("""
+        QCheckBox::indicator:checked{
+            height: 10px;
+            width: 10px;
+            border-style:solid;
+            border-width: 1px;
+            border-color: qlineargradient(spread:pad, x1:0.5, y1:1, x2:0.5, y2:0, stop:0 rgba(0, 113, 255, 255), stop:1 rgba(91, 171, 252, 255));
+            color: #000000;
+            background-color: yellow;
+        }
+        """)
 
     def open_map(self):
         self.map_view =  MapView(self.flight_folder_path)

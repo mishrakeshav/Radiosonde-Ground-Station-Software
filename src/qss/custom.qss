@@ -125,45 +125,7 @@ QLineEdit:pressed {
 }
 
 
-QMenu {
-  background: #ffffff;
-  border: 1px solid #ffffff;
-  color: #ffffff;
-}
 
-QMenu::item {
-  border: 0px solid transparent;
-  color: #111111;
-  padding: 5px 16px;
-  padding-left: 25px;
-  border-radius: 2px;
-}
-
-/* QMenu */
-QMenu::item:selected {
-  background: #ffffff;
-  border: 0px solid #ffffff;
-}
-
-QMenu::item:disabled {
-  border: 0px solid transparent;
-  background: transparent;
-}
-QMenu::item:pressed {
-  border: 0px solid #ffffff;
-  background-color: #dddddd;
-}
-
-QMenu::separator {
-  background: #ffffff;
-  height: 1px;
-}
-
-QMenu::indicator {
-  padding-top: 2px;
-  height: 25px;
-  width: 25px;
-}
 
 QTabWidget::pane {
     border: 1px solid black;
@@ -255,5 +217,37 @@ QTabBar::tab:left:last, QTabBar::tab:right:last,
 QTabBar::tab:left:only-one, QTabBar::tab:right:only-one {
     margin-bottom: 0;
 }
+
+/* QCheckBox */
+QCheckBox {
+	color: #000000;
+	padding: 2px;
+}
+QCheckBox:disabled {
+	color: #808086;
+	padding: 2px;
+}
+
+QCheckBox:hover {
+	border-radius:4px;
+	border-style:solid;
+	padding-left: 1px;
+	padding-right: 1px;
+	padding-bottom: 1px;
+	padding-top: 1px;
+	border-width:1px;
+	border-color: transparent;
+}
+
+QCheckBox::indicator:unchecked {
+	height: 10px;
+	width: 10px;
+	border-style:solid;
+	border-width: 1px;
+	border-color: qlineargradient(spread:pad, x1:0.5, y1:1, x2:0.5, y2:0, stop:0 rgba(0, 113, 255, 255), stop:1 rgba(91, 171, 252, 255));
+	color: #000000;
+}
+
+
 
 
