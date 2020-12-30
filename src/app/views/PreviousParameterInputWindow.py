@@ -10,6 +10,7 @@ from pyside_material import apply_stylesheet
 
 from app.views.FlightDashboard import Dashboard
 from app.utils.Alerts import Alert
+from app.utils.ValidateJson import validate_surface_values
 
 ASSETS_DIR = os.path.join("resources", "images", "assets")
 FONT_NAME = u"MS Shell Dlg 2"
@@ -228,16 +229,26 @@ class ParameterInputWindow(object):
         self.proceed_button.setAccessibleName(QCoreApplication.translate("MainWindow", u"btn_secondary", None))
         self.back_button.setAccessibleName(QCoreApplication.translate("MainWindow", u"btn_danger", None))
 
-    # fills all the QlineEdits  
+    # Fills all the QlineEdits with the values from the json file (params.json)  
     def fill_parameters(self):
-        with open(os.path.join(self.folder_path , 'params.json')) as fileinput:
-            self.data = json.load(fileinput) 
+        # get the file path 
+        file_path = os.path.join(self.folder_path , 'params.json')
 
-        # assert(type(self.data['data']['']) 
-        print(self.data)
-        self.set_label_text()
-    
-    def set_label_text(self):
+        try:
+            with open(file_path) as fileinput:
+                self.data = json.load(fileinput) 
+            is_valid = validate_surface_values(self.data)
+            if not is_valid:
+                raise(Exception(f"Invalid json file located at {file_path}"))
+        except Exception as e:
+            Alert(
+                main_text = "Invalid Json File",
+                info_text = str(e),
+                alert_type = Alert.CRITICAL 
+            )
+            return 
+
+        # Set the text for all the QLineEdit 
         self.temperature_input.setText(str(self.data['data']['temperature']))
         self.pressure_input.setText(str(self.data['data']['pressure']))
         self.altitude_input.setText(str(self.data['data']['altitude']))
@@ -246,9 +257,8 @@ class ParameterInputWindow(object):
         self.humidity_input.setText(str(self.data['data']['humidity']))
         self.longitude_input.setText(str(self.data['data']['longitude']))
         self.frequency_input.setCurrentText(str(self.data['data']['frequency']))
-
-
     
+    # opens the dashboard
     def open_next_window(self):
         if self.next_window:
             self.current_window.close()
@@ -260,6 +270,7 @@ class ParameterInputWindow(object):
             self.next_window.show()
             self.current_window.close()
 
+    # opens
     def open_previous_window(self):
         self.current_window.close()
         self.previous_window.show()

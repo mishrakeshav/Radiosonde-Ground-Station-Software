@@ -23,6 +23,12 @@ class Alert:
         "QUESTION" :QMessageBox.Question,
     }
 
+    # Static valiables 
+    CRITICAL = "CRITICAL"
+    WARNING = "WARNING"
+    INFORMATION = "INFORMATION"
+    QUESTION = "QUESTION"
+
     def __init__(self, main_text:str, info_text="", alert_type="INFORMATION"):
 
         self.alert = QMessageBox()
