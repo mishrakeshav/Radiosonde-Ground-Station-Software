@@ -1,3 +1,4 @@
+from app.views.PreferenceSetting import PreferenceSetting
 import sys
 import os
 
@@ -8,6 +9,7 @@ from pyside_material import apply_stylesheet
 
 from app.views.PortSelectionWindow import PortSelectionWindow
 from app.views.ViewPreviousFlightWIndow import ViewPreviousFlightWindow
+from app.views.PreferenceSetting import PreferenceSetting
 
 
 
@@ -121,5 +123,3 @@ class StartMenuWindow(object):
             self.previous_flight_window_ui.setupUi(self.previous_flight_window,self.current_window)
             self.previous_flight_window.show()
             self.current_window.close()
-        
-

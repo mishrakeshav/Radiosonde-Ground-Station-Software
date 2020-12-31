@@ -1,8 +1,15 @@
 {
-    "type_of_flight": "RS with Pressure Sensor",
-    "receiver_port": "/dev/ttyUSB0",
-    "radiosonde_port": "/dev/ttyACM0",
-    "export_path": "./export",
-    "frequency": 403
-}
-
+    "preference_list": ["type_of_flight", "receiver_port", "radiosonde_port", "frequency", "export_path"], 
+    "data": [
+        {
+            "name": "type_of_flight", 
+            "description": "The option can be made to select one of the three flight options available:\nEnter one of the following option value: \n1. Radiosonde with Pressure Sensor\n2. Radiosonde without Pressure Sensor\n3. Pilotsonde", 
+            "value": 1, 
+            "default_value": 1
+        }, 
+        {
+            "name": "receiver_port", 
+            "description": "Will by default expect the receiver comport connection on this port.\nWill select default iff there is an actual connection on this port", 
+            "value": "/dev/ttyACM0", 
+            "default_value": "/dev/ttyACM0"
+        }, {"name": "radiosonde_port", "description": "Will by default expect the radiosonde comport connection on this port.\nWill select default iff there is an actual connection on this port", "value": "/dev/ttyUSB0", "default_value": "/dev/ttyUSB0"}, {"name": "frequency", "description": "The Radiosonde receiver will be made to receive on this frequency.\n Specify any other default value in the range 400-406MHz", "value": 403, "default_value": 403}, {"name": "export_path", "description": "The Flight data folder will be made inside the folder specified by the path.", "value": "export", "default_value": "export"}]}
