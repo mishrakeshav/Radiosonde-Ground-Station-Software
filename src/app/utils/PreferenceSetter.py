@@ -58,6 +58,11 @@ class PreferenceSetter:
     def get_export_path(self):
         return self.preferences['export_path'].value
 
+    def set_defaults(self):
+        for pref in self.preferences.values():
+            pref.value = pref.default_value
+        self.save_perferences()
+
     def save_perferences(self):
         result = {"preference_list": self.preference_list}
         result['data'] = []

@@ -30,15 +30,21 @@ class PreferenceSetting(object):
         self.horizontalLayout.setObjectName("horizontalLayout")
         spacerItem2 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.horizontalLayout.addItem(spacerItem2)
+
         self.back_button = QtWidgets.QPushButton(self.centralwidget)
         self.back_button.setObjectName("back_button")
         self.horizontalLayout.addWidget(self.back_button)
+        
         self.save_button = QtWidgets.QPushButton(self.centralwidget)
         self.save_button.setObjectName("save_button")
+        self.save_button.clicked.connect(self.save_preferences)
         self.horizontalLayout.addWidget(self.save_button)
+        
         self.reset_button = QtWidgets.QPushButton(self.centralwidget)
         self.reset_button.setObjectName("reset_button")
+        self.reset_button.clicked.connect(self.reset_to_defaults)
         self.horizontalLayout.addWidget(self.reset_button)
+        
         self.verticalLayout_2.addLayout(self.horizontalLayout)
         self.gridLayout.addLayout(self.verticalLayout_2, 0, 0, 1, 1)
         MainWindow.setCentralWidget(self.centralwidget)
@@ -62,10 +68,11 @@ class PreferenceSetting(object):
     
 
     def make_preferences_ui(self):
+        self.preference_input = {}
         for pref in self.preference_setter.preferences.values():
 
             container = QtWidgets.QWidget()
-            container.setStyleSheet("background-color:grey;")
+            container.setStyleSheet("background-color:lightgrey;")
 
             verticalLayout = QtWidgets.QVBoxLayout(container)
             horizontalLayout = QtWidgets.QHBoxLayout()
@@ -92,10 +99,31 @@ class PreferenceSetting(object):
             preference_description.setText(f"{ pref.description }")
 
             verticalLayout.addWidget(preference_description)
+
+            self.preference_input[pref.name] = preference_value
             self.verticalLayout.addWidget(container)
 
         spacerItem1 = QtWidgets.QSpacerItem(20, 139, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
         self.verticalLayout.addItem(spacerItem1)
+    
+    def update_preference_inputs(self):
+        for pref_name, pref_input in self.preference_input.items():
+            pref_input.setText(self.preference_setter.preferences[pref_name].value)
+
+    def update_preference_values(self):
+        for pref_name, pref_input in self.preference_input.items():
+            self.preference_setter.preferences[pref_name].value = pref_input.text()
+
+    def reset_to_defaults(self):
+        self.preference_setter.set_defaults()
+        self.update_preference_inputs()
+
+    def save_preferences(self):
+        self.update_preference_values()
+        self.preference_setter.save_perferences()
+
+    def back(self):
+        pass
 
 
 
