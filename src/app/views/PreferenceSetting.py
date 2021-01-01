@@ -1,3 +1,4 @@
+from typing import Container
 from PySide2 import QtCore, QtGui, QtWidgets
 from app.utils.PreferenceSetter import PreferenceSetter
 
@@ -63,7 +64,10 @@ class PreferenceSetting(object):
     def make_preferences_ui(self):
         for pref in self.preference_setter.preferences.values():
 
-            verticalLayout = QtWidgets.QVBoxLayout()
+            container = QtWidgets.QWidget()
+            container.setStyleSheet("background-color:grey;")
+
+            verticalLayout = QtWidgets.QVBoxLayout(container)
             horizontalLayout = QtWidgets.QHBoxLayout()
 
             preference_label = QtWidgets.QLabel(self.scrollAreaWidgetContents)
@@ -82,15 +86,13 @@ class PreferenceSetting(object):
             verticalLayout.addLayout(horizontalLayout)
 
             preference_description = QtWidgets.QLabel(self.scrollAreaWidgetContents)
-            preference_description.setMinimumSize(QtCore.QSize(200, 35))
-            preference_description.setMaximumSize(QtCore.QSize(16777215, 35))
             
-            preference_label.setText(f"{pref.name }: ")
-            preference_value.setText(f"{ pref.value }: ")
-            preference_description.setText(f"{ pref.description }: ")
+            preference_label.setText(f"{pref.name }")
+            preference_value.setText(f"{ pref.value }")
+            preference_description.setText(f"{ pref.description }")
 
             verticalLayout.addWidget(preference_description)
-            self.verticalLayout.addLayout(verticalLayout)
+            self.verticalLayout.addWidget(container)
 
         spacerItem1 = QtWidgets.QSpacerItem(20, 139, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
         self.verticalLayout.addItem(spacerItem1)
