@@ -118,14 +118,14 @@ class StartMenuWindow(object):
             self.current_window.close()
             self.previous_flight_window.show()
         else:
-            # self.previous_flight_window = QMainWindow()
-            # self.previous_flight_window_ui = ViewPreviousFlightWindow()
-            # self.previous_flight_window_ui.setupUi(self.previous_flight_window,self.current_window)
-            # self.previous_flight_window.show()
-            # self.current_window.close()
-
             self.previous_flight_window = QMainWindow()
-            self.previous_flight_window_ui = PreferenceSetting()
-            self.previous_flight_window_ui.setupUi(self.previous_flight_window)
+            self.previous_flight_window_ui = ViewPreviousFlightWindow()
+            self.previous_flight_window_ui.setupUi(self.previous_flight_window,self.current_window)
             self.previous_flight_window.show()
             self.current_window.close()
+
+            # self.previous_flight_window = QMainWindow()
+            # self.previous_flight_window_ui = PreferenceSetting()
+            # self.previous_flight_window_ui.setupUi(self.previous_flight_window)
+            # self.previous_flight_window.show()
+            # self.current_window.close()
