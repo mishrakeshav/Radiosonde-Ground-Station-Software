@@ -11,9 +11,10 @@ from pyside_material import apply_stylesheet
 from app.views.FlightDashboard import Dashboard
 from app.utils.Alerts import Alert
 from app.utils.ValidateJson import validate_surface_values
+from app.utils.constants import * 
 
-ASSETS_DIR = os.path.join("resources", "images", "assets")
-FONT_NAME = u"MS Shell Dlg 2"
+
+
 
 class ParameterInputWindow(object):
     def setupUi(self,folder_path ,MainWindow, PreviousWindow):

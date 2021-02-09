@@ -11,8 +11,9 @@ from app.utils.PreferenceSetter import PreferenceSetter
 
 from app.views.ParameterInputWindow import ParameterInputWindow
 from app.utils.Alerts import Alert
+from app.utils.constants import * 
 
-ASSETS_DIR = os.path.join("resources", "images", "assets")
+
 preference_setter = PreferenceSetter()
 
 

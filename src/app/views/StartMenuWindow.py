@@ -10,11 +10,8 @@ from pyside_material import apply_stylesheet
 from app.views.PortSelectionWindow import PortSelectionWindow
 from app.views.ViewPreviousFlightWIndow import ViewPreviousFlightWindow
 from app.views.PreferenceSetting import PreferenceSetting
+from app.utils.constants import * 
 
-
-
-ASSETS_DIR = os.path.join("resources", "images", "assets")
-FONT_NAME = u"MS Shell Dlg 2"
 
 class StartMenuWindow(object):
     def setupUi(self, MainWindow):

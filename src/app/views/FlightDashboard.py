@@ -25,14 +25,7 @@ from app.utils.Percentage import Percentage
 from app.utils.MapGenerator import Map
 from app.views.ViewMap import MapView
 
-GAUGE_MINIMUM_HEIGHT = 125
-GAUGE_MINIMUM_WIDTH = 125
-GAUGE_MAXIMUM_HEIGHT = 250
-GAUGE_MAXIMUM_WIDTH = 16777215
-
-
-GAUGE_LABEL_WIDTH = 16777215
-GAUGE_LABEL_HIEGHT = 30
+from app.utils.constants import * 
 
 
 class Dashboard(QWidget):

@@ -8,10 +8,8 @@ from app.utils.PreferenceSetter import PreferenceSetter
 
 from app.views.PreviousParameterInputWindow import ParameterInputWindow
 from app.utils.Alerts import Alert
+from app.utils.constants import * 
 
-
-ASSETS_DIR = os.path.join("resources", "images", "assets")
-FONT_NAME = u"MS Shell Dlg 2"
 
 class ViewPreviousFlightWindow(object):
     def setupUi(self, MainWindow, PreviousWindow):
