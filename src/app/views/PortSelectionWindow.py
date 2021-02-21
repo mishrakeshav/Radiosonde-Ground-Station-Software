@@ -11,16 +11,14 @@ from app.utils.PreferenceSetter import PreferenceSetter
 
 from app.views.ParameterInputWindow import ParameterInputWindow
 from app.utils.Alerts import Alert
-from app.utils.constants import * 
-
+from app.utils.constants import *
 
 preference_setter = PreferenceSetter()
 
 
 class PortSelectionWindow(object):
-    def setupUi(self, MainWindow,PreviousWindow):
+    def setupUi(self, MainWindow):
         self.current_window = MainWindow
-        self.previous_window = PreviousWindow
         self.next_window = None
 
         if not MainWindow.objectName():
@@ -107,62 +105,20 @@ class PortSelectionWindow(object):
         self.statusbar.setObjectName(u"statusbar")
         MainWindow.setStatusBar(self.statusbar)
 
-
-        preference_setter.set_receiver_port(self.get_comport_list(), self.receiver_port_input)
-        preference_setter.set_radiosonde_port(self.get_comport_list(), self.radiosonde_port_input)
-
         self.retranslateUi(MainWindow)
 
         QMetaObject.connectSlotsByName(MainWindow)
-
-        # custom setups
-        self.connect_buttons()
 
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"MainWindow", None))
         self.receiver_port_label.setText(QCoreApplication.translate("MainWindow", u"Receiver com port :", None))
         self.radiosonde_port_label.setText(QCoreApplication.translate("MainWindow", u"Radiosonde com port :", None))
-        self.subtitle_label.setText(QCoreApplication.translate("MainWindow", u"Receiver com port and Radiosonde com port", None))
+        self.subtitle_label.setText(
+            QCoreApplication.translate("MainWindow", u"Receiver com port and Radiosonde com port", None))
         self.title_label.setText(QCoreApplication.translate("MainWindow", u"Start New Flight", None))
-        self.main_title_label.setText(QCoreApplication.translate("MainWindow", u"Indravani Groundstation Software", None))
+        self.main_title_label.setText(
+            QCoreApplication.translate("MainWindow", u"Indravani Groundstation Software", None))
         self.back_button.setText(QCoreApplication.translate("MainWindow", u"Back", None))
         self.proceed_button.setText(QCoreApplication.translate("MainWindow", u"Proceed", None))
         self.logo_databyte.setText("")
         self.logo_somaiya.setText("")
-
-
-    # connects buttons to methods that gets triggered on click
-    def connect_buttons(self):
-        self.proceed_button.clicked.connect(self.open_next_window)
-        self.back_button.clicked.connect(self.open_previous_window)
-
-    def open_previous_window(self):
-        self.current_window.close()
-        self.previous_window.show()
-
-    def open_next_window(self):
-
-        receiver_port = self.receiver_port_input.currentText()
-        radiosonde_port = self.radiosonde_port_input.currentText()
-
-        if False:
-            Alert(
-                main_text = "Port Selection Error",
-                info_text = "The radiosonde and receiver port cannot be same",
-                alert_type = Alert.WARNING,
-            )
-        else:
-            if self.next_window:
-                self.current_window.close()
-                self.next_window.show()
-            else:
-                self.next_window = QMainWindow()
-                self.next_window_ui = ParameterInputWindow()
-                self.next_window_ui.setupUi(receiver_port, radiosonde_port, self.next_window,self.current_window)
-                self.next_window.show()
-                self.current_window.close()
-
-    def get_comport_list(self):
-        comport_list = comports()
-        comport_list = list(map(lambda x: str(x).split()[0], comport_list))
-        return comport_list

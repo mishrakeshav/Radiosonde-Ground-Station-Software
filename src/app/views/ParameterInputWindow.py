@@ -1,41 +1,30 @@
-import sys
-import os
-import datetime
-import json
-
 from PySide2.QtCore import *
 from PySide2.QtGui import *
 from PySide2.QtWidgets import *
-from pyside_material import apply_stylesheet
-from app.utils.PreferenceSetter import PreferenceSetter
+from src.app.utils.PreferenceSetter import PreferenceSetter
 
-from app.views.Dashboard import Dashboard
-from app.utils.Alerts import Alert
-from app.utils.constants import * 
+from src.app.utils.constants import *
 
 preference_setter = PreferenceSetter()
 
+
 class ParameterInputWindow(object):
-    def setupUi(self, receiver_port, radiosonde_port, MainWindow, PreviousWindow):
-        # Date from the port selection page
+    def setupUi(self, receiver_port, radiosonde_port, main_window):
         self.receiver_port = receiver_port
         self.radiosonde_port = radiosonde_port
 
-
         self.frequency = [400, 401, 402, 403, 404, 405, 406]
 
-        # to navigate between windows
-        self.current_window = MainWindow
-        self.previous_window = PreviousWindow
+        self.current_window = main_window
         self.next_window = None
 
-        if not MainWindow.objectName():
-            MainWindow.setObjectName(u"MainWindow")
-        MainWindow.resize(600, 600)
-        MainWindow.setMinimumSize(QSize(600, 600))
-        MainWindow.setMaximumSize(QSize(600, 600))
-        MainWindow.setStyleSheet(u"background-color:white;\n""")
-        self.centralwidget = QWidget(MainWindow)
+        if not main_window.objectName():
+            main_window.setObjectName(u"MainWindow")
+        main_window.resize(600, 600)
+        main_window.setMinimumSize(QSize(600, 600))
+        main_window.setMaximumSize(QSize(600, 600))
+        main_window.setStyleSheet(u"background-color:white;\n""")
+        self.centralwidget = QWidget(main_window)
         self.centralwidget.setObjectName(u"centralwidget")
         self.main_title_label = QLabel(self.centralwidget)
         self.main_title_label.setObjectName(u"main_title_label")
@@ -150,29 +139,26 @@ class ParameterInputWindow(object):
         self.logo_somaiya.setGeometry(QRect(330, 30, 121, 111))
         self.logo_somaiya.setPixmap(QPixmap(os.path.join(ASSETS_DIR, "svv.png")))
         self.logo_somaiya.setScaledContents(True)
-        MainWindow.setCentralWidget(self.centralwidget)
-        self.menubar = QMenuBar(MainWindow)
+        main_window.setCentralWidget(self.centralwidget)
+        self.menubar = QMenuBar(main_window)
         self.menubar.setObjectName(u"menubar")
         self.menubar.setGeometry(QRect(0, 0, 600, 20))
-        MainWindow.setMenuBar(self.menubar)
-        self.statusbar = QStatusBar(MainWindow)
+        main_window.setMenuBar(self.menubar)
+        self.statusbar = QStatusBar(main_window)
         self.statusbar.setObjectName(u"statusbar")
-        MainWindow.setStatusBar(self.statusbar)
+        main_window.setStatusBar(self.statusbar)
 
-        self.retranslateUi(MainWindow)
+        self.retranslateUi(main_window)
 
-        QMetaObject.connectSlotsByName(MainWindow)
-
-        # custom setups
-        self.connect_buttons()
+        QMetaObject.connectSlotsByName(main_window)
 
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"MainWindow", None))
-        self.main_title_label.setText(QCoreApplication.translate("MainWindow", u"Indravani Groundstation Software", None))
+        self.main_title_label.setText(
+            QCoreApplication.translate("MainWindow", u"Indravani Groundstation Software", None))
         self.title_label.setText(QCoreApplication.translate("MainWindow", u"Start New Flight", None))
         self.subtitle_label.setText(QCoreApplication.translate("MainWindow", u"Enter Surface Parameters", None))
         self.frequency_label.setText(QCoreApplication.translate("MainWindow", u"Frequency", None))
-        
 
         preference_setter.set_frequency_options(self.frequency_input)
 
@@ -187,59 +173,3 @@ class ParameterInputWindow(object):
         self.back_button.setText(QCoreApplication.translate("MainWindow", u"Back", None))
         self.logo_databyte.setText("")
         self.logo_somaiya.setText("")
-
-    # connects buttons to the methods that gets triggered on click
-    def connect_buttons(self):
-        self.proceed_button.clicked.connect(self.open_next_window)
-        self.back_button.clicked.connect(self.open_previous_window)
-
-    def open_next_window(self):
-        try:
-            data = {
-                "frequency" : float(self.frequency_input.currentText()),
-                "temperature" : float(self.temperature_input.text()),
-                "pressure" : float(self.pressure_input.text()),
-                "altitude" : float(self.altitude_input.text()),
-                "latitude" : float(self.latitude_input.text()),
-                "longitude" : float(self.longitude_input.text()),
-                "windspeed" : float(self.windspeed_input.text()),
-                "humidity" : float(self.humidity_input.text()),
-            }
-        except:
-            Alert(
-                main_text = "Input Error",
-                info_text = "Provide appropriate values",
-                alert_type=Alert.CRITICAL
-            )
-            return
-
-
-        # Make the folder structure for the new flight
-        folder_name = datetime.datetime.utcnow().strftime("%Y%m%d_%H%M%S")             # Folder name is todays date
-        folder_path = os.path.join(preference_setter.get_export_path(), folder_name)                   # get the folder path
-        os.makedirs(folder_path)                                                       # make the folder
-
-        with open(os.path.join(folder_path, "output.csv"), 'w') as file_output:        # make the files
-            cols = ['Time', 'Latitude', 'Longitude', 'Satelites', 'Altitude',\
-             'Pressure', 'Internal Temperature', 'External Temperature', 'Humidity',\
-             'TimeElapsed', 'Wind Direction', 'Wind Speed', 'Scaled Pressure', 'Scaled Temperature']
-            file_output.write(",".join(cols) + "\n")
-
-        with open(os.path.join(folder_path, "params.json"), 'w') as file_output:
-            json.dump({"data": data, "time":datetime.datetime.utcnow().strftime("%H:%M:%S")}, file_output)
-
-
-        if self.next_window:
-            self.current_window.close()
-            self.next_window.show()
-        else:
-            self.next_window = QMainWindow()
-            self.next_window_ui = Dashboard()
-            self.next_window_ui.setupUi(self.next_window, folder_path, self.receiver_port)
-            self.next_window.show()
-            self.current_window.close()
-
-    def open_previous_window(self):
-        self.current_window.close()
-        self.previous_window.show()
-
