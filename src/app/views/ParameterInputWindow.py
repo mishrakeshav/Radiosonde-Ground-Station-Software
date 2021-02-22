@@ -2,7 +2,8 @@ from PySide2.QtCore import *
 from PySide2.QtGui import *
 from PySide2.QtWidgets import *
 from src.app.utils.PreferenceSetter import PreferenceSetter
-
+from src.app.components.logo import Logo
+from src.app.components.constants import *
 from src.app.utils.constants import *
 
 preference_setter = PreferenceSetter()
@@ -129,16 +130,13 @@ class ParameterInputWindow(object):
         self.back_button = QPushButton(self.centralwidget)
         self.back_button.setObjectName(u"back_button")
         self.back_button.setGeometry(QRect(330, 510, 141, 31))
-        self.logo_databyte = QLabel(self.centralwidget)
-        self.logo_databyte.setObjectName(u"logo_databyte")
-        self.logo_databyte.setGeometry(QRect(160, 20, 161, 141))
-        self.logo_databyte.setPixmap(os.path.join(ASSETS_DIR, "logo.jpeg"))
-        self.logo_databyte.setScaledContents(True)
-        self.logo_somaiya = QLabel(self.centralwidget)
-        self.logo_somaiya.setObjectName(u"logo_somaiya")
-        self.logo_somaiya.setGeometry(QRect(330, 30, 121, 111))
-        self.logo_somaiya.setPixmap(QPixmap(os.path.join(ASSETS_DIR, "svv.png")))
-        self.logo_somaiya.setScaledContents(True)
+
+        self.logo_databyte = Logo(parent=self.centralwidget, position=DATABYTE_LOGO_POSITION, size=DATABYTE_LOGO_SIZE,
+                                  path=DATABYTE_LOGO_PATH)
+
+        self.logo_somaiya = Logo(parent=self.centralwidget, position=SOMAIYA_LOGO_POSITION, size=SOMAIYA_LOGO_SIZE,
+                                 path=SOMAIYA_LOGO_PATH)
+        
         main_window.setCentralWidget(self.centralwidget)
         self.menubar = QMenuBar(main_window)
         self.menubar.setObjectName(u"menubar")
@@ -171,5 +169,4 @@ class ParameterInputWindow(object):
         self.longitude_label.setText(QCoreApplication.translate("MainWindow", u"Longitude", None))
         self.proceed_button.setText(QCoreApplication.translate("MainWindow", u"Proceed", None))
         self.back_button.setText(QCoreApplication.translate("MainWindow", u"Back", None))
-        self.logo_databyte.setText("")
-        self.logo_somaiya.setText("")
+

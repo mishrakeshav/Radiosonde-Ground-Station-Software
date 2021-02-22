@@ -5,6 +5,8 @@ from PySide2.QtGui import *
 from PySide2.QtWidgets import *
 
 from src.app.utils.constants import *
+from src.app.components.constants import *
+from src.app.components.logo import Logo
 
 
 class StartMenuWindow(object):
@@ -38,17 +40,11 @@ class StartMenuWindow(object):
         self.continue_flight_button = PushButton(name="Continue Flight", parent=self.centralwidget,
                                                  position=(170, 410))
 
-        self.logo_databyte = QLabel(self.centralwidget)
-        self.logo_databyte.setObjectName(u"logo_databyte")
-        self.logo_databyte.setGeometry(QRect(160, 30, 161, 141))
-        self.logo_databyte.setPixmap(QPixmap(os.path.join(ASSETS_DIR, "logo.jpeg")))
-        self.logo_databyte.setScaledContents(True)
+        self.logo_databyte = Logo(parent=self.centralwidget, position=DATABYTE_LOGO_POSITION, size=DATABYTE_LOGO_SIZE,
+                                  path=DATABYTE_LOGO_PATH)
 
-        self.logo_somaiya = QLabel(self.centralwidget)
-        self.logo_somaiya.setObjectName(u"logo_somaiya")
-        self.logo_somaiya.setGeometry(QRect(330, 40, 121, 111))
-        self.logo_somaiya.setPixmap(QPixmap(os.path.join(ASSETS_DIR, "svv.png")))
-        self.logo_somaiya.setScaledContents(True)
+        self.logo_somaiya = Logo(parent=self.centralwidget, position=SOMAIYA_LOGO_POSITION, size=SOMAIYA_LOGO_SIZE,
+                                 path=SOMAIYA_LOGO_PATH)
 
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QMenuBar(MainWindow)
@@ -66,5 +62,4 @@ class StartMenuWindow(object):
         MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"MainWindow", None))
         self.main_title_label.setText(
             QCoreApplication.translate("MainWindow", u"Indravani Radiostation Software", None))
-        self.logo_databyte.setText("")
-        self.logo_somaiya.setText("")
+

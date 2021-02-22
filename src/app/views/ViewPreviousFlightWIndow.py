@@ -3,6 +3,7 @@ from PySide2.QtGui import *
 from PySide2.QtWidgets import *
 
 from src.app.components.buttons import PushButton
+from src.app.components.constants import *
 from src.app.utils.constants import *
 
 
@@ -83,19 +84,11 @@ class ViewPreviousFlightWindow(object):
         self.back_button = PushButton(name="Proceed", parent=self.centralwidget,
                                       position=(330, 480), size=(151, 41))
 
-        ###### Logo Databyte ######
-        self.logo_databyte = QLabel(self.centralwidget)
-        self.logo_databyte.setObjectName(u"logo_databyte")
-        self.logo_databyte.setGeometry(QRect(150, 20, 161, 141))
-        self.logo_databyte.setPixmap(os.path.join(ASSETS_DIR, "logo.jpeg"))
-        self.logo_databyte.setScaledContents(True)
+        self.logo_databyte = Logo(parent=self.centralwidget, position=DATABYTE_LOGO_POSITION, size=DATABYTE_LOGO_SIZE,
+                                  path=DATABYTE_LOGO_PATH)
 
-        ###### Logo Somaiya ######
-        self.logo_somaiya = QLabel(self.centralwidget)
-        self.logo_somaiya.setObjectName(u"logo_somaiya")
-        self.logo_somaiya.setGeometry(QRect(320, 30, 121, 111))
-        self.logo_somaiya.setPixmap(QPixmap(os.path.join(ASSETS_DIR, "svv.png")))
-        self.logo_somaiya.setScaledContents(True)
+        self.logo_somaiya = Logo(parent=self.centralwidget, position=SOMAIYA_LOGO_POSITION, size=SOMAIYA_LOGO_SIZE,
+                                 path=SOMAIYA_LOGO_PATH)
 
         main_window.setCentralWidget(self.centralwidget)
 
@@ -123,5 +116,4 @@ class ViewPreviousFlightWindow(object):
         self.browse_button.setText(QCoreApplication.translate("MainWindow", u"Browse", None))
         self.proceed_button.setText(QCoreApplication.translate("MainWindow", u"Proceed", None))
         self.back_button.setText(QCoreApplication.translate("MainWindow", u"Back", None))
-        self.logo_databyte.setText("")
-        self.logo_somaiya.setText("")
+

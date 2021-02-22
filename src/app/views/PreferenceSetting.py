@@ -1,6 +1,6 @@
-from typing import Container
-from PySide2 import QtCore, QtGui, QtWidgets
-from app.utils.PreferenceSetter import PreferenceSetter
+from PySide2 import QtCore, QtWidgets
+from src.app.utils.PreferenceSetter import PreferenceSetter
+
 
 class PreferenceSetting(object):
     def __init__(self):
@@ -34,17 +34,17 @@ class PreferenceSetting(object):
         self.back_button = QtWidgets.QPushButton(self.centralwidget)
         self.back_button.setObjectName("back_button")
         self.horizontalLayout.addWidget(self.back_button)
-        
+
         self.save_button = QtWidgets.QPushButton(self.centralwidget)
         self.save_button.setObjectName("save_button")
         self.save_button.clicked.connect(self.save_preferences)
         self.horizontalLayout.addWidget(self.save_button)
-        
+
         self.reset_button = QtWidgets.QPushButton(self.centralwidget)
         self.reset_button.setObjectName("reset_button")
         self.reset_button.clicked.connect(self.reset_to_defaults)
         self.horizontalLayout.addWidget(self.reset_button)
-        
+
         self.verticalLayout_2.addLayout(self.horizontalLayout)
         self.gridLayout.addLayout(self.verticalLayout_2, 0, 0, 1, 1)
         MainWindow.setCentralWidget(self.centralwidget)
@@ -65,12 +65,10 @@ class PreferenceSetting(object):
         self.back_button.setText(_translate("MainWindow", "Back"))
         self.save_button.setText(_translate("MainWindow", "Save"))
         self.reset_button.setText(_translate("MainWindow", "Reset to defaults"))
-    
 
     def make_preferences_ui(self):
         self.preference_input = {}
         for pref in self.preference_setter.preferences.values():
-
             container = QtWidgets.QWidget()
             container.setStyleSheet("background-color:lightgrey;")
 
@@ -93,10 +91,10 @@ class PreferenceSetting(object):
             verticalLayout.addLayout(horizontalLayout)
 
             preference_description = QtWidgets.QLabel(self.scrollAreaWidgetContents)
-            
-            preference_label.setText(f"{pref.name }")
-            preference_value.setText(f"{ pref.value }")
-            preference_description.setText(f"{ pref.description }")
+
+            preference_label.setText(f"{pref.name}")
+            preference_value.setText(f"{pref.value}")
+            preference_description.setText(f"{pref.description}")
 
             verticalLayout.addWidget(preference_description)
 
@@ -105,7 +103,7 @@ class PreferenceSetting(object):
 
         spacerItem1 = QtWidgets.QSpacerItem(20, 139, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
         self.verticalLayout.addItem(spacerItem1)
-    
+
     def update_preference_inputs(self):
         for pref_name, pref_input in self.preference_input.items():
             pref_input.setText(self.preference_setter.preferences[pref_name].value)
@@ -126,9 +124,9 @@ class PreferenceSetting(object):
         pass
 
 
-
 if __name__ == "__main__":
     import sys
+
     app = QtWidgets.QApplication(sys.argv)
     MainWindow = QtWidgets.QMainWindow()
     ui = PreferenceSetting()
