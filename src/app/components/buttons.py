@@ -1,13 +1,15 @@
-from app.components.fonts import ButtonFont
+from src.app.components.fonts import ButtonFont
 from .constants import *
 from PySide2.QtCore import *
-from PySide2.QtGui import *
 from PySide2.QtWidgets import *
 
-class StartMenuButton(QPushButton):
-    def __init__(self, parent, name, position):
+
+class PushButton(QPushButton):
+    def __init__(self, parent, name, position, size=STANDARD_BUTTON_SIZE, accessible_name=u"btn_outline_secondary"):
         super().__init__(parent)
         self.setObjectName(name)
-        self.setGeometry(QRect(*position, *START_MENU_BUTTON_SIZE))
+        self.setGeometry(QRect(*position, *size))
         self.setFont(ButtonFont())
         self.setText(name)
+        self.setAccessibleName(accessible_name)
+

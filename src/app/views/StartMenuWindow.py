@@ -1,11 +1,11 @@
-from app.components.buttons import StartMenuButton
-import os
+from src.app.components.buttons import PushButton
 
 from PySide2.QtCore import *
 from PySide2.QtGui import *
 from PySide2.QtWidgets import *
 
 from src.app.utils.constants import *
+
 
 class StartMenuWindow(object):
     def setupUi(self, MainWindow):
@@ -32,11 +32,11 @@ class StartMenuWindow(object):
         self.main_title_label.setFont(font)
         self.main_title_label.setAlignment(Qt.AlignCenter)
 
-        self.previous_flights_button = StartMenuButton(name="Previous Flight", parent=self.centralwidget,
-                                                       position=(170, 480))
-        self.new_flight_button = StartMenuButton(name="New Flight", parent=self.centralwidget, position=(170, 340))
-        self.continue_flight_button = StartMenuButton(name="Continue Flight", parent=self.centralwidget,
-                                                      position=(170, 410))
+        self.previous_flights_button = PushButton(name="Previous Flight", parent=self.centralwidget,
+                                                  position=(170, 480))
+        self.new_flight_button = PushButton(name="New Flight", parent=self.centralwidget, position=(170, 340))
+        self.continue_flight_button = PushButton(name="Continue Flight", parent=self.centralwidget,
+                                                 position=(170, 410))
 
         self.logo_databyte = QLabel(self.centralwidget)
         self.logo_databyte.setObjectName(u"logo_databyte")
@@ -60,15 +60,7 @@ class StartMenuWindow(object):
         MainWindow.setStatusBar(self.statusbar)
 
         self.retranslateUi(MainWindow)
-        # self.set_accesible_name()
         QMetaObject.connectSlotsByName(MainWindow)
-
-    def set_accesible_name(self):
-        self.new_flight_button.setAccessibleName(
-            QCoreApplication.translate("MainWindow", u"btn_outline_secondary", None))
-        self.continue_flight_button.setAccessibleName(
-            QCoreApplication.translate("MainWindow", u"btn_outline_danger", None))
-        self.previous_flights_button.setAccessibleName(QCoreApplication.translate("MainWindow", u"btn_outline_secondary", None))
 
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"MainWindow", None))
