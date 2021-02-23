@@ -1,4 +1,4 @@
-from app.utils.constants import *
+from src.app.utils.constants import *
 from PySide2.QtGui import *
 
 

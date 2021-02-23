@@ -29,7 +29,7 @@ class ViewPreviousFlightController(ViewPreviousFlightWindow):
             Alert(main_text="PLS BROWSER WINDOW", info_text="Pls choose folder first lol")
             return
         else:
-            self.next_window_ui = ParameterInputController(self.main_window)
+            self.next_window_ui = ParameterInputController(main_window=self.main_window)
 
     def open_previous_window(self):
         self.main_window.close()

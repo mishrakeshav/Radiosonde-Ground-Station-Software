@@ -5,7 +5,7 @@ from PySide2.QtWidgets import *
 
 
 class PushButton(QPushButton):
-    def __init__(self, parent, name, position, size=STANDARD_BUTTON_SIZE, accessible_name=u"btn_outline_secondary"):
+    def __init__(self, parent, name, position=(0, 0), size=STANDARD_BUTTON_SIZE, accessible_name=u"btn_outline_secondary"):
         super().__init__(parent)
         self.setObjectName(name)
         self.setGeometry(QRect(*position, *size))

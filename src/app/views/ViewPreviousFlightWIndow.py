@@ -3,6 +3,7 @@ from PySide2.QtGui import *
 from PySide2.QtWidgets import *
 
 from src.app.components.buttons import PushButton
+from src.app.components.logo import Logo
 from src.app.components.constants import *
 from src.app.utils.constants import *
 
