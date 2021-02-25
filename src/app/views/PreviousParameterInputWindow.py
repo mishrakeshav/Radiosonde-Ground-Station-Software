@@ -1,39 +1,29 @@
-import sys
-import os
-import datetime
 import json
 
 from PySide2.QtCore import *
 from PySide2.QtGui import *
 from PySide2.QtWidgets import *
-from pyside_material import apply_stylesheet
 
-from app.views.FlightDashboard import Dashboard
-from app.utils.Alerts import Alert
-from app.utils.ValidateJson import validate_surface_values
-from app.utils.constants import * 
-
-
+from src.app.views.FlightDashboard import Dashboard
+from src.app.utils.Alerts import Alert
+from src.app.utils.ValidateJson import validate_surface_values
+from src.app.utils.constants import *
 
 
 class ParameterInputWindow(object):
-    def setupUi(self,folder_path ,MainWindow, PreviousWindow):
-        # Date from the port selection page
-        self.folder_path = folder_path
-
-        # to navigate between windows
-        self.current_window = MainWindow
-        self.previous_window = PreviousWindow
+    def setupUi(self, flight_folder_path, main_window):
+        self.flight_folder_path = flight_folder_path
+        self.main_window = main_window
         self.next_window = None
 
-        if not MainWindow.objectName():
-            MainWindow.setObjectName(u"MainWindow")
-        MainWindow.resize(600, 600)
-        MainWindow.setMinimumSize(QSize(600, 600))
-        MainWindow.setMaximumSize(QSize(600, 600))
+        if not main_window.objectName():
+            main_window.setObjectName(u"MainWindow")
+        main_window.resize(600, 600)
+        main_window.setMinimumSize(QSize(600, 600))
+        main_window.setMaximumSize(QSize(600, 600))
 
         # Central widget 
-        self.centralwidget = QWidget(MainWindow)
+        self.centralwidget = QWidget(main_window)
         self.centralwidget.setObjectName(u"centralwidget")
 
         # main title 
@@ -69,6 +59,7 @@ class ParameterInputWindow(object):
         font2.setWeight(50)
         self.subtitle_label.setFont(font2)
         self.subtitle_label.setAlignment(Qt.AlignCenter)
+
         self.frequency_label = QLabel(self.centralwidget)
         self.frequency_label.setObjectName(u"frequency_label")
         self.frequency_label.setGeometry(QRect(20, 340, 151, 21))
@@ -180,19 +171,19 @@ class ParameterInputWindow(object):
         self.logo_somaiya.setGeometry(QRect(330, 30, 121, 111))
         self.logo_somaiya.setPixmap(QPixmap(os.path.join(ASSETS_DIR, "somaiya_logo.png")))
         self.logo_somaiya.setScaledContents(True)
-        MainWindow.setCentralWidget(self.centralwidget)
-        self.menubar = QMenuBar(MainWindow)
+        main_window.setCentralWidget(self.centralwidget)
+        self.menubar = QMenuBar(main_window)
         self.menubar.setObjectName(u"menubar")
         self.menubar.setGeometry(QRect(0, 0, 600, 20))
-        MainWindow.setMenuBar(self.menubar)
-        self.statusbar = QStatusBar(MainWindow)
+        main_window.setMenuBar(self.menubar)
+        self.statusbar = QStatusBar(main_window)
         self.statusbar.setObjectName(u"statusbar")
-        MainWindow.setStatusBar(self.statusbar)
+        main_window.setStatusBar(self.statusbar)
 
-        self.retranslateUi(MainWindow)
+        self.retranslateUi(main_window)
         self.set_accesible_name()
-        
-        QMetaObject.connectSlotsByName(MainWindow)
+
+        QMetaObject.connectSlotsByName(main_window)
 
         # custom setups
         self.connect_buttons()
@@ -200,7 +191,8 @@ class ParameterInputWindow(object):
 
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"MainWindow", None))
-        self.main_title_label.setText(QCoreApplication.translate("MainWindow", u"Indravani Groundstation Software", None))
+        self.main_title_label.setText(
+            QCoreApplication.translate("MainWindow", u"Indravani Groundstation Software", None))
         self.title_label.setText(QCoreApplication.translate("MainWindow", u"Start New Flight", None))
         self.subtitle_label.setText(QCoreApplication.translate("MainWindow", u"Enter Surface Parameters", None))
         self.frequency_label.setText(QCoreApplication.translate("MainWindow", u"Frequency", None))
@@ -220,35 +212,33 @@ class ParameterInputWindow(object):
         self.proceed_button.setText(QCoreApplication.translate("MainWindow", u"Proceed", None))
         self.back_button.setText(QCoreApplication.translate("MainWindow", u"Back", None))
 
-
     # connects buttons to the methods that gets triggered on click
     def connect_buttons(self):
         self.proceed_button.clicked.connect(self.open_next_window)
         self.back_button.clicked.connect(self.open_previous_window)
+
     def set_accesible_name(self):
         self.proceed_button.setAccessibleName(QCoreApplication.translate("MainWindow", u"btn_secondary", None))
         self.back_button.setAccessibleName(QCoreApplication.translate("MainWindow", u"btn_danger", None))
 
-    # Fills all the QlineEdits with the values from the json file (params.json)  
     def fill_parameters(self):
-        # get the file path 
-        file_path = os.path.join(self.folder_path , 'params.json')
+        file_path = os.path.join(self.flight_folder_path, 'params.json')
 
         try:
             with open(file_path) as fileinput:
-                self.data = json.load(fileinput) 
+                self.data = json.load(fileinput)
             is_valid = validate_surface_values(self.data)
             if not is_valid:
-                raise(Exception(f"Invalid json file located at {file_path}"))
+                raise (Exception(f"Invalid json file located at {file_path}"))
         except Exception as e:
             Alert(
-                main_text = "Invalid Json File",
-                info_text = str(e),
-                alert_type = Alert.CRITICAL 
+                main_text="Invalid Json File",
+                info_text=str(e),
+                alert_type=Alert.CRITICAL
             )
-            return 
+            return
 
-        # Set the text for all the QLineEdit 
+            # Set the text for all the QLineEdit
         self.temperature_input.setText(str(self.data['data']['temperature']))
         self.pressure_input.setText(str(self.data['data']['pressure']))
         self.altitude_input.setText(str(self.data['data']['altitude']))
@@ -257,21 +247,17 @@ class ParameterInputWindow(object):
         self.humidity_input.setText(str(self.data['data']['humidity']))
         self.longitude_input.setText(str(self.data['data']['longitude']))
         self.frequency_input.setCurrentText(str(self.data['data']['frequency']))
-    
-    # opens the dashboard
+
     def open_next_window(self):
         if self.next_window:
-            self.current_window.close()
+            self.main_window.close()
             self.next_window.show()
         else:
             self.next_window = QMainWindow()
             self.next_window_ui = Dashboard()
-            self.next_window_ui.setupUi(self.next_window, self.folder_path, self.data)
+            self.next_window_ui.setupUi(self.next_window, self.flight_folder_path, self.data)
             self.next_window.show()
-            self.current_window.close()
+            self.main_window.close()
 
-    # opens
     def open_previous_window(self):
-        self.current_window.close()
-        self.previous_window.show()
-
+        self.main_window.close()

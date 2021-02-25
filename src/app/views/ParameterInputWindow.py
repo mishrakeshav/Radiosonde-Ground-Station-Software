@@ -4,7 +4,6 @@ from PySide2.QtWidgets import *
 from src.app.utils.PreferenceSetter import PreferenceSetter
 from src.app.components.logo import Logo
 from src.app.components.constants import *
-from src.app.utils.constants import *
 
 preference_setter = PreferenceSetter()
 
@@ -124,9 +123,11 @@ class ParameterInputWindow(object):
         self.latitude_input = QLineEdit(self.centralwidget)
         self.latitude_input.setObjectName(u"latitude_input")
         self.latitude_input.setGeometry(QRect(430, 340, 113, 25))
+
         self.proceed_button = QPushButton(self.centralwidget)
         self.proceed_button.setObjectName(u"proceed_button")
         self.proceed_button.setGeometry(QRect(170, 510, 141, 31))
+
         self.back_button = QPushButton(self.centralwidget)
         self.back_button.setObjectName(u"back_button")
         self.back_button.setGeometry(QRect(330, 510, 141, 31))

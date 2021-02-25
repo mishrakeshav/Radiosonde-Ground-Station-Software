@@ -10,17 +10,16 @@ from src.app.views.ParameterInputWindow import ParameterInputWindow
 
 class ParameterInputController(ParameterInputWindow):
     def __init__(self, receiver_port, radiosonde_port, main_window):
+        super().__init__()
         self.main_window = main_window
         self.receiver_port = receiver_port
         self.radiosonde_port = radiosonde_port
         self.setupUi(receiver_port=receiver_port, radiosonde_port=radiosonde_port, main_window=self.main_window)
-        self.connect_buttons()
-
-    def connect_buttons(self):
-        self.proceed_button.clicked.connect(self.open_next_window)
+        self.proceed_button.clicked.connect(lambda: print("Proceed Called"))
         self.back_button.clicked.connect(self.open_previous_window)
 
     def open_next_window(self):
+        print("Called")
         try:
             data = {
                 "frequency": float(self.frequency_input.currentText()),
@@ -56,12 +55,10 @@ class ParameterInputController(ParameterInputWindow):
         with open(os.path.join(flight_folder_path, "params.json"), 'w') as file_output:
             json.dump({"data": data, "time": datetime.datetime.utcnow().strftime("%H:%M:%S")}, file_output)
 
-        if self.next_window:
-            self.current_window.close()
-            self.next_window.show()
-        else:
-            DashboardController(main_window=self.main_window, flight_folder_path=flight_folder_path,
+        print("huhuhuhuhuh")
+        self.next_window = DashboardController(main_window=self.main_window, flight_folder_path=flight_folder_path,
                                 comport_name=self.receiver_port)
 
     def open_previous_window(self):
+        print("Woop go Doop")
         self.current_window.close()

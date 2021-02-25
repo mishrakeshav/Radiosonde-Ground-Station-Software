@@ -1,5 +1,3 @@
-import sys
-
 from PySide2.QtCore import *
 from PySide2.QtGui import *
 from PySide2.QtWidgets import *
@@ -10,7 +8,6 @@ from src.app.utils.Canvas import MplCanvas
 from src.app.utils.ReadComPort import SerialPort
 from src.app.utils.styles import *
 from src.app.utils.constants import *
-
 
 
 class DashboardWindow(object):

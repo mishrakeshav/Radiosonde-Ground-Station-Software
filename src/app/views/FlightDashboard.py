@@ -1,6 +1,5 @@
 import sys
 import os
-from collections import defaultdict
 
 from PySide2.QtCore import *
 from PySide2.QtGui import *
@@ -12,20 +11,14 @@ from metpy.plots import Hodograph, SkewT
 from metpy.units import units
 import numpy as np
 from tephi import Tephigram
-import matplotlib.pyplot as plt
-from numpy import dtype
 import netCDF4 as nc
 from datetime import datetime
 
-from app.utils.Canvas import MplCanvas
-from app.utils.ReadComPort import SerialPort
-from app.utils.Worker import Worker
-from app.utils.styles import *
-from app.utils.Percentage import Percentage
-from app.utils.MapGenerator import Map
-from app.views.ViewMap import MapView
-
-from app.utils.constants import * 
+from src.app.utils.Canvas import MplCanvas
+from src.app.utils.Worker import Worker
+from src.app.utils.Percentage import Percentage
+from src.app.views.ViewMap import MapView
+from src.app.utils.constants import *
 
 
 class Dashboard(QWidget):
