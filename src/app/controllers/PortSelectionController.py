@@ -1,3 +1,5 @@
+from PySide2 import QtWidgets
+
 from src.app.controllers.ParameterInputController import ParameterInputController
 from src.app.utils.PreferenceSetter import PreferenceSetter
 
@@ -14,6 +16,7 @@ class PortSelectionController(PortSelectionWindow):
         preference_setter = PreferenceSetter()
         preference_setter.set_receiver_port(self.receiver_port_input)
         preference_setter.set_radiosonde_port(self.radiosonde_port_input)
+        self.main_window.show()
 
     def connect_buttons(self):
         self.proceed_button.clicked.connect(self.open_next_window)
@@ -35,9 +38,5 @@ class PortSelectionController(PortSelectionWindow):
                 alert_type=Alert.WARNING,
             )
         else:
-            if self.next_window:
-                self.current_window.close()
-                self.next_window.show()
-            else:
-                ParameterInputController(receiver_port=receiver_port, radiosonde_port=radiosonde_port,
-                                         main_window=self.main_window)
+            self.next_window = ParameterInputController(receiver_port=receiver_port, radiosonde_port=radiosonde_port,
+                                     main_window=self.main_window)

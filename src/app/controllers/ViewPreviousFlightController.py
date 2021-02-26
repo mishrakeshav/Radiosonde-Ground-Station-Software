@@ -1,7 +1,7 @@
 from PySide2.QtCore import *
 from PySide2.QtWidgets import *
 
-from src.app.controllers.ParameterInputController import ParameterInputController
+from src.app.controllers.PreviousParameterInputController import PreviousParameterInputController
 from src.app.utils.Alerts import Alert
 from src.app.views.ViewPreviousFlightWIndow import ViewPreviousFlightWindow
 
@@ -15,9 +15,8 @@ class ViewPreviousFlightController(ViewPreviousFlightWindow):
 
     def get_folder(self):
         print('Get Folder Called')
-        self.folder_name = QFileDialog.getExistingDirectory()
-        self.flight_directory_input.setText(str(self.folder_name))
-        print(self.folder_name)
+        self.flight_folder_path = QFileDialog.getExistingDirectory()
+        self.flight_directory_input.setText(str(self.flight_folder_path))
 
     def connect_buttons(self):
         self.proceed_button.clicked.connect(self.open_next_window)
@@ -25,11 +24,12 @@ class ViewPreviousFlightController(ViewPreviousFlightWindow):
         self.browse_button.clicked.connect(self.get_folder)
 
     def open_next_window(self):
-        if not self.folder_name:
+        if not self.flight_folder_path:
             Alert(main_text="PLS BROWSER WINDOW", info_text="Pls choose folder first lol")
             return
         else:
-            self.next_window_ui = ParameterInputController(main_window=self.main_window)
+            self.next_window_ui = PreviousParameterInputController(main_window=self.main_window,
+                                                                   flight_folder_path=self.flight_folder_path)
 
     def open_previous_window(self):
         self.main_window.close()

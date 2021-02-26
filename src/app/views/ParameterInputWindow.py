@@ -1,6 +1,8 @@
 from PySide2.QtCore import *
 from PySide2.QtGui import *
 from PySide2.QtWidgets import *
+
+from src.app.components.buttons import PushButton
 from src.app.utils.PreferenceSetter import PreferenceSetter
 from src.app.components.logo import Logo
 from src.app.components.constants import *
@@ -9,10 +11,7 @@ preference_setter = PreferenceSetter()
 
 
 class ParameterInputWindow(object):
-    def setupUi(self, receiver_port, radiosonde_port, main_window):
-        self.receiver_port = receiver_port
-        self.radiosonde_port = radiosonde_port
-
+    def setupUi(self, main_window):
         self.frequency = [400, 401, 402, 403, 404, 405, 406]
 
         self.current_window = main_window
@@ -124,13 +123,9 @@ class ParameterInputWindow(object):
         self.latitude_input.setObjectName(u"latitude_input")
         self.latitude_input.setGeometry(QRect(430, 340, 113, 25))
 
-        self.proceed_button = QPushButton(self.centralwidget)
-        self.proceed_button.setObjectName(u"proceed_button")
-        self.proceed_button.setGeometry(QRect(170, 510, 141, 31))
+        self.proceed_button = PushButton(parent=self.centralwidget, name="Proceed", position=(170, 510), size=(141, 31))
 
-        self.back_button = QPushButton(self.centralwidget)
-        self.back_button.setObjectName(u"back_button")
-        self.back_button.setGeometry(QRect(330, 510, 141, 31))
+        self.back_button = PushButton(parent=self.centralwidget, name="Proceed", position=(330, 510), size=(141, 31))
 
         self.logo_databyte = Logo(parent=self.centralwidget, position=DATABYTE_LOGO_POSITION, size=DATABYTE_LOGO_SIZE,
                                   path=DATABYTE_LOGO_PATH)

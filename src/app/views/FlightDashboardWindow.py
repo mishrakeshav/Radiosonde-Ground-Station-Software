@@ -7,7 +7,7 @@ from src.app.utils.styles import *
 from src.app.components.constants import *
 
 
-class DashboardWindow(object):
+class FlightDashboardWindow(object):
     def setupUi(self, main_window):
 
         self.parameter_list = []
@@ -58,29 +58,29 @@ class DashboardWindow(object):
                                      title="Parameters V/S Altitude")
         self.gridLayout_4.addLayout(self.graph_altitude, 0, 1, 1, 1)
 
-        # -----------  Gauges -----------------
-        self.gauge_row = QHBoxLayout()
-        self.gauge_row.setObjectName(u"gauge_row")
-
-        self.pressure_gauge = Gauge(parent=self.tab)
-        self.gauge_row.addLayout(self.pressure_gauge)
-
-        self.temperature_gauge = Gauge(self.tab)
-        self.gauge_row.addLayout(self.temperature_gauge)
-
-        self.humidity_gauge = Gauge(self.tab)
-        self.gauge_row.addLayout(self.humidity_gauge)
-
-        self.wind_speed_gauge = Gauge(self.tab)
-        self.gauge_row.addLayout(self.wind_speed_gauge)
-
-        self.wind_direction_gauge = Gauge(self.tab)
-        self.gauge_row.addLayout(self.wind_direction_gauge)
-
-        self.altitude_gauge = Gauge(self.tab)
-        self.gauge_row.addLayout(self.altitude_gauge)
-
-        self.gridLayout_4.addLayout(self.gauge_row, 1, 0, 1, 3)
+        # # -----------  Gauges -----------------
+        # self.gauge_row = QHBoxLayout()
+        # self.gauge_row.setObjectName(u"gauge_row")
+        #
+        # self.pressure_gauge = Gauge(parent=self.tab)
+        # self.gauge_row.addLayout(self.pressure_gauge)
+        #
+        # self.temperature_gauge = Gauge(self.tab)
+        # self.gauge_row.addLayout(self.temperature_gauge)
+        #
+        # self.humidity_gauge = Gauge(self.tab)
+        # self.gauge_row.addLayout(self.humidity_gauge)
+        #
+        # self.wind_speed_gauge = Gauge(self.tab)
+        # self.gauge_row.addLayout(self.wind_speed_gauge)
+        #
+        # self.wind_direction_gauge = Gauge(self.tab)
+        # self.gauge_row.addLayout(self.wind_direction_gauge)
+        #
+        # self.altitude_gauge = Gauge(self.tab)
+        # self.gauge_row.addLayout(self.altitude_gauge)
+        #
+        # self.gridLayout_4.addLayout(self.gauge_row, 1, 0, 1, 3)
 
         # Graph Index
         self.parameter_group = QGroupBox(self.tab)

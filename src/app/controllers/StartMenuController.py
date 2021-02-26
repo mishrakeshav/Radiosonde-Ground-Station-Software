@@ -1,3 +1,5 @@
+from PySide2 import QtWidgets
+
 from src.app.controllers.PortSelectionController import PortSelectionController
 from src.app.controllers.ViewPreviousFlightController import ViewPreviousFlightController
 from src.app.views.StartMenuWindow import StartMenuWindow
