@@ -2,6 +2,7 @@ from PySide2.QtCore import *
 from PySide2.QtGui import *
 from PySide2.QtWidgets import *
 
+from src.app.components.buttons import PushButton
 from src.app.utils.PreferenceSetter import PreferenceSetter
 from src.app.components.constants import *
 from src.app.components.logo import Logo
@@ -73,12 +74,8 @@ class PortSelectionWindow(object):
         font3.setWeight(75)
         self.main_title_label.setFont(font3)
         self.main_title_label.setAlignment(Qt.AlignCenter)
-        self.back_button = QPushButton(self.centralwidget)
-        self.back_button.setObjectName(u"back_button")
-        self.back_button.setGeometry(QRect(320, 470, 141, 31))
-        self.proceed_button = QPushButton(self.centralwidget)
-        self.proceed_button.setObjectName(u"proceed_button")
-        self.proceed_button.setGeometry(QRect(160, 470, 141, 31))
+        self.back_button = PushButton(self.centralwidget, position=(320, 470), name="Back")
+        self.proceed_button = PushButton(self.centralwidget, position=(160, 470), name="Proceed")
 
         self.logo_databyte = Logo(parent=self.centralwidget, position=DATABYTE_LOGO_POSITION, size=DATABYTE_LOGO_SIZE,
                                   path=DATABYTE_LOGO_PATH)
@@ -109,6 +106,4 @@ class PortSelectionWindow(object):
         self.title_label.setText(QCoreApplication.translate("MainWindow", u"Start New Flight", None))
         self.main_title_label.setText(
             QCoreApplication.translate("MainWindow", u"Indravani Groundstation Software", None))
-        self.back_button.setText(QCoreApplication.translate("MainWindow", u"Back", None))
-        self.proceed_button.setText(QCoreApplication.translate("MainWindow", u"Proceed", None))
 

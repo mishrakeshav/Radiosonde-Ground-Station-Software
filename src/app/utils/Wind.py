@@ -10,7 +10,7 @@ class Wind:
         return a**2
 
     @staticmethod
-    def calculate_time_difference(previous_time:int, current_time:int):
+    def calculate_time_difference(previous_time, current_time):
         """
             Keyword arguments
                 previous_time   -- Previous Time

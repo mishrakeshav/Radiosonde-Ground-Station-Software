@@ -15,14 +15,10 @@ class MplCanvas(FigureCanvas):
 
 
 class Canvas(QtWidgets.QVBoxLayout):
-    def __init__(self, parent, xlabel="", ylabel="", title=""):
+    def __init__(self, parent):
         super().__init__(parent)
         self.graph = MplCanvas()
         self.graph.setObjectName("graph")
-        self.graph.axes.set_xlabel(xlabel)
-        self.graph.axes.set_ylabel(ylabel)
-        self.graph.axes.set_title(title)
-        self.graph.axes.grid()
 
         self.nav_bar = NavigationToolbar(self.graph, parent)
         self.nav_bar.setObjectName("nav_bar")
@@ -34,3 +30,15 @@ class Canvas(QtWidgets.QVBoxLayout):
 
         self.setStretch(0, 10)
         self.setStretch(2, 90)
+    
+    def clear_canvas(self): self.graph.axes.cla()
+    
+    def set_xlabel(self, xlabel): self.graph.axes.set_xlabel(xlabel)
+    
+    def set_ylabel(self, ylabel): self.graph.axes.set_ylabel(ylabel)
+    
+    def set_title(self, title): self.graph.axes.set_title(title)
+    
+    def plot(self, x, y, c):
+        self.graph.axes.plot(x, y, color=c)
+        self.graph.axes.grid()

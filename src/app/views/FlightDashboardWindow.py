@@ -38,7 +38,8 @@ class FlightDashboardWindow(object):
 
         self.tabWidget = QTabWidget(self.centralwidget)
         self.tabWidget.setObjectName(u"tabWidget")
-
+        
+        # --------------------------- TAB 1 Contents ---------------------------
         self.tab = QWidget()
         self.tab.setObjectName(u"Graph Views")
 
@@ -49,38 +50,18 @@ class FlightDashboardWindow(object):
         self.gridLayout_4.setObjectName(u"gridLayout_4")
 
         # -----------  Graph V/s Time -----------------
-        self.graph_time = Canvas(parent=self.tab, xlabel="Time Elapsed(s)", ylabel="Atmospheric Parameters",
-                                 title="Parameters V/S Time Elapsed")
+        self.graph_time = Canvas(parent=self.tab)
+        self.graph_time.set_xlabel("Time Elapsed(s)")
+        self.graph_time.set_ylabel("Atmospheric Parameters")
+        self.graph_time.set_title("Parameters V/S Time Elapsed")
         self.gridLayout_4.addLayout(self.graph_time, 0, 0, 1, 1)
 
         # -----------  Graph V/s Altitude -----------------
-        self.graph_altitude = Canvas(parent=self.tab, xlabel="Atmospheric Parameters", ylabel="Altitude",
-                                     title="Parameters V/S Altitude")
+        self.graph_altitude = Canvas(parent=self.tab)
+        self.graph_time.set_xlabel("Atmospheric Parameters")
+        self.graph_time.set_ylabel("Altitude")
+        self.graph_time.set_title("Parameters V/S Altitude")
         self.gridLayout_4.addLayout(self.graph_altitude, 0, 1, 1, 1)
-
-        # # -----------  Gauges -----------------
-        # self.gauge_row = QHBoxLayout()
-        # self.gauge_row.setObjectName(u"gauge_row")
-        #
-        # self.pressure_gauge = Gauge(parent=self.tab)
-        # self.gauge_row.addLayout(self.pressure_gauge)
-        #
-        # self.temperature_gauge = Gauge(self.tab)
-        # self.gauge_row.addLayout(self.temperature_gauge)
-        #
-        # self.humidity_gauge = Gauge(self.tab)
-        # self.gauge_row.addLayout(self.humidity_gauge)
-        #
-        # self.wind_speed_gauge = Gauge(self.tab)
-        # self.gauge_row.addLayout(self.wind_speed_gauge)
-        #
-        # self.wind_direction_gauge = Gauge(self.tab)
-        # self.gauge_row.addLayout(self.wind_direction_gauge)
-        #
-        # self.altitude_gauge = Gauge(self.tab)
-        # self.gauge_row.addLayout(self.altitude_gauge)
-        #
-        # self.gridLayout_4.addLayout(self.gauge_row, 1, 0, 1, 3)
 
         # Graph Index
         self.parameter_group = QGroupBox(self.tab)
@@ -121,8 +102,13 @@ class FlightDashboardWindow(object):
         self.gridLayout_4.addWidget(self.parameter_group, 0, 2, 1, 1)
 
         self.gridLayout.addLayout(self.gridLayout_4, 0, 0, 1, 1)
+        # ----------------------- END TAB 1 Contents ---------------------------
 
         self.tabWidget.addTab(self.tab, "")
+
+
+
+        # --------------------------- TAB 2 Contents ---------------------------
         self.tab_2 = QWidget()
         self.tab_2.setObjectName(u"tab_2")
         self.gridLayout_5 = QGridLayout(self.tab_2)
@@ -188,6 +174,7 @@ class FlightDashboardWindow(object):
         self.verticalLayout_3.addWidget(self.hodograph_check)
 
         self.gridLayout_5.addWidget(self.visualization_group, 0, 2, 1, 1)
+        # ----------------------- END TAB 2 Contents ---------------------------
 
         self.tabWidget.addTab(self.tab_2, "")
 

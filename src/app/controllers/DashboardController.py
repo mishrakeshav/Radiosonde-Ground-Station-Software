@@ -1,28 +1,65 @@
-from PySide2.QtGui import *
 from PySide2.QtWidgets import *
+from PySide2.QtCore import *
 
-from src.app.views.DashboardWindow import DashboardWindow
-from src.app.views.ViewMap import MapView
-from src.app.utils.Percentage import Percentage
-from src.app.utils.constants import *
+import json
+import pandas as pd
+import numpy as np
+from datetime import datetime, time
+
 import metpy.calc as mpcalc
 from metpy.plots import Hodograph, SkewT
 from metpy.units import units
-import numpy as np
 from tephi import Tephigram
 import netCDF4 as nc
-from datetime import datetime
+
+from src.app.utils.Wind import Wind
+from src.app.utils.Worker import Worker
+from src.app.views.DashboardWindow import DashboardWindow
+from src.app.views.ViewMap import MapView
+from src.app.components.constants import *
+from src.app.utils.SerialPort import SerialPort
+
+
+def parse_time(time_):
+    hours, minutes, seconds = int(time_[:2]), int(time_[2:4]), int(time_[4:])
+    return time(hours, minutes, seconds)
 
 
 class DashboardController(DashboardWindow):
     def __init__(self, main_window, flight_folder_path, comport_name):
+        super().__init__()
+
         self.main_window = main_window
         self.flight_folder_path = flight_folder_path
         self.comport_name = comport_name
+        self.flight_init_time = datetime.utcnow()
+        self.previous_time = 0
+
+        path = os.path.join(flight_folder_path, 'params.json')
+        with open(path) as json_file:
+            flight_data = json.load(json_file)
+            self.previous_latitude = flight_data["data"]["latitude"]
+            self.previous_longitude = flight_data["data"]["longitude"]
+
+        path = os.path.join(flight_folder_path, 'output.csv')
+        self.data_frame = pd.read_csv(path)
+
+
+        self.comport = SerialPort(self.comport_name)
         self.setupUi(main_window=main_window)
+        self.parameter_list = [
+            (self.temperature_check, 'External Temperature', COLOR_TEMPERATURE),
+            (self.pressure_check, 'Pressure', COLOR_PRESSURE),
+            (self.altitude_check, 'Altitude', COLOR_ALTITUDE),
+            (self.humidity_check, 'Humidity', COLOR_HUMIDITY),
+            (self.wind_speed_check, 'Wind Speed', COLOR_WINDSPEED),
+        ]
+
+        self.threadpool = QThreadPool()
+        self.run_threads()
 
     def open_map(self):
-        self.map = MapView(self.flight_folder_path)
+        _ = MapView(self.flight_folder_path)
 
     def read_port(self):
         output_file = os.path.join(self.flight_folder_path, "output.csv")
@@ -30,101 +67,115 @@ class DashboardController(DashboardWindow):
             if self.comport.serial_port.in_waiting:
                 data = self.comport.serial_port.read_until().decode('ascii').split(",")
                 data = [data[0]] + list(map(lambda x: float(x), data[1:]))
-                time, latitude, longitude, satelite, altitude, pressure, internal_temperature, external_temperature, humidity = data
+                time_str, latitude, longitude, satellite, altitude, pressure, internal_temperature, external_temperature, humidity = data
+                time_parsed = parse_time(time_str)
+                time_elapsed = self.flight_init_time - datetime.utcnow()
 
-                time_elapsed = self.comport.get_time_elapsed(time)
-                wind_direction = self.comport.get_wind_direction(
-                    latitude, longitude)
-                wind_speed = self.comport.get_wind_speed(
-                    latitude, longitude, time_elapsed)
-                scaled_pressure = (
-                                          pressure / (
-                                          self.comport.MAXIMUM_PRESSURE - self.comport.MINIMUM_PRESSURE)) * 100
-                scaled_external_temperature = (
-                                                      external_temperature / (
-                                                      self.comport.MAXIMUM_TEMPERATURE - self.comport.MINIMUM_TEMPERATURE)) * 100
+                wind_direction = Wind.calculate_wind_direction(
+                    self.previous_latitude,
+                    self.previous_longitude,
+                    latitude,
+                    longitude
+                )
+
+                wind_speed = Wind.calculate_wind_speed(
+                    self.previous_latitude,
+                    self.previous_longitude,
+                    latitude,
+                    longitude,
+                    self.previous_time,
+                    time_elapsed.total_seconds()
+                )
+
+                scaled_pressure = pressure / (PRESSURE_MAXIMUM - PRESSURE_MINIMUM) * 100
+
+                scaled_external_temperature = external_temperature / (TEMPERATURE_MAXIMUM - TEMPERATURE_MINIMUM) * 100
+
+                data_dict = {
+                    'time': time_parsed,
+                    'latitude': latitude,
+                    'longitude': longitude,
+                    'satellite': satellite,
+                    'altitude': altitude,
+                    'pressure': pressure,
+                    'internal_temperature': internal_temperature,
+                    'external_temperature': external_temperature,
+                    'humidity': humidity,
+                    'time_elapsed': time_elapsed.total_seconds(),
+                    'wind_direction': wind_direction,
+                    'wind_speed': wind_speed,
+                    'scaled_pressure': scaled_pressure,
+                    'scaled_external_temperature': scaled_external_temperature
+                }
 
                 data.extend([time_elapsed, wind_direction, wind_speed,
                              scaled_pressure, scaled_external_temperature])
+
                 data = [data[0]] + list(map(lambda x: str(x), data[1:]))
                 with open(output_file, 'a') as file_output:
                     file_output.write(",".join(data) + "\n")
 
                 index = self.data_frame.shape[0]
                 self.data_frame.loc[index] = data
+
                 self.update_graph()
-                self.update_table([time_elapsed, pressure, external_temperature, humidity, wind_speed, wind_direction])
-                self.update_gauge(*[pressure, external_temperature, humidity, wind_speed, wind_direction, altitude])
-                self.update_spec_graphs()
-                self.comport.previous_longitude = longitude
-                self.comport.previous_latitude = latitude
-                self.comport.previous_time = time_elapsed
+                self.update_table(data_dict)
+                self.update_gauge(data_dict)
+                # self.update_spec_graphs()
 
-    def update_gauge(self, pressure, temperature, humidity, wind_speed, wind_direction, altitude):
-        self.pressure_gauge_label.setText(str(pressure))
-        self.temperature_gauge_label.setText(str(temperature))
-        self.humidity_gauge_label.setText(str(humidity))
-        self.wind_speed_gauge_label.setText(str(wind_speed))
-        self.wind_direction_gauge_label.setText(str(wind_direction))
-        self.altitude_gauge_label.setText(str(altitude))
+                self.previous_longitude = longitude
+                self.previous_latitude = latitude
+                self.previous_time = time_elapsed.total_seconds()
 
-        pressure = Percentage.get_pressure(pressure)
-        temperature = Percentage.get_temperature(temperature)
-        humidity = int(humidity)
-        wind_speed = Percentage.get_wind_speed(wind_speed)
-        wind_direction = Percentage.get_wind_direction(wind_direction)
-        altitude = Percentage.get_altitude(altitude)
-
-        self.pressure_gauge.setPixmap(
-            QPixmap(os.path.join(GAUGE_PATH, "pressure", f"{pressure}.png")))
-        self.temperature_gauge.setPixmap(QPixmap(os.path.join(
-            GAUGE_PATH, "temperature", f"{temperature}.png")))
-        self.humidity_gauge.setPixmap(
-            QPixmap(os.path.join(GAUGE_PATH, "humidity", f"{humidity}.png")))
-        self.wind_speed_gauge.setPixmap(
-            QPixmap(os.path.join(GAUGE_PATH, "wind_speed", f"{wind_speed}.png")))
-        self.wind_direction_gauge.setPixmap(QPixmap(os.path.join(
-            GAUGE_PATH, "wind_direction", f"{wind_direction}.png")))
-        self.altitude_gauge.setPixmap(
-            QPixmap(os.path.join(GAUGE_PATH, "altitude", f"{altitude}.png")))
-
-    def update_table(self, data):
-        row = self.table.rowCount()
-        self.table.insertRow(row)
-        for i in range(len(data)):
-            self.table.setItem(row, i, QTableWidgetItem(str(data[i])))
-        # self.table.scrollToBottom()
+    def update_gauge(self, data):
+        self.pressure_gauge.update_gauge(data['pressure'])
+        self.temperature_gauge.update_gauge(data['external_temperature'])
+        self.humidity_gauge.update_gauge(data['humidity'])
+        self.wind_speed_gauge.update_gauge(data['wind_speed'])
+        self.wind_direction_gauge.update_gauge(data['wind_direction'])
+        self.altitude_gauge.update_gauge(data['altitude'])
 
     def update_graph(self):
-        # if not self.plot_ref_time:
-        #     self.plot_ref_time = dict()
-        #     self.plot_ref_time["temperature"] = self.graph_time.axes.plot(
-        #         self.data_frame["TimeElapsed"],
-        #         self.data_frame["External Temperature"]
-        #     )[0]
-        # else:
-        #     self.plot_ref_time["temperature"].set_ydata(self.data_frame["External Temperature"])
-        #     self.plot_ref_time["temperature"].set_xdata(self.data_frame["TimeElapsed"])
+        print("Update Graph")
+        self.graph_time.clear_canvas()
+        self.graph_altitude.clear_canvas()
 
-        self.graph_time.axes.cla()
         for parameter_check, parameter_name, color in self.parameter_list:
             if parameter_check.isChecked():
-                self.graph_time.axes.plot(
-                    self.data_frame[parameter_name], self.data_frame["TimeElapsed"], color=color)
-        self.graph_time.axes.grid()
-        self.graph_time.axes.set_xlabel('Time Elapsed (s)')
-        self.graph_time.draw()
+                self.graph_time.plot(
+                    x=self.data_frame[parameter_name],
+                    y=self.data_frame["TimeElapsed"],
+                    c=color)
 
-        self.graph_altitude.axes.cla()
-        for parameter_check, parameter_name, color in self.parameter_list:
-            if parameter_name == "Altitude":
-                continue
-            if parameter_check.isChecked():
-                self.graph_altitude.axes.plot(
-                    self.data_frame[parameter_name], self.data_frame["Altitude"], color=color)
-        self.graph_altitude.axes.grid()
-        self.graph_altitude.axes.set_xlabel('Time Elapsed (s)')
-        self.graph_altitude.draw()
+                if parameter_name == "Altitude": continue
+
+                self.graph_altitude.plot(
+                    x=self.data_frame[parameter_name],
+                    y=self.data_frame["Altitude"],
+                    c=color)
+
+        self.graph_time.set_xlabel('Time Elapsed (s)')
+        self.graph_time.set_ylabel('Parameters (units)')
+
+        self.graph_altitude.set_xlabel('Parameters (units)')
+        self.graph_altitude.set_ylabel('Altitude (m)')
+
+        self.graph_altitude.graph.axes.grid()
+        self.graph_time.graph.axes.grid()
+
+        self.graph_altitude.graph.draw()
+        self.graph_time.graph.draw()
+
+    def update_table(self, data):
+        cols = ['time', 'pressure', 'external_temperature', 'humidity', 'wind_speed', 'wind_direction']
+        row = self.table.rowCount()
+        self.table.insertRow(row)
+        for index, name in enumerate(cols):
+            self.table.setItem(row, index, QTableWidgetItem(str(data[name])))
+
+    def run_threads(self):
+        worker1 = Worker(self.read_port)
+        self.threadpool.start(worker1)
 
     def update_hodograph(self):
         print("updating hodograph")
@@ -235,10 +286,6 @@ class DashboardController(DashboardWindow):
         for graph in self.spec_graph_list:
             if self.spec_graph_list[graph]["check"].isChecked():
                 self.spec_graph_list[graph]["function"]()
-
-    def run_threads(self):
-        worker1 = Worker(self.read_port)
-        self.threadpool.start(worker1)
 
     def cdf(self):
         x = len(self.data_frame['Pressure'])

@@ -15,13 +15,12 @@ class ParameterInputController(ParameterInputWindow):
         self.main_window = main_window
         self.receiver_port = receiver_port
         self.radiosonde_port = radiosonde_port
-        self.setupUi(receiver_port=receiver_port, radiosonde_port=radiosonde_port, main_window=self.main_window)
+        self.setupUi(main_window=self.main_window)
         self.proceed_button.clicked.connect(self.open_next_window)
         self.back_button.clicked.connect(self.open_previous_window)
         self.main_window.show()
 
     def open_next_window(self):
-        print("Called")
         try:
             data = {
                 "frequency": float(self.frequency_input.currentText()),
@@ -57,7 +56,6 @@ class ParameterInputController(ParameterInputWindow):
         with open(os.path.join(flight_folder_path, "params.json"), 'w') as file_output:
             json.dump({"data": data, "time": datetime.datetime.utcnow().strftime("%H:%M:%S")}, file_output)
 
-        print("huhuhuhuhuh")
         self.main_window.close()
         self.next_window = DashboardController(main_window=QMainWindow(), flight_folder_path=flight_folder_path,
                                 comport_name=self.receiver_port)

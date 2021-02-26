@@ -49,35 +49,63 @@ class DashboardWindow(object):
         self.gridLayout_4.setObjectName(u"gridLayout_4")
 
         # -----------  Graph V/s Time -----------------
-        self.graph_time = Canvas(parent=self.tab, xlabel="Time Elapsed(s)", ylabel="Atmospheric Parameters",
-                                 title="Parameters V/S Time Elapsed")
+        self.graph_time = Canvas(parent=self.tab)
         self.gridLayout_4.addLayout(self.graph_time, 0, 0, 1, 1)
 
         # -----------  Graph V/s Altitude -----------------
-        self.graph_altitude = Canvas(parent=self.tab, xlabel="Atmospheric Parameters", ylabel="Altitude",
-                                     title="Parameters V/S Altitude")
+        self.graph_altitude = Canvas(parent=self.tab,)
         self.gridLayout_4.addLayout(self.graph_altitude, 0, 1, 1, 1)
 
         # -----------  Gauges -----------------
         self.gauge_row = QHBoxLayout()
         self.gauge_row.setObjectName(u"gauge_row")
 
-        self.pressure_gauge = Gauge(parent=self.tab)
+        self.pressure_gauge = Gauge(
+            parent=self.tab,
+            assets_path=os.path.join(GAUGE_PATH, "pressure"),
+            minimum=PRESSURE_MINIMUM,
+            maximum=PRESSURE_MAXIMUM
+        )
         self.gauge_row.addLayout(self.pressure_gauge)
 
-        self.temperature_gauge = Gauge(self.tab)
+        self.temperature_gauge = Gauge(
+            parent=self.tab,
+            assets_path=os.path.join(GAUGE_PATH, "temperature"),
+            minimum=TEMPERATURE_MINIMUM,
+            maximum=TEMPERATURE_MAXIMUM
+        )
         self.gauge_row.addLayout(self.temperature_gauge)
 
-        self.humidity_gauge = Gauge(self.tab)
+        self.humidity_gauge = Gauge(
+            parent=self.tab,
+            assets_path=os.path.join(GAUGE_PATH, "humidity"),
+            minimum=HUMIDITY_MINIMUM,
+            maximum=HUMIDITY_MAXIMUM
+        )
         self.gauge_row.addLayout(self.humidity_gauge)
 
-        self.wind_speed_gauge = Gauge(self.tab)
+        self.wind_speed_gauge = Gauge(
+            parent=self.tab,
+            assets_path=os.path.join(GAUGE_PATH, "wind_speed"),
+            minimum=WIND_SPEED_MINIMUM,
+            maximum=WIND_SPEED_MAXIMUM
+        )
         self.gauge_row.addLayout(self.wind_speed_gauge)
 
-        self.wind_direction_gauge = Gauge(self.tab)
+        self.wind_direction_gauge = Gauge(
+            parent=self.tab,
+            assets_path=os.path.join(GAUGE_PATH, "wind_direction"),
+            minimum=WIND_DIRECTION_MINIMUM,
+            maximum=WIND_DIRECTION_MAXIMUM
+        )
         self.gauge_row.addLayout(self.wind_direction_gauge)
 
-        self.altitude_gauge = Gauge(self.tab)
+        self.altitude_gauge = Gauge(
+            parent=self.tab,
+            assets_path=os.path.join(GAUGE_PATH, "altitude"),
+            minimum=ALTITUDE_MINIMUM,
+            maximum=ALTITUDE_MAXIMUM
+        )
         self.gauge_row.addLayout(self.altitude_gauge)
 
         self.gridLayout_4.addLayout(self.gauge_row, 1, 0, 1, 3)
@@ -127,7 +155,6 @@ class DashboardWindow(object):
         self.tab_2.setObjectName(u"tab_2")
         self.gridLayout_5 = QGridLayout(self.tab_2)
         self.gridLayout_5.setObjectName(u"gridLayout_5")
-
 
         self.table = QTableWidget(self.tab_2)
         if (self.table.columnCount() < 6):
