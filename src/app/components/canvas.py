@@ -9,7 +9,7 @@ matplotlib.use('Qt5Agg')
 
 class MplCanvas(FigureCanvas):
     def __init__(self, width=5, height=4, dpi=100):
-        self.fig = Figure(figsize=(width, height), dpi=dpi)
+        self.fig = Figure(figsize=(width, height), dpi=dpi, tight_layout=True)
         self.axes = self.fig.add_subplot(111)
         super().__init__(self.fig)
 
@@ -41,4 +41,3 @@ class Canvas(QtWidgets.QVBoxLayout):
     
     def plot(self, x, y, c):
         self.graph.axes.plot(x, y, color=c)
-        self.graph.axes.grid()

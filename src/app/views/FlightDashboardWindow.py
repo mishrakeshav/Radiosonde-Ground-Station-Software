@@ -137,7 +137,6 @@ class FlightDashboardWindow(object):
         self.spec_graph = Canvas(parent=self.tab_2)
         self.gridLayout_5.addLayout(self.spec_graph, 0, 1, 1, 1)
 
-        self.spec_graph_list = {}
         self.visualization_group = QGroupBox(self.tab_2)
         self.visualization_group.setObjectName(u"visualization_group")
         self.visualization_group.setMinimumSize(QSize(100, 150))
@@ -151,26 +150,18 @@ class FlightDashboardWindow(object):
 
         self.skewt_check = QRadioButton(self.layoutWidget)
         self.skewt_check.setObjectName(u"skewt_check")
-        self.spec_graph_list["skewt"] = {
-            "check": self.skewt_check, "function": self.update_skewt}
         self.verticalLayout_3.addWidget(self.skewt_check)
 
         self.tphi_check = QRadioButton(self.layoutWidget)
         self.tphi_check.setObjectName(u"tphi_check")
-        self.spec_graph_list["tphi"] = {
-            "check": self.tphi_check, "function": self.update_tphi}
         self.verticalLayout_3.addWidget(self.tphi_check)
 
         self.stuve_check = QRadioButton(self.layoutWidget)
         self.stuve_check.setObjectName(u"stuve_check")
-        self.spec_graph_list["stuve"] = {
-            "check": self.stuve_check, "function": self.update_stuve}
         self.verticalLayout_3.addWidget(self.stuve_check)
 
         self.hodograph_check = QRadioButton(self.layoutWidget)
         self.hodograph_check.setObjectName(u"hodograph_check")
-        self.spec_graph_list["hodograph"] = {
-            "check": self.hodograph_check, "function": self.update_hodograph}
         self.verticalLayout_3.addWidget(self.hodograph_check)
 
         self.gridLayout_5.addWidget(self.visualization_group, 0, 2, 1, 1)

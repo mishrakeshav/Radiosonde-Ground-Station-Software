@@ -48,9 +48,10 @@ class ParameterInputController(ParameterInputWindow):
         os.makedirs(flight_folder_path)  # make the folder
 
         with open(os.path.join(flight_folder_path, "output.csv"), 'w') as file_output:  # make the files
-            cols = ['Time', 'Latitude', 'Longitude', 'Satellites', 'Altitude',
-                    'Pressure', 'Internal Temperature', 'External Temperature', 'Humidity',
-                    'TimeElapsed', 'Wind Direction', 'Wind Speed', 'Scaled Pressure', 'Scaled Temperature']
+            cols = ['time', 'latitude', 'longitude', 'satellites', 'altitude', 'pressure', 'internal_temperature',
+                    'external_temperature', 'humidity', 'time_elapsed', 'wind_direction', 'wind_speed',
+                    'scaled_pressure', 'scaled_temperature'
+                    ]
             file_output.write(",".join(cols) + "\n")
 
         with open(os.path.join(flight_folder_path, "params.json"), 'w') as file_output:
@@ -58,7 +59,7 @@ class ParameterInputController(ParameterInputWindow):
 
         self.main_window.close()
         self.next_window = DashboardController(main_window=QMainWindow(), flight_folder_path=flight_folder_path,
-                                comport_name=self.receiver_port)
+                                               comport_name=self.receiver_port)
 
     def open_previous_window(self):
         print("Woop go Doop")
