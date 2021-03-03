@@ -20,7 +20,6 @@ class FlightDashboardController(FlightDashboardWindow):
 
         path = os.path.join(flight_folder_path, 'output.csv')
         self.data_frame = pd.read_csv(path)
-        print(self.data_frame)
 
         self.parameter_list = [
             (self.temperature_check, 'external_temperature', COLOR_TEMPERATURE),
@@ -34,12 +33,13 @@ class FlightDashboardController(FlightDashboardWindow):
             (self.hodograph_check, self.update_hodograph),
             (self.skewt_check, self.update_skewt),
             (self.tphi_check, self.update_tphi),
-            (self.hodograph_check, self.update_hodograph),
+            (self.stuve_check, self.update_stuve),
         ]
 
-        # Update the graphs when the checkboxes change their state
-        for radio_button, function in self.spec_graph_list:
-            radio_button.toggled.connect(lambda flag: self.update_spec_graphs(flag, function))
+        self.hodograph_check.toggled.connect(lambda flag: self.update_spec_graphs(flag, self.update_hodograph))
+        self.skewt_check.toggled.connect(lambda flag: self.update_spec_graphs(flag, self.update_skewt))
+        self.tphi_check.toggled.connect(lambda flag: self.update_spec_graphs(flag, self.update_tphi))
+        self.stuve_check.toggled.connect(lambda flag: self.update_spec_graphs(flag, self.update_stuve))
 
         # Update the graphs when the checkboxes change their state
         for checkbox, _, _ in self.parameter_list:
@@ -56,9 +56,7 @@ class FlightDashboardController(FlightDashboardWindow):
 
         for row_number in range(len(self.data_frame)):
             for col_number, col in enumerate(cols):
-                print((row_number, col_number), end=", ")
                 self.table.setItem(row_number + 1, col_number, QTableWidgetItem(self.data_frame.iloc[row_number][col]))
-            print()
 
     def update_graph(self):
         self.graph_time.clear_canvas()
@@ -91,7 +89,6 @@ class FlightDashboardController(FlightDashboardWindow):
         self.graph_time.graph.draw()
 
     def update_hodograph(self):
-        print('Update Hodograph')
         wind_speed = self.data_frame['wind_speed'].values * units.knots
         wind_direction = self.data_frame['wind_direction'].values * units.degrees
         u, v = mpcalc.wind_components(wind_speed, wind_direction)
@@ -103,7 +100,6 @@ class FlightDashboardController(FlightDashboardWindow):
         self.spec_graph.graph.draw()
 
     def update_skewt(self):
-        print('Update SkewT')
         self.data_frame['Td'] = self.data_frame['external_temperature'].values - (
                 (100 - self.data_frame['humidity']) / 5)
         p = self.data_frame['pressure'].values * units.hPa
@@ -123,7 +119,6 @@ class FlightDashboardController(FlightDashboardWindow):
         self.spec_graph.graph.draw()
 
     def update_tphi(self):
-        print('Update Tphi')
         self.data_frame['Td'] = self.data_frame['external_temperature'].values - (
                 (100 - self.data_frame['humidity'].values) / 5)
         dewpoint = list(zip(self.data_frame['pressure'], self.data_frame['Td']))
@@ -138,7 +133,6 @@ class FlightDashboardController(FlightDashboardWindow):
         self.spec_graph.graph.draw()
 
     def update_stuve(self):
-        print('Update Stuve')
         self.data_frame['Td'] = self.data_frame['external_temperature'].values - (
                 (100 - self.data_frame['humidity'].values) / 5)
 
@@ -161,36 +155,35 @@ class FlightDashboardController(FlightDashboardWindow):
         ws_T_2D = 1. / (1. / 273.15 - 1.844e-4 *
                         np.log(ws_2D * Pws_2D / 611.3 / (ws_2D + 0.622)))
 
-        self.spec_graph.fig.clf()
+        self.spec_graph.graph.fig.clf()
 
-        self.spec_graph.axes.set_yscale('log')
-        self.spec_graph.axes.set_xlabel('temp K')
-        self.spec_graph.axes.set_ylabel('pressure mb')
-        self.spec_graph.axes.set_title('Stuve chart')
-        self.spec_graph.axes.set_xlim(200, 300)
-        self.spec_graph.axes.set_ylim(1025, 400)
-        self.spec_graph.axes.minorticks_off()
-        self.spec_graph.axes.set_xticks(np.arange(200, 301, 10))
-        self.spec_graph.axes.set_yticks([1000, 850, 700, 600, 500, 400])
-        self.spec_graph.axes.set_yticklabels(
+        self.spec_graph.graph.axes.set_yscale('log')
+        self.spec_graph.graph.axes.set_xlabel('temp K')
+        self.spec_graph.graph.axes.set_ylabel('pressure mb')
+        self.spec_graph.graph.axes.set_title('Stuve chart')
+        self.spec_graph.graph.axes.set_xlim(200, 300)
+        self.spec_graph.graph.axes.set_ylim(1025, 400)
+        self.spec_graph.graph.axes.minorticks_off()
+        self.spec_graph.graph.axes.set_xticks(np.arange(200, 301, 10))
+        self.spec_graph.graph.axes.set_yticks([1000, 850, 700, 600, 500, 400])
+        self.spec_graph.graph.axes.set_yticklabels(
             ['1000', '850', '700', '600', '500', '400'])
-        self.spec_graph.axes.grid(True)
-        self.spec_graph.axes.plot(
+        self.spec_graph.graph.axes.grid(True)
+        self.spec_graph.graph.axes.plot(
             ws_T_2D, Pws_2D * 0.01, color='#a4c2f4', linestyle='dashed')
-        self.spec_graph.axes.plot(T_2D, P_2D, color='#f6b26b')
-        self.spec_graph.axes.plot(temp_C, press_mb, 'r', lw=2)
-        self.spec_graph.axes.plot(td_C, press_mb, 'g', lw=2)
+        self.spec_graph.graph.axes.plot(T_2D, P_2D, color='#f6b26b')
+        self.spec_graph.graph.axes.plot(temp_C, press_mb, 'r', lw=2)
+        self.spec_graph.graph.axes.plot(td_C, press_mb, 'g', lw=2)
 
         for i in np.arange(16):
-            self.spec_graph.axes.text(
+            self.spec_graph.graph.axes.text(
                 ws_T_2D[3, i], Pws_2D[3, i] * 0.01, labels[i], color='#0000f4', ha='center', weight='bold')
-            self.spec_graph.axes.text(
+            self.spec_graph.graph.axes.text(
                 ws_T_2D[22, i], Pws_2D[22, i] * 0.01, labels[i], color='#0000f4', ha='center', weight='bold')
 
         self.spec_graph.graph.draw()
 
     def update_spec_graphs(self, flag, function):
-        print('Update Special Graphs')
         if flag: function()
 
     def cdf(self):

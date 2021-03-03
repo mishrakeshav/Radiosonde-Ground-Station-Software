@@ -2,7 +2,6 @@ from PySide2.QtCore import *
 from PySide2.QtWidgets import *
 
 from src.app.components.canvas import Canvas
-from src.app.components.gauge import Gauge
 from src.app.utils.styles import *
 from src.app.components.constants import *
 
@@ -38,7 +37,7 @@ class FlightDashboardWindow(object):
 
         self.tabWidget = QTabWidget(self.centralwidget)
         self.tabWidget.setObjectName(u"tabWidget")
-        
+
         # --------------------------- TAB 1 Contents ---------------------------
         self.tab = QWidget()
         self.tab.setObjectName(u"Graph Views")
@@ -106,14 +105,11 @@ class FlightDashboardWindow(object):
 
         self.tabWidget.addTab(self.tab, "")
 
-
-
         # --------------------------- TAB 2 Contents ---------------------------
         self.tab_2 = QWidget()
         self.tab_2.setObjectName(u"tab_2")
         self.gridLayout_5 = QGridLayout(self.tab_2)
         self.gridLayout_5.setObjectName(u"gridLayout_5")
-
 
         self.table = QTableWidget(self.tab_2)
         if (self.table.columnCount() < 6):

@@ -53,7 +53,7 @@ class DashboardWindow(object):
         self.gridLayout_4.addLayout(self.graph_time, 0, 0, 1, 1)
 
         # -----------  Graph V/s Altitude -----------------
-        self.graph_altitude = Canvas(parent=self.tab,)
+        self.graph_altitude = Canvas(parent=self.tab, )
         self.gridLayout_4.addLayout(self.graph_altitude, 0, 1, 1, 1)
 
         # -----------  Gauges -----------------
@@ -218,12 +218,17 @@ class DashboardWindow(object):
         self.gridLayout_2.addLayout(self.verticalLayout_2, 0, 0, 1, 1)
 
         main_window.setCentralWidget(self.centralwidget)
+
+        # ------------------ MENU BAR -------------------
         self.menubar = QMenuBar(main_window)
         self.menubar.setObjectName(u"menubar")
         self.menubar.setGeometry(QRect(0, 0, 830, 22))
+
+        # ---------------- MENU Visualization --------------
         self.menuVisualization = QMenu(self.menubar)
         self.menuVisualization.setObjectName(u"menuVisualization")
 
+        # ---------------- MENU Files --------------
         self.menuFiles = QMenu(self.menubar)
         self.menuFiles.setObjectName(u"menuFiles")
 
@@ -234,11 +239,9 @@ class DashboardWindow(object):
 
         self.menubar.addAction(self.menuVisualization.menuAction())
         self.menuVisualization.addAction(self.actionTrack_Balloon)
-        self.actionTrack_Balloon.triggered.connect(self.open_map)
 
         self.menubar.addAction(self.menuFiles.menuAction())
         self.menuFiles.addAction(self.actionCreate_File)
-        self.actionCreate_File.triggered.connect(self.cdf)
 
         self.retranslateUi(main_window)
 

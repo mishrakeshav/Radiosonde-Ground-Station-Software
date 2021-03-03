@@ -45,7 +45,6 @@ class DashboardController(DashboardWindow):
         path = os.path.join(flight_folder_path, 'output.csv')
         self.data_frame = pd.read_csv(path)
 
-
         self.comport = SerialPort(self.comport_name)
         self.setupUi(main_window=main_window)
         self.parameter_list = [
@@ -60,17 +59,24 @@ class DashboardController(DashboardWindow):
             (self.hodograph_check, self.update_hodograph),
             (self.skewt_check, self.update_skewt),
             (self.tphi_check, self.update_tphi),
-            (self.hodograph_check, self.update_hodograph),
+            (self.stuve_check, self.update_stuve),
         ]
 
         # Update the graphs when the checkboxes change their state
-        for radio_button, function in self.spec_graph_list:
-            radio_button.toggled.connect(lambda flag: self.update_spec_graphs(flag, function))
+        self.hodograph_check.toggled.connect(lambda flag: self.update_spec_graphs(flag, self.update_hodograph))
+        self.skewt_check.toggled.connect(lambda flag: self.update_spec_graphs(flag, self.update_skewt))
+        self.tphi_check.toggled.connect(lambda flag: self.update_spec_graphs(flag, self.update_tphi))
+        self.stuve_check.toggled.connect(lambda flag: self.update_spec_graphs(flag, self.update_stuve))
+
+        # setting up the menu bar
+        self.actionTrack_Balloon.triggered.connect(self.open_map)
+        self.actionCreate_File.triggered.connect(self.cdf)
 
         self.threadpool = QThreadPool()
         self.run_threads()
 
     def open_map(self):
+        print('Generating Map')
         _ = MapView(self.flight_folder_path)
 
     def read_port(self):
@@ -255,36 +261,35 @@ class DashboardController(DashboardWindow):
         ws_T_2D = 1. / (1. / 273.15 - 1.844e-4 *
                         np.log(ws_2D * Pws_2D / 611.3 / (ws_2D + 0.622)))
 
-        self.spec_graph.fig.clf()
+        self.spec_graph.graph.fig.clf()
 
-        self.spec_graph.axes.set_yscale('log')
-        self.spec_graph.axes.set_xlabel('temp K')
-        self.spec_graph.axes.set_ylabel('pressure mb')
-        self.spec_graph.axes.set_title('Stuve chart')
-        self.spec_graph.axes.set_xlim(200, 300)
-        self.spec_graph.axes.set_ylim(1025, 400)
-        self.spec_graph.axes.minorticks_off()
-        self.spec_graph.axes.set_xticks(np.arange(200, 301, 10))
-        self.spec_graph.axes.set_yticks([1000, 850, 700, 600, 500, 400])
-        self.spec_graph.axes.set_yticklabels(
+        self.spec_graph.graph.axes.set_yscale('log')
+        self.spec_graph.graph.axes.set_xlabel('temp K')
+        self.spec_graph.graph.axes.set_ylabel('pressure mb')
+        self.spec_graph.graph.axes.set_title('Stuve chart')
+        self.spec_graph.graph.axes.set_xlim(200, 300)
+        self.spec_graph.graph.axes.set_ylim(1025, 400)
+        self.spec_graph.graph.axes.minorticks_off()
+        self.spec_graph.graph.axes.set_xticks(np.arange(200, 301, 10))
+        self.spec_graph.graph.axes.set_yticks([1000, 850, 700, 600, 500, 400])
+        self.spec_graph.graph.axes.set_yticklabels(
             ['1000', '850', '700', '600', '500', '400'])
-        self.spec_graph.axes.grid(True)
-        self.spec_graph.axes.plot(
+        self.spec_graph.graph.axes.grid(True)
+        self.spec_graph.graph.axes.plot(
             ws_T_2D, Pws_2D * 0.01, color='#a4c2f4', linestyle='dashed')
-        self.spec_graph.axes.plot(T_2D, P_2D, color='#f6b26b')
-        self.spec_graph.axes.plot(temp_C, press_mb, 'r', lw=2)
-        self.spec_graph.axes.plot(td_C, press_mb, 'g', lw=2)
+        self.spec_graph.graph.axes.plot(T_2D, P_2D, color='#f6b26b')
+        self.spec_graph.graph.axes.plot(temp_C, press_mb, 'r', lw=2)
+        self.spec_graph.graph.axes.plot(td_C, press_mb, 'g', lw=2)
 
         for i in np.arange(16):
-            self.spec_graph.axes.text(
+            self.spec_graph.graph.axes.text(
                 ws_T_2D[3, i], Pws_2D[3, i] * 0.01, labels[i], color='#0000f4', ha='center', weight='bold')
-            self.spec_graph.axes.text(
+            self.spec_graph.graph.axes.text(
                 ws_T_2D[22, i], Pws_2D[22, i] * 0.01, labels[i], color='#0000f4', ha='center', weight='bold')
 
         self.spec_graph.graph.draw()
 
     def update_spec_graphs(self, flag, function):
-        print('Update Special Graphs')
         if flag: function()
 
     def cdf(self):

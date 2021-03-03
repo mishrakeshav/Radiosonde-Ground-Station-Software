@@ -74,15 +74,14 @@ class PortSelectionWindow(object):
         font3.setWeight(75)
         self.main_title_label.setFont(font3)
         self.main_title_label.setAlignment(Qt.AlignCenter)
-        self.back_button = PushButton(self.centralwidget, position=(320, 470), name="Back")
-        self.proceed_button = PushButton(self.centralwidget, position=(160, 470), name="Proceed")
+        self.back_button = PushButton(self.centralwidget, position=(160, 480), size=(151, 41), name="Back")
+        self.proceed_button = PushButton(self.centralwidget, position=(330, 480), size=(151, 41), name="Proceed")
 
         self.logo_databyte = Logo(parent=self.centralwidget, position=DATABYTE_LOGO_POSITION, size=DATABYTE_LOGO_SIZE,
                                   path=DATABYTE_LOGO_PATH)
 
         self.logo_somaiya = Logo(parent=self.centralwidget, position=SOMAIYA_LOGO_POSITION, size=SOMAIYA_LOGO_SIZE,
                                  path=SOMAIYA_LOGO_PATH)
-
 
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QMenuBar(MainWindow)
@@ -106,4 +105,3 @@ class PortSelectionWindow(object):
         self.title_label.setText(QCoreApplication.translate("MainWindow", u"Start New Flight", None))
         self.main_title_label.setText(
             QCoreApplication.translate("MainWindow", u"Indravani Groundstation Software", None))
-
