@@ -22,7 +22,6 @@ class ParameterInputWindow(object):
         main_window.resize(600, 600)
         main_window.setMinimumSize(QSize(600, 600))
         main_window.setMaximumSize(QSize(600, 600))
-        main_window.setStyleSheet(u"background-color:white;\n""")
         self.centralwidget = QWidget(main_window)
         self.centralwidget.setObjectName(u"centralwidget")
         self.main_title_label = QLabel(self.centralwidget)

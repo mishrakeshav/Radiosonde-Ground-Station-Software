@@ -20,7 +20,6 @@ class PortSelectionWindow(object):
         MainWindow.resize(600, 600)
         MainWindow.setMinimumSize(QSize(600, 600))
         MainWindow.setMaximumSize(QSize(600, 600))
-        MainWindow.setStyleSheet(u"background-color:white;\n""")
         self.centralwidget = QWidget(MainWindow)
         self.centralwidget.setObjectName(u"centralwidget")
         self.radiosonde_port_input = QComboBox(self.centralwidget)

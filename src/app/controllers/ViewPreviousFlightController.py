@@ -1,4 +1,3 @@
-from PySide2.QtCore import *
 from PySide2.QtWidgets import *
 
 from src.app.controllers.PreviousParameterInputController import PreviousParameterInputController
