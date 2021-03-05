@@ -15,10 +15,10 @@ import netCDF4 as nc
 
 from src.app.utils.Wind import Wind
 from src.app.utils.Worker import Worker
+from src.app.utils.SerialPort import SerialPort
 from src.app.views.DashboardWindow import DashboardWindow
 from src.app.views.ViewMap import MapView
 from src.app.components.constants import *
-from src.app.utils.SerialPort import SerialPort
 
 
 def parse_time(time_):
@@ -133,13 +133,12 @@ class DashboardController(DashboardWindow):
                 with open(output_file, 'a') as file_output:
                     file_output.write(",".join(data) + "\n")
 
-                index = self.data_frame.shape[0]
-                self.data_frame.loc[index] = data
+                self.data_frame = self.data_frame.append(data_dict, ignore_index=True)
 
                 self.update_graph()
                 self.update_table(data_dict)
                 self.update_gauge(data_dict)
-                # self.update_spec_graphs()
+                # TODO: Update speacial graphs in real-time
 
                 self.previous_longitude = longitude
                 self.previous_latitude = latitude
@@ -160,8 +159,8 @@ class DashboardController(DashboardWindow):
         for parameter_check, parameter_name, color in self.parameter_list:
             if parameter_check.isChecked():
                 self.graph_time.plot(
-                    x=self.data_frame[parameter_name],
-                    y=self.data_frame["time_elapsed"],
+                    x=self.data_frame["time_elapsed"],
+                    y=self.data_frame[parameter_name],
                     c=color)
 
                 if parameter_name == "altitude": continue

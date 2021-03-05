@@ -1,15 +1,17 @@
 from PySide2.QtWidgets import *
-from src.app.components.constants import *
-from src.app.views.FlightDashboardWindow import FlightDashboardWindow
-from src.app.views.ViewMap import MapView
+
+from datetime import datetime
+import numpy as np
+import pandas as pd
 import metpy.calc as mpcalc
 from metpy.plots import Hodograph, SkewT
 from metpy.units import units
-import numpy as np
-import pandas as pd
 from tephi import Tephigram
 import netCDF4 as nc
-from datetime import datetime
+
+from src.app.components.constants import *
+from src.app.views.FlightDashboardWindow import FlightDashboardWindow
+from src.app.views.ViewMap import MapView
 
 
 class FlightDashboardController(FlightDashboardWindow):
@@ -45,6 +47,10 @@ class FlightDashboardController(FlightDashboardWindow):
         for checkbox, _, _ in self.parameter_list:
             checkbox.stateChanged.connect(self.update_graph)
 
+        # setting up the menu bar
+        self.actionTrack_Balloon.triggered.connect(self.open_map)
+        self.actionCreate_File.triggered.connect(self.cdf)
+
         self.update_table()
         self.update_graph()
 
@@ -65,8 +71,8 @@ class FlightDashboardController(FlightDashboardWindow):
         for parameter_check, parameter_name, color in self.parameter_list:
             if parameter_check.isChecked():
                 self.graph_time.plot(
-                    x=self.data_frame[parameter_name],
-                    y=self.data_frame["time_elapsed"],
+                    x=self.data_frame["time_elapsed"],
+                    y=self.data_frame[parameter_name],
                     c=color)
 
                 if parameter_name == "altitude": continue
