@@ -1,17 +1,9 @@
-import math
+import netCDF4 as nc
 
-R = 6371e3
+PATH = '/home/phoenix/Desktop/Projects/Radiosonde-Ground-Station-Software/src/export/20210306_043308/Indravani_788_20210306_043637.nc'
 
-lat1_rad = math.radians(lat1_deg)
-lat2_rad = math.radians(lat2_deg)
-
-lat_diff_rad = math.radians(lat2_deg-lat1_deg)
-lon_diff_rad = math.radians(lon2_deg-lon1_deg)
-
-a = math.pow(math.sin(lat_diff_rad/2), 2) + \
-    math.cos(lat1_rad) * math.cos(lat2_rad) * \
-    math.pow(math.sin(lon_diff_rad/2), 2)
-
-c = 2 * math.atan2(math.sqrt(a), math.sqrt(1-a))
-
-d = R * c
+if __name__ == '__main__':
+    df = nc.Dataset(PATH)
+    print(f"Variables: {type(df.variables)}")
+    time_variable = df.variables['time']
+    print(time_variable[:])

@@ -11,7 +11,6 @@ import metpy.calc as mpcalc
 from metpy.plots import Hodograph, SkewT
 from metpy.units import units
 from tephi import Tephigram
-import netCDF4 as nc
 
 from src.app.utils.Wind import Wind
 from src.app.utils.Worker import Worker
@@ -55,13 +54,6 @@ class DashboardController(DashboardWindow):
             (self.wind_speed_check, 'wind_speed', COLOR_WINDSPEED),
         ]
 
-        self.spec_graph_list = [
-            (self.hodograph_check, self.update_hodograph),
-            (self.skewt_check, self.update_skewt),
-            (self.tphi_check, self.update_tphi),
-            (self.stuve_check, self.update_stuve),
-        ]
-
         # Update the graphs when the checkboxes change their state
         self.hodograph_check.toggled.connect(lambda flag: self.update_spec_graphs(flag, self.update_hodograph))
         self.skewt_check.toggled.connect(lambda flag: self.update_spec_graphs(flag, self.update_skewt))
@@ -87,6 +79,7 @@ class DashboardController(DashboardWindow):
                 data = [data[0]] + list(map(lambda x: float(x), data[1:]))
                 time_str, latitude, longitude, satellite, altitude, pressure, internal_temperature, external_temperature, humidity = data
                 time_parsed = parse_time(time_str)
+                data[0] = time_parsed
                 time_elapsed = ceil((datetime.utcnow() - self.flight_init_time).total_seconds())
 
                 wind_direction = Wind.calculate_wind_direction(
@@ -129,7 +122,7 @@ class DashboardController(DashboardWindow):
                 data.extend([time_elapsed, wind_direction, wind_speed,
                              scaled_pressure, scaled_external_temperature])
 
-                data = [data[0]] + list(map(lambda x: str(x), data[1:]))
+                data = list(map(lambda x: str(x), data))
                 with open(output_file, 'a') as file_output:
                     file_output.write(",".join(data) + "\n")
 

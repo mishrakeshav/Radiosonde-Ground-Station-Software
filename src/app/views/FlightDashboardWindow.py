@@ -190,11 +190,9 @@ class FlightDashboardWindow(object):
 
         self.menubar.addAction(self.menuVisualization.menuAction())
         self.menuVisualization.addAction(self.actionTrack_Balloon)
-        self.actionTrack_Balloon.triggered.connect(self.open_map)
 
         self.menubar.addAction(self.menuFiles.menuAction())
         self.menuFiles.addAction(self.actionCreate_File)
-        self.actionCreate_File.triggered.connect(self.cdf)
 
         self.retranslateUi(main_window)
 
