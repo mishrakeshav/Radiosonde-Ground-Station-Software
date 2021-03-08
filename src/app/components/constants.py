@@ -1,25 +1,24 @@
-from os import path
-from src.app.utils.constants import *
+import os
 from PySide2.QtCore import QSize
-
-SOMAIYA_LOGO_PATH = os.path.join(ASSETS_DIR, "somaiya_logo.png")
-SOMAIYA_LOGO_POSITION = (330, 30)
-SOMAIYA_LOGO_SIZE = (121, 111)
-
-DATABYTE_LOGO_PATH = path.join(ASSETS_DIR, "databyte_logo.jpeg")
-DATABYTE_LOGO_POSITION = (160, 20)
-DATABYTE_LOGO_SIZE = (161, 141)
-
-STANDARD_BUTTON_SIZE = (271, 51)
 
 # Assets Directory Path
 ASSETS_DIR = os.path.join("resources", "images", "assets")
 # Preferences Path
 PREFERENCES_PATH = os.path.join(".rsgs", "preferences.json")
 
+
+SOMAIYA_LOGO_PATH = os.path.join(ASSETS_DIR, "somaiya_logo.png")
+SOMAIYA_LOGO_POSITION = (330, 30)
+SOMAIYA_LOGO_SIZE = (121, 111)
+
+DATABYTE_LOGO_PATH = os.path.join(ASSETS_DIR, "databyte_logo.jpeg")
+DATABYTE_LOGO_POSITION = (160, 20)
+DATABYTE_LOGO_SIZE = (161, 141)
+
+STANDARD_BUTTON_SIZE = (271, 51)
+
 # Fonts
 FONT_NAME = u"Ubuntu Mono"
-
 
 # Gauge Constants
 GAUGE_PATH = os.path.join("resources", "images")
@@ -62,3 +61,6 @@ WIND_DIRECTION_MINIMUM = 0
 ALTITUDE_MAXIMUM = 40000
 ALTITUDE_MINIMUM = 0
 
+# Serial Communication constants
+BAUD_RATE = 9600
+TIMEOUT = 1

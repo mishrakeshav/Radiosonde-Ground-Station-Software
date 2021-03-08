@@ -29,5 +29,6 @@ class MapView(QMainWindow):
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-    window = MapView(export_path="/home/phoenix/Desktop/Projects/Radiosonde-Ground-Station-Software/src/export/20210227_094749")
+    path = "/home/phoenix/Desktop/Projects/Radiosonde-Ground-Station-Software/src/export/20210227_094749"
+    window = MapView(export_path=path)
     app.exec_()

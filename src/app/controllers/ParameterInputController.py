@@ -50,7 +50,7 @@ class ParameterInputController(ParameterInputWindow):
         with open(os.path.join(flight_folder_path, "output.csv"), 'w') as file_output:  # make the files
             cols = ['time', 'latitude', 'longitude', 'satellites', 'altitude', 'pressure', 'internal_temperature',
                     'external_temperature', 'humidity', 'time_elapsed', 'wind_direction', 'wind_speed',
-                    'scaled_pressure', 'scaled_temperature'
+                    'scaled_pressure', 'scaled_temperature', 'dew_point'
                     ]
             file_output.write(",".join(cols) + "\n")
 

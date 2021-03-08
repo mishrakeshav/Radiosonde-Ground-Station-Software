@@ -1,5 +1,5 @@
 from src.app.components.fonts import ButtonFont
-from .constants import *
+from src.app.components.constants import *
 from PySide2.QtCore import *
 from PySide2.QtWidgets import *
 
