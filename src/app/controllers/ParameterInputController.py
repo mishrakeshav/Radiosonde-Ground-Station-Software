@@ -32,7 +32,7 @@ class ParameterInputController(ParameterInputWindow):
                 "windspeed": float(self.windspeed_input.text()),
                 "humidity": float(self.humidity_input.text()),
             }
-        except:
+        except :
             Alert(
                 main_text="Input Error",
                 info_text="Provide appropriate values",

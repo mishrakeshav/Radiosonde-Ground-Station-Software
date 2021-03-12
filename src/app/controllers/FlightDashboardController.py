@@ -67,7 +67,8 @@ class FlightDashboardController(FlightDashboardWindow):
                     y=self.data_frame[parameter_name],
                     c=color)
 
-                if parameter_name == "altitude": continue
+                if parameter_name == "altitude":
+                    continue
 
                 self.graph_altitude.plot(
                     x=self.data_frame[parameter_name],

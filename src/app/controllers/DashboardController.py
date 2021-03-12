@@ -70,7 +70,8 @@ class DashboardController(DashboardWindow):
             if self.comport.in_waiting:
                 data = self.comport.read_until().decode('ascii').split(",")
                 data = [data[0]] + list(map(lambda x: float(x), data[1:]))
-                time_str, latitude, longitude, satellite, altitude, pressure, internal_temperature, external_temperature, humidity = data
+                time_str, latitude, longitude, satellite, altitude, pressure, internal_temperature, \
+                    external_temperature, humidity = data
                 time_parsed = parse_time(time_str)
                 data[0] = time_parsed
                 time_elapsed = ceil((datetime.utcnow() - self.flight_init_time).total_seconds())
@@ -152,7 +153,8 @@ class DashboardController(DashboardWindow):
                     y=self.data_frame[parameter_name],
                     c=color)
 
-                if parameter_name == "altitude": continue
+                if parameter_name == "altitude":
+                    continue
 
                 self.graph_altitude.plot(
                     x=self.data_frame[parameter_name],
@@ -179,10 +181,14 @@ class DashboardController(DashboardWindow):
             self.table.setItem(row, index, QTableWidgetItem(str(data[name])))
 
     def update_spec_graphs(self):
-        if self.hodograph_check.isChecked(): hodograph(data_frame=self.data_frame, graph=self.spec_graph)
-        elif self.tphi_check.isChecked(): tephigram(data_frame=self.data_frame, graph=self.spec_graph)
-        elif self.skewt_check.isChecked(): skewt(data_frame=self.data_frame, graph=self.spec_graph)
-        elif self.stuve_check.isChecked(): stuve(data_frame=self.data_frame, graph=self.spec_graph)
+        if self.hodograph_check.isChecked():
+            hodograph(data_frame=self.data_frame, graph=self.spec_graph)
+        elif self.tphi_check.isChecked():
+            tephigram(data_frame=self.data_frame, graph=self.spec_graph)
+        elif self.skewt_check.isChecked():
+            skewt(data_frame=self.data_frame, graph=self.spec_graph)
+        elif self.stuve_check.isChecked():
+            stuve(data_frame=self.data_frame, graph=self.spec_graph)
 
     def run_threads(self):
         worker1 = Worker(self.read_port)
