@@ -1,5 +1,4 @@
 import os
-import datetime
 import json
 
 from PySide2.QtWidgets import QMainWindow
@@ -26,8 +25,8 @@ class PreviousParameterInputController(ParameterInputWindow):
                                                      flight_folder_path=self.flight_folder_path)
 
     def open_previous_window(self):
-        print("Woop go Doop")
-        self.current_window.close()
+        from src.app.controllers.ViewPreviousFlightController import ViewPreviousFlightController
+        self.next_window = ViewPreviousFlightController(self.main_window)
 
     def fill_parameters(self):
         file_path = os.path.join(self.flight_folder_path, 'params.json')

@@ -31,4 +31,5 @@ class ViewPreviousFlightController(ViewPreviousFlightWindow):
                                                                    flight_folder_path=self.flight_folder_path)
 
     def open_previous_window(self):
-        self.main_window.close()
+        from src.app.controllers.StartMenuController import StartMenuController
+        self.next_window = StartMenuController(self.main_window)
