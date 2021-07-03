@@ -1,15 +1,11 @@
 import os
 import sys
-import io
 import pandas as pd
 
-from PySide2.QtCore import *
 from PySide2.QtWidgets import *
-from PySide2.QtGui import *
 from PySide2.QtWebEngineWidgets import *
-from PySide2.QtPrintSupport import *
 
-from app.utils.MapGenerator import Map
+from src.app.utils.MapGenerator import Map
 
 
 class MapView(QMainWindow):
@@ -18,12 +14,12 @@ class MapView(QMainWindow):
         self.export_path = os.path.join(export_path, 'output.csv')
         self.browser = QWebEngineView()
         self.setCentralWidget(self.browser)
-        
+
         df = pd.read_csv(self.export_path)
-        lats = list(df['Latitude'])
-        lons = list(df['Longitude'])
+        latitude = list(df['latitude'])
+        longitude = list(df['longitude'])
         self.map_generator = Map()
-        self.map_generator.generate_map(lats, lons)
+        self.map_generator.generate_map(latitude, longitude)
         self.browser.setHtml(self.map_generator.data.getvalue().decode())
 
         self.status = QStatusBar()
@@ -31,11 +27,8 @@ class MapView(QMainWindow):
         self.show()
 
 
-
-
-
-
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-    window = MapView()
+    path = "/home/phoenix/Desktop/Projects/Radiosonde-Ground-Station-Software/src/export/20210227_094749"
+    window = MapView(export_path=path)
     app.exec_()

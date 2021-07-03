@@ -1,26 +1,18 @@
-import os
-import sys
-import json
-
 from PySide2.QtCore import *
 from PySide2.QtGui import *
 from PySide2.QtWidgets import *
-from pyside_material import apply_stylesheet
-from serial.tools.list_ports import comports
-from app.utils.PreferenceSetter import PreferenceSetter
 
-from app.views.ParameterInputWindow import ParameterInputWindow
-from app.utils.Alerts import Alert
-from app.utils.constants import * 
-
+from src.app.components.buttons import PushButton
+from src.app.utils.PreferenceSetter import PreferenceSetter
+from src.app.components.constants import *
+from src.app.components.logo import Logo
 
 preference_setter = PreferenceSetter()
 
 
 class PortSelectionWindow(object):
-    def setupUi(self, MainWindow,PreviousWindow):
+    def setupUi(self, MainWindow):
         self.current_window = MainWindow
-        self.previous_window = PreviousWindow
         self.next_window = None
 
         if not MainWindow.objectName():
@@ -28,7 +20,6 @@ class PortSelectionWindow(object):
         MainWindow.resize(600, 600)
         MainWindow.setMinimumSize(QSize(600, 600))
         MainWindow.setMaximumSize(QSize(600, 600))
-        MainWindow.setStyleSheet(u"background-color:white;\n""")
         self.centralwidget = QWidget(MainWindow)
         self.centralwidget.setObjectName(u"centralwidget")
         self.radiosonde_port_input = QComboBox(self.centralwidget)
@@ -82,22 +73,15 @@ class PortSelectionWindow(object):
         font3.setWeight(75)
         self.main_title_label.setFont(font3)
         self.main_title_label.setAlignment(Qt.AlignCenter)
-        self.back_button = QPushButton(self.centralwidget)
-        self.back_button.setObjectName(u"back_button")
-        self.back_button.setGeometry(QRect(320, 470, 141, 31))
-        self.proceed_button = QPushButton(self.centralwidget)
-        self.proceed_button.setObjectName(u"proceed_button")
-        self.proceed_button.setGeometry(QRect(160, 470, 141, 31))
-        self.logo_databyte = QLabel(self.centralwidget)
-        self.logo_databyte.setObjectName(u"logo_databyte")
-        self.logo_databyte.setGeometry(QRect(150, 10, 161, 141))
-        self.logo_databyte.setPixmap(QPixmap(os.path.join(ASSETS_DIR, "logo.jpeg")))
-        self.logo_databyte.setScaledContents(True)
-        self.logo_somaiya = QLabel(self.centralwidget)
-        self.logo_somaiya.setObjectName(u"logo_somaiya")
-        self.logo_somaiya.setGeometry(QRect(320, 20, 121, 111))
-        self.logo_somaiya.setPixmap(QPixmap(os.path.join(ASSETS_DIR, "svv.png")))
-        self.logo_somaiya.setScaledContents(True)
+        self.back_button = PushButton(self.centralwidget, position=(160, 480), size=(151, 41), name="Back")
+        self.proceed_button = PushButton(self.centralwidget, position=(330, 480), size=(151, 41), name="Proceed")
+
+        self.logo_databyte = Logo(parent=self.centralwidget, position=DATABYTE_LOGO_POSITION, size=DATABYTE_LOGO_SIZE,
+                                  path=DATABYTE_LOGO_PATH)
+
+        self.logo_somaiya = Logo(parent=self.centralwidget, position=SOMAIYA_LOGO_POSITION, size=SOMAIYA_LOGO_SIZE,
+                                 path=SOMAIYA_LOGO_PATH)
+
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QMenuBar(MainWindow)
         self.menubar.setObjectName(u"menubar")
@@ -107,62 +91,16 @@ class PortSelectionWindow(object):
         self.statusbar.setObjectName(u"statusbar")
         MainWindow.setStatusBar(self.statusbar)
 
-
-        preference_setter.set_receiver_port(self.get_comport_list(), self.receiver_port_input)
-        preference_setter.set_radiosonde_port(self.get_comport_list(), self.radiosonde_port_input)
-
         self.retranslateUi(MainWindow)
 
         QMetaObject.connectSlotsByName(MainWindow)
-
-        # custom setups
-        self.connect_buttons()
 
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"MainWindow", None))
         self.receiver_port_label.setText(QCoreApplication.translate("MainWindow", u"Receiver com port :", None))
         self.radiosonde_port_label.setText(QCoreApplication.translate("MainWindow", u"Radiosonde com port :", None))
-        self.subtitle_label.setText(QCoreApplication.translate("MainWindow", u"Receiver com port and Radiosonde com port", None))
+        self.subtitle_label.setText(
+            QCoreApplication.translate("MainWindow", u"Receiver com port and Radiosonde com port", None))
         self.title_label.setText(QCoreApplication.translate("MainWindow", u"Start New Flight", None))
-        self.main_title_label.setText(QCoreApplication.translate("MainWindow", u"Indravani Groundstation Software", None))
-        self.back_button.setText(QCoreApplication.translate("MainWindow", u"Back", None))
-        self.proceed_button.setText(QCoreApplication.translate("MainWindow", u"Proceed", None))
-        self.logo_databyte.setText("")
-        self.logo_somaiya.setText("")
-
-
-    # connects buttons to methods that gets triggered on click
-    def connect_buttons(self):
-        self.proceed_button.clicked.connect(self.open_next_window)
-        self.back_button.clicked.connect(self.open_previous_window)
-
-    def open_previous_window(self):
-        self.current_window.close()
-        self.previous_window.show()
-
-    def open_next_window(self):
-
-        receiver_port = self.receiver_port_input.currentText()
-        radiosonde_port = self.radiosonde_port_input.currentText()
-
-        if False:
-            Alert(
-                main_text = "Port Selection Error",
-                info_text = "The radiosonde and receiver port cannot be same",
-                alert_type = Alert.WARNING,
-            )
-        else:
-            if self.next_window:
-                self.current_window.close()
-                self.next_window.show()
-            else:
-                self.next_window = QMainWindow()
-                self.next_window_ui = ParameterInputWindow()
-                self.next_window_ui.setupUi(receiver_port, radiosonde_port, self.next_window,self.current_window)
-                self.next_window.show()
-                self.current_window.close()
-
-    def get_comport_list(self):
-        comport_list = comports()
-        comport_list = list(map(lambda x: str(x).split()[0], comport_list))
-        return comport_list
+        self.main_title_label.setText(
+            QCoreApplication.translate("MainWindow", u"Indravani Groundstation Software", None))

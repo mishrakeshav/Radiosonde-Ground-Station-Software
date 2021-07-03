@@ -1,3 +1,4 @@
+
 temperature_checkbox_indicator = """
 QCheckBox
 {
@@ -29,7 +30,7 @@ QCheckBox
 altitude_checkbox_indicator = """
 QCheckBox
 {
-    color:yellow;
+    color:orange;
 }
 """
 

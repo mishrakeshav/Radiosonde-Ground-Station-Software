@@ -1,33 +1,27 @@
-import os
-import sys
-
 from PySide2.QtCore import *
 from PySide2.QtGui import *
 from PySide2.QtWidgets import *
-from app.utils.PreferenceSetter import PreferenceSetter
 
-from app.views.PreviousParameterInputWindow import ParameterInputWindow
-from app.utils.Alerts import Alert
-from app.utils.constants import * 
+from src.app.components.buttons import PushButton
+from src.app.components.logo import Logo
+from src.app.components.constants import *
+from src.app.utils.constants import *
 
 
 class ViewPreviousFlightWindow(object):
-    def setupUi(self, MainWindow, PreviousWindow):
-
+    def setupUi(self, main_window):
         self.folder_name = None
-        # to navigate between windows 
-        self.current_window = MainWindow
-        self.previous_window = PreviousWindow
-        self.next_window = None 
+        self.current_window = main_window
+        self.next_window = None
 
-        if not MainWindow.objectName():
-            MainWindow.setObjectName(u"MainWindow")
-        MainWindow.resize(600, 600)
-        MainWindow.setMinimumSize(QSize(600, 600))
-        MainWindow.setMaximumSize(QSize(600, 600))
+        if not main_window.objectName():
+            main_window.setObjectName(u"MainWindow")
+        main_window.resize(600, 600)
+        main_window.setMinimumSize(QSize(600, 600))
+        main_window.setMaximumSize(QSize(600, 600))
 
         ###### Central Widget ######
-        self.centralwidget = QWidget(MainWindow)
+        self.centralwidget = QWidget(main_window)
         self.centralwidget.setObjectName(u"centralwidget")
 
         ##### Subtitle  ######
@@ -41,7 +35,7 @@ class ViewPreviousFlightWindow(object):
         font.setWeight(50)
         self.subtitle_label.setFont(font)
         self.subtitle_label.setAlignment(Qt.AlignCenter)
-        
+
         ###### Title ######
         self.title_label = QLabel(self.centralwidget)
         self.title_label.setObjectName(u"title_label")
@@ -80,101 +74,47 @@ class ViewPreviousFlightWindow(object):
         self.flight_directory_input.setGeometry(QRect(200, 390, 281, 31))
 
         ###### Browse Button ######
-        self.browse_button = QPushButton(self.centralwidget)
-        self.browse_button.setObjectName(u"browse_button")
-        self.browse_button.setGeometry(QRect(480, 390, 61, 31))
+        self.browse_button = PushButton(name="Browse Flight", parent=self.centralwidget,
+                                        position=(480, 390,), size=(61, 31))
 
         ###### Proceed Button ######
-        self.proceed_button = QPushButton(self.centralwidget)
-        self.proceed_button.setObjectName(u"proceed_button")
-        self.proceed_button.setGeometry(QRect(160, 480, 151, 41))
+        self.proceed_button = PushButton(name="Proceed", parent=self.centralwidget,
+                                         position=(160, 480), size=(151, 41))
 
         ###### Back Button ######
-        self.back_button = QPushButton(self.centralwidget)
-        self.back_button.setObjectName(u"back_button")
-        self.back_button.setGeometry(QRect(330, 480, 151, 41))
+        self.back_button = PushButton(name="Proceed", parent=self.centralwidget,
+                                      position=(330, 480), size=(151, 41))
 
-        ###### Logo Databyte ######
-        self.logo_databyte = QLabel(self.centralwidget)
-        self.logo_databyte.setObjectName(u"logo_databyte")
-        self.logo_databyte.setGeometry(QRect(150, 20, 161, 141))
-        self.logo_databyte.setPixmap(os.path.join(ASSETS_DIR, "logo.jpeg"))
-        self.logo_databyte.setScaledContents(True)
+        self.logo_databyte = Logo(parent=self.centralwidget, position=DATABYTE_LOGO_POSITION, size=DATABYTE_LOGO_SIZE,
+                                  path=DATABYTE_LOGO_PATH)
 
-        ###### Logo Somaiya ######
-        self.logo_somaiya = QLabel(self.centralwidget)
-        self.logo_somaiya.setObjectName(u"logo_somaiya")
-        self.logo_somaiya.setGeometry(QRect(320, 30, 121, 111))
-        self.logo_somaiya.setPixmap(QPixmap(os.path.join(ASSETS_DIR, "svv.png")))
-        self.logo_somaiya.setScaledContents(True)
+        self.logo_somaiya = Logo(parent=self.centralwidget, position=SOMAIYA_LOGO_POSITION, size=SOMAIYA_LOGO_SIZE,
+                                 path=SOMAIYA_LOGO_PATH)
 
-        MainWindow.setCentralWidget(self.centralwidget)
+        main_window.setCentralWidget(self.centralwidget)
 
         ###### Menubar ######
-        self.menubar = QMenuBar(MainWindow)
+        self.menubar = QMenuBar(main_window)
         self.menubar.setObjectName(u"menubar")
         self.menubar.setGeometry(QRect(0, 0, 600, 20))
-        MainWindow.setMenuBar(self.menubar)
+        main_window.setMenuBar(self.menubar)
 
-        
-        self.statusbar = QStatusBar(MainWindow)
+        self.statusbar = QStatusBar(main_window)
         self.statusbar.setObjectName(u"statusbar")
-        MainWindow.setStatusBar(self.statusbar)
+        main_window.setStatusBar(self.statusbar)
 
-        self.retranslateUi(MainWindow)
-        self.set_accesible_name()
+        self.retranslateUi(main_window)
 
-        QMetaObject.connectSlotsByName(MainWindow)
-
-        # custom setups 
-        self.connect_buttons()
-        
+        QMetaObject.connectSlotsByName(main_window)
 
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"MainWindow", None))
         self.subtitle_label.setText(QCoreApplication.translate("MainWindow", u"Select Flight Directory", None))
         self.title_label.setText(QCoreApplication.translate("MainWindow", u"View Previous Flights", None))
-        self.main_title_label.setText(QCoreApplication.translate("MainWindow", u"Indravani Groundstation Software", None))
+        self.main_title_label.setText(
+            QCoreApplication.translate("MainWindow", u"Indravani Groundstation Software", None))
         self.flight_directory_label.setText(QCoreApplication.translate("MainWindow", u"Flight Directory", None))
         self.browse_button.setText(QCoreApplication.translate("MainWindow", u"Browse", None))
         self.proceed_button.setText(QCoreApplication.translate("MainWindow", u"Proceed", None))
         self.back_button.setText(QCoreApplication.translate("MainWindow", u"Back", None))
-        self.logo_databyte.setText("")
-        self.logo_somaiya.setText("")
-    
-    def set_accesible_name(self):
-        self.proceed_button.setAccessibleName(QCoreApplication.translate("MainWindow", u"btn_outline_secondary", None))
-        self.back_button.setAccessibleName(QCoreApplication.translate("MainWindow", u"btn_outline_danger", None))
-        self.browse_button.setAccessibleName(QCoreApplication.translate("MainWindow", u"btn_secondary", None))
-
-    def get_folder(self):
-        print('Get Foler Called')
-        self.folder_name = QFileDialog.getExistingDirectory()
-        self.flight_directory_input.setText(str(self.folder_name))
-        print(self.folder_name)
-        
-
-    def connect_buttons(self):
-        self.proceed_button.clicked.connect(self.open_next_window)
-        self.back_button.clicked.connect(self.open_previous_window)
-        self.browse_button.clicked.connect(self.get_folder)
-    
-    def open_next_window(self):
-        if not self.folder_name:
-            Alert(main_text = "PLS BROWSER WINDOW",  info_text= "Pls choose folder first lol")
-            return 
-        # validation 
-        if self.next_window:
-            self.current_window.close()
-            self.next_window.show()
-        else:
-            self.next_window = QMainWindow()
-            self.next_window_ui = ParameterInputWindow()
-            self.next_window_ui.setupUi(self.folder_name,self.next_window,self.current_window)
-            self.next_window.show()
-            self.current_window.close()
-    
-    def open_previous_window(self):
-        self.current_window.close()
-        self.previous_window.show()
 
